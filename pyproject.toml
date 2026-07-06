@@ -1,0 +1,26 @@
+[project]
+name = "frontdesk"
+version = "0.1.0"
+description = "Booking, POS, and AI-powered front desk for service businesses (barber, salon, clinic, spa, gym). Built on Frappe."
+authors = [
+    { name = "Yasser Bousrih", email = "yasser@basira.tech" }
+]
+license = "MIT"
+requires-python = ">=3.10"
+readme = "README.md"
+
+dependencies = [
+    "frappe>=15.0.0",
+    "erpnext>=15.0.0",
+]
+
+[project.urls]
+Repository = "https://github.com/yasserbousrih/frontdesk"
+Documentation = "https://github.com/yasserbousrih/frontdesk#readme"
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.frappe]
+app_name = "frontdesk"
