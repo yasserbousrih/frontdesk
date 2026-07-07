@@ -1,7 +1,6 @@
 # FrontDesk
 
 **Booking + POS + AI receptionist for service businesses.**
-The front-of-house counterpart to [BackHouse](https://github.com/yasserbousrih/backhouse) (restaurants). Same building blocks, assembled for businesses where the customer books a **specific person** — not a room, not a time slot.
 
 ---
 
@@ -66,8 +65,8 @@ FrontDesk assembles these reusable blocks from the Basira ecosystem:
 |---|---|---|
 | **Booking Engine** | Customer picks staff member → sees real-time availability → books slot | FrontDesk (new) |
 | **Staff Availability Board** | Live view of who's free, who's busy, who's next | FrontDesk (new) |
-| **Simple POS** | Checkout at the chair. No KOT, no kitchen routing. Just totals + payment. | Ugy (POS engine) |
-| **Booking Website** | Branded booking page per business. Mobile-first. | UCM (Unified Commercial Middleware) |
+| **Simple POS** | Checkout at the chair. No KOT, no kitchen routing. Just totals + payment. | FrontDesk POS |
+| **Booking Website** | Branded booking page per business. Mobile-first. | Frappe website pages |
 | **Omnichat** | WhatsApp booking flow via Basira-omnichat | Basira-omnichat |
 | **VoxAI** | Voice booking — customer calls, AI books the appointment | VoxAI |
 | **CRM** | Client history, preferences, visit count | Frappe ERPNext |
@@ -80,12 +79,12 @@ FrontDesk assembles these reusable blocks from the Basira ecosystem:
 Customer
   │
   ├── WhatsApp ──→ Basira-Omnichat ──┐
-  ├── Website ───→ UCM ──────────────┤
-  ├── Phone Call → VoxAI ────────────┼──→ Agent-Brain ──→ FrontDesk (Frappe)
+  ├── Website ───→ Frappe Website ───┤
+  ├── Phone Call → VoxAI ────────────┼──→ FrontDesk (Frappe)
   └── Walk-in ───→ Staff Tablet ─────┘                        │
                                                               ├── Staff Availability Board
                                                               ├── Booking Calendar
-                                                              ├── POS (Ugy)
+                                                              ├── POS (FrontDesk)
                                                               ├── CRM (ERPNext)
                                                               └── Loyalty (ERPNext)
 ```
@@ -96,9 +95,8 @@ Customer
 
 - **Framework:** Frappe v15+
 - **ERP:** ERPNext v15+
-- **POS:** Ugy (custom Frappe POS engine)
-- **Middleware:** UCM (Unified Commercial Middleware)
-- **AI Layer:** Agent-Brain + Basira-omnichat + VoxAI
+- **POS:** FrontDesk checkout (booking → Sales Invoice)
+- **AI Layer:** Basira-omnichat + VoxAI
 - **Database:** MariaDB (via Frappe)
 - **Frontend:** Frappe Desk + custom pages
 
@@ -133,8 +131,6 @@ bench --site yoursite install-app frontdesk
 **Dependencies:**
 - Frappe v15+
 - ERPNext v15+
-- Ugy (POS engine) — optional, for checkout
-- UCM (middleware) — for website booking
 - Basira-omnichat — for WhatsApp booking
 - VoxAI — for voice booking
 

@@ -16,19 +16,19 @@ def on_booking_update(doc, method):
     and the follow_up_sent flag hasn't been set yet.
     """
     if doc.status == "Paid" and not doc.follow_up_sent:
-        send_post_paid_message(doc)
-        doc.db_set("follow_up_sent", 1, update_modified=False)
+        if send_post_paid_message(doc):
+            doc.db_set("follow_up_sent", 1, update_modified=False)
 
 
 def send_post_paid_message(doc):
     """Send rebooking + review prompt via Omnichat."""
     bs = frappe.get_single("Business Settings")
     if not (bs.get("omnichat_api_url") and bs.get("omnichat_api_token")):
-        return
+        return True  # nothing to do — mark as handled
 
     customer = frappe.get_doc("Customer Profile", doc.customer)
     if not customer.phone:
-        return
+        return True  # no phone to send to — mark as handled
 
     staff_name = frappe.db.get_value("Staff Member", doc.staff, "staff_name")
     service_name = frappe.db.get_value("Service", doc.service, "service_name")
@@ -54,5 +54,7 @@ def send_post_paid_message(doc):
             json=payload, timeout=10,
         )
         resp.raise_for_status()
+        return True
     except Exception:
         frappe.log_error(f"FrontDesk: post-paid follow-up failed for booking {doc.name}")
+        return False

@@ -53,7 +53,7 @@ def _send_reminder(booking, bs):
     """Send a single WhatsApp reminder for a booking."""
     customer = frappe.get_doc("Customer Profile", booking["customer"])
     if not customer.phone:
-        return
+        return True  # no phone to send to — mark as handled
 
     staff_name = frappe.db.get_value("Staff Member", booking["staff"], "staff_name")
     service_name = frappe.db.get_value("Service", booking["service"], "service_name")
@@ -84,7 +84,7 @@ def _send_reminder(booking, bs):
 
 
 def _to_datetime(booking_date, start_time):
-    """Combine a date + time (which may be str or datetime.time) into datetime."""
+    """Combine a date + time (which may be str or datetime.time) into TZ-aware datetime."""
     if isinstance(start_time, str):
         try:
             start_time = datetime.strptime(start_time, "%H:%M:%S").time()
@@ -94,6 +94,7 @@ def _to_datetime(booking_date, start_time):
             except ValueError:
                 return None
     try:
-        return datetime.combine(booking_date, start_time)
+        naive = datetime.combine(booking_date, start_time)
+        return frappe.utils.get_datetime(naive.strftime("%Y-%m-%d %H:%M:%S"))
     except (TypeError, AttributeError):
         return None

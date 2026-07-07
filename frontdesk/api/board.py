@@ -28,29 +28,39 @@ def get_board_data():
         fields=["name", "staff_name", "photo"],
         order_by="staff_name",
     )
+    bookings = frappe.get_all(
+        "Booking",
+        filters={
+            "staff": ["in", [s.name for s in staff_list]],
+            "booking_date": today(),
+            "status": ["not in", ["Cancelled", "No-Show"]],
+        },
+        fields=[
+            "name", "customer", "start_time", "end_time",
+            "service", "status", "price", "staff",
+        ],
+        order_by="start_time",
+    )
+    # Batch-load names to avoid N+1 queries
+    customer_ids = {b["customer"] for b in bookings}
+    service_ids = {b["service"] for b in bookings}
+    customer_names = {
+        r["name"]: r["customer_name"]
+        for r in frappe.get_all("Customer Profile", filters={"name": ["in", list(customer_ids)]}, fields=["name", "customer_name"])
+    }
+    service_names = {
+        r["name"]: r["service_name"]
+        for r in frappe.get_all("Service", filters={"name": ["in", list(service_ids)]}, fields=["name", "service_name"])
+    }
+    # Group by staff
+    bookings_by_staff = {}
+    for b in bookings:
+        bookings_by_staff.setdefault(b["staff"], []).append(b)
     for s in staff_list:
-        bookings = frappe.get_all(
-            "Booking",
-            filters={
-                "staff": s.name,
-                "booking_date": today(),
-                "status": ["not in", ["Cancelled", "No-Show"]],
-            },
-            fields=[
-                "name",
-                "customer",
-                "start_time",
-                "end_time",
-                "service",
-                "status",
-                "price",
-            ],
-            order_by="start_time",
-        )
-        for b in bookings:
-            b.customer_name = frappe.db.get_value("Customer Profile", b.customer, "customer_name")
-            b.service_name = frappe.db.get_value("Service", b.service, "service_name")
-        s.bookings = bookings
+        s.bookings = bookings_by_staff.get(s.name, [])
+        for b in s.bookings:
+            b["customer_name"] = customer_names.get(b["customer"], "")
+            b["service_name"] = service_names.get(b["service"], "")
     return staff_list
 
 
