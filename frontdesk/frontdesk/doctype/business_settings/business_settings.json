@@ -26,7 +26,8 @@
   "omnichat_section",
   "omnichat_api_url",
   "omnichat_api_token",
-  "omnichat_sender_id"
+  "omnichat_sender_id",
+  "google_review_url"
  ],
  "fields": [
   {
@@ -143,6 +144,11 @@
    "fieldname": "omnichat_sender_id",
    "fieldtype": "Data",
    "label": "Omnichat Sender ID"
+  },
+  {
+   "fieldname": "google_review_url",
+   "fieldtype": "Data",
+   "label": "Google Review URL"
   }
  ],
  "index_web_pages_for_search": 1,

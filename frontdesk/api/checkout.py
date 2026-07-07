@@ -54,11 +54,15 @@ def create_invoice(booking_name, payment_method="Cash"):
         # Payment Entry here, but that's out of scope for the desk screen).
         "remarks": f"Booking {booking_name} — Payment method: {payment_method}",
     })
+    # Attach loyalty program so ERPNext auto-calculates points on submit
+    if frappe.db.exists("DocType", "Loyalty Program") and frappe.db.exists("Loyalty Program", "FrontDesk Rewards"):
+        si.loyalty_program = "FrontDesk Rewards"
     si.insert(ignore_permissions=True)
     si.submit()
 
     # Mark booking as Paid
-    booking.db_set("status", "Paid")
+    booking.status = "Paid"
+    booking.save(ignore_permissions=True)
     return {"sales_invoice": si.name, "booking": booking.name}
 
 
@@ -79,7 +83,18 @@ def _ensure_customer(customer_profile):
         "territory": "All Territories",
     }).insert(ignore_permissions=True)
     cp.db_set("erpnext_customer", cust.name)
+    _enroll_loyalty(cust.name)
     return cust.name
+
+
+def _enroll_loyalty(customer_name):
+    """Enroll an ERPNext Customer in the FrontDesk Rewards loyalty program."""
+    # Guard: Loyalty Program is an ERPNext doctype — skip if ERPNext not installed
+    if not frappe.db.exists("DocType", "Loyalty Program"):
+        return
+    if not frappe.db.exists("Loyalty Program", "FrontDesk Rewards"):
+        return
+    frappe.db.set_value("Customer", customer_name, "loyalty_program", "FrontDesk Rewards")
 
 
 def _ensure_item(service_name):

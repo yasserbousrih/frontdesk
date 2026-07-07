@@ -60,7 +60,13 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
+ "links": [
+  {
+   "group": "Bookings",
+   "link_doctype": "Booking",
+   "link_fieldname": "customer"
+  }
+ ],
  "modified": "2026-07-07 10:00:00.000000",
  "module": "Frontdesk",
  "name": "Customer Profile",

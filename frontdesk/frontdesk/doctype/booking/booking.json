@@ -20,7 +20,10 @@
   "source",
   "section_break_amounts",
   "price",
-  "notes"
+  "notes",
+  "internal_flags_section",
+  "reminder_sent",
+  "follow_up_sent"
  ],
  "fields": [
   {
@@ -112,6 +115,28 @@
    "fieldname": "notes",
    "fieldtype": "Text",
    "label": "Notes"
+  },
+  {
+   "fieldname": "internal_flags_section",
+   "fieldtype": "Section Break",
+   "label": "Internal",
+   "hidden": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "reminder_sent",
+   "fieldtype": "Check",
+   "label": "Reminder Sent",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "follow_up_sent",
+   "fieldtype": "Check",
+   "label": "Follow-up Sent",
+   "read_only": 1,
+   "hidden": 1
   }
  ],
  "index_web_pages_for_search": 1,
