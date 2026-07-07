@@ -30,29 +30,35 @@ def get_context(context):
         "Booking",
         filters={"status": "Completed"},
         fields=[
-            "name",
-            "customer",
-            "staff",
-            "service",
-            "booking_date",
-            "start_time",
-            "price",
+            "name", "customer", "staff", "service",
+            "booking_date", "start_time", "price",
         ],
         order_by="booking_date desc, start_time desc",
         limit=50,
     )
 
-    for b in bookings:
-        b["customer_name"] = frappe.db.get_value(
-            "Customer Profile", b["customer"], "customer_name"
-        )
-        b["service_name"] = frappe.db.get_value(
-            "Service", b["service"], "service_name"
-        )
-        b["staff_name"] = frappe.db.get_value(
-            "Staff Member", b["staff"], "staff_name"
-        )
-        b["start_time"] = _fmt_time(b.get("start_time"))
+    if bookings:
+        # Batch-load names to avoid N+1 (up to 150 saved queries)
+        customer_ids = {b["customer"] for b in bookings}
+        service_ids = {b["service"] for b in bookings}
+        staff_ids = {b["staff"] for b in bookings}
+        customer_names = {
+            r["name"]: r["customer_name"]
+            for r in frappe.get_all("Customer Profile", filters={"name": ["in", list(customer_ids)]}, fields=["name", "customer_name"])
+        }
+        service_names = {
+            r["name"]: r["service_name"]
+            for r in frappe.get_all("Service", filters={"name": ["in", list(service_ids)]}, fields=["name", "service_name"])
+        }
+        staff_names = {
+            r["name"]: r["staff_name"]
+            for r in frappe.get_all("Staff Member", filters={"name": ["in", list(staff_ids)]}, fields=["name", "staff_name"])
+        }
+        for b in bookings:
+            b["customer_name"] = customer_names.get(b["customer"], "")
+            b["service_name"] = service_names.get(b["service"], "")
+            b["staff_name"] = staff_names.get(b["staff"], "")
+            b["start_time"] = _fmt_time(b.get("start_time"))
 
     context.bookings = bookings
     context.no_cache = 1
