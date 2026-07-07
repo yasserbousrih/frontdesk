@@ -54,6 +54,9 @@ doc_events = {
     "Booking": {
         "after_insert": "frontdesk.api.notifications.send_booking_confirmation",
         "on_update": "frontdesk.api.followups.on_booking_update",
+    },
+    "Customer Profile": {
+        "on_update": "frontdesk.api.basira_crm.sync_customer_to_basira",
     }
 }
 

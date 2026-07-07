@@ -26,7 +26,10 @@
   "omnichat_api_url",
   "omnichat_api_token",
   "omnichat_sender_id",
-  "google_review_url"
+  "google_review_url",
+  "basira_crm_section",
+  "basira_crm_api_url",
+  "basira_crm_secret"
  ],
  "fields": [
   {
@@ -141,6 +144,21 @@
    "fieldname": "google_review_url",
    "fieldtype": "Data",
    "label": "Google Review URL"
+  },
+  {
+   "fieldname": "basira_crm_section",
+   "fieldtype": "Section Break",
+   "label": "Basira CRM"
+  },
+  {
+   "fieldname": "basira_crm_api_url",
+   "fieldtype": "Data",
+   "label": "Basira CRM API URL"
+  },
+  {
+   "fieldname": "basira_crm_secret",
+   "fieldtype": "Password",
+   "label": "Basira CRM Secret"
   }
  ],
  "index_web_pages_for_search": 1,

@@ -51,9 +51,21 @@ class Booking(Document):
             frappe.throw(f"Staff member '{staff_doc.staff_name}' is not active.")
 
     def _enforce_no_overlap(self):
-        """Reject if any non-cancelled booking for the same staff overlaps this one."""
+        """Reject if any non-cancelled booking for the same staff overlaps this one.
+
+        Locks the staff member row (SELECT FOR UPDATE) to serialize concurrent
+        bookings for the same staff — prevents two requests from both passing
+        the overlap check before either commits.
+        """
         if not (self.staff and self.booking_date and self.start_time and self.end_time):
             return
+
+        # Lock the staff member row — any concurrent booking for this staff
+        # blocks here until the current transaction commits or rolls back.
+        frappe.db.sql(
+            "SELECT name FROM `tabStaff Member` WHERE name=%s FOR UPDATE",
+            (self.staff,),
+        )
 
         existing = frappe.get_all(
             "Booking",
