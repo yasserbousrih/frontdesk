@@ -48,6 +48,8 @@ Booking `validate` rejects overlapping bookings (no double-booking, regardless o
 
 Tap a completed booking → services pre-filled → add extras → payment method → ERPNext Sales Invoice created. Loyalty points auto-applied.
 
+**Receipt printing:** When `epson_middleware` is installed, submitting the Sales Invoice automatically fires an Epson ePOS receipt print via doc_events. No custom integration code needed — FrontDesk sets the `payments` child table on the SI and the middleware picks it up on `on_submit`.
+
 ## 8. Retention (Phase 2 — built)
 
 - **2h reminders** — hourly scheduler job queries upcoming bookings and sends WhatsApp reminders via Omnichat. No-ops gracefully if Omnichat is unconfigured.

@@ -84,6 +84,14 @@ def create_invoice(
 
     _attach_loyalty(si)
     si.insert(ignore_permissions=True)
+
+    # Payment details for receipt printing (epson_middleware reads this table)
+    mode_map = {"Cash": "Cash", "Card": "Credit Card", "Transfer": "Bank Transfer"}
+    si.append("payments", {
+        "mode_of_payment": mode_map.get(payment_method, "Cash"),
+        "amount": si.grand_total,
+    })
+
     si.submit()
 
     booking.status = "Paid"

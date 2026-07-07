@@ -52,6 +52,7 @@ This defines who FrontDesk is for:
 | **Staff availability board** (API + web) | ✅ |
 | **My Schedule** page (staff view) | ✅ |
 | **Checkout / POS** (booking → Sales Invoice) | ✅ |
+| **Epson receipt printing** (via epson_middleware) | ✅ |
 | **2h pre-appointment reminders** (hourly scheduler) | ✅ |
 | **Post-paid follow-up tracking** | ✅ |
 | **Loyalty program** (FrontDesk Rewards, auto-created) | ✅ |
