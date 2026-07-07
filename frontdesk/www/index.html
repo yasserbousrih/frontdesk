@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="theme-color" content="{{ business.primary_color or '#1a1a2e' }}" />
+	<title>{{ business.business_name or "FrontDesk" }}</title>
+	<style>
+		:root {
+			--primary: {{ business.primary_color or '#1a1a2e' }};
+			--accent: {{ business.accent_color or '#e94560' }};
+			--bg: #fafafa;
+			--surface: #ffffff;
+			--text: #1a1a1a;
+			--muted: #6b7280;
+			--border: #e5e7eb;
+		}
+		* { box-sizing: border-box; }
+		html, body {
+			margin: 0;
+			padding: 0;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			color: var(--text);
+			background: var(--bg);
+			-webkit-font-smoothing: antialiased;
+			line-height: 1.5;
+		}
+		.hero {
+			position: relative;
+			width: 100%;
+			min-height: 220px;
+			background: linear-gradient(135deg, var(--primary), var(--accent));
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+		}
+		.hero img {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			opacity: 0.35;
+		}
+		.hero-content {
+			position: relative;
+			text-align: center;
+			padding: 32px 20px;
+		}
+		.brand-row {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+			margin-bottom: 8px;
+		}
+		.brand-row img {
+			position: static;
+			width: 48px;
+			height: 48px;
+			object-fit: cover;
+			border-radius: 50%;
+			opacity: 1;
+			background: #fff;
+			padding: 4px;
+		}
+		.hero h1 {
+			margin: 0;
+			font-size: 28px;
+			font-weight: 700;
+			letter-spacing: -0.02em;
+		}
+		.hero .tagline {
+			margin: 8px 0 0;
+			font-size: 14px;
+			opacity: 0.9;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
+		main {
+			max-width: 640px;
+			margin: 0 auto;
+			padding: 24px 16px 80px;
+		}
+		.cta-wrap {
+			margin: 24px 0 32px;
+			text-align: center;
+		}
+		.cta {
+			display: inline-block;
+			background: var(--accent);
+			color: #fff;
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 18px;
+			padding: 18px 36px;
+			border-radius: 999px;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+			min-height: 56px;
+			min-width: 240px;
+			transition: transform 0.15s ease, box-shadow 0.15s ease;
+		}
+		.cta:active {
+			transform: translateY(1px);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		}
+		.about {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 20px;
+			margin-bottom: 24px;
+		}
+		.about h2 {
+			margin: 0 0 8px;
+			font-size: 18px;
+			color: var(--primary);
+		}
+		.about p {
+			margin: 0;
+			color: var(--muted);
+			font-size: 15px;
+			white-space: pre-line;
+		}
+		.contact {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 20px;
+		}
+		.contact h2 {
+			margin: 0 0 12px;
+			font-size: 18px;
+			color: var(--primary);
+		}
+		.contact-list {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+		.contact a {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			color: var(--text);
+			text-decoration: none;
+			padding: 12px 14px;
+			border-radius: 10px;
+			background: var(--bg);
+			font-size: 15px;
+			min-height: 48px;
+		}
+		.contact a:active {
+			background: var(--border);
+		}
+		.contact .label {
+			color: var(--muted);
+			font-size: 12px;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			min-width: 70px;
+		}
+		footer {
+			text-align: center;
+			font-size: 12px;
+			color: var(--muted);
+			margin-top: 24px;
+		}
+		@media (min-width: 600px) {
+			.hero { min-height: 300px; }
+			.hero h1 { font-size: 36px; }
+			main { padding: 32px 24px 80px; }
+		}
+	</style>
+</head>
+<body>
+	<header class="hero">
+		{% if business.cover_image %}
+			<img src="{{ business.cover_image }}" alt="" />
+		{% endif %}
+		<div class="hero-content">
+			<div class="brand-row">
+				{% if business.logo %}
+					<img src="{{ business.logo }}" alt="{{ business.business_name }} logo" />
+				{% endif %}
+			</div>
+			<h1>{{ business.business_name or "FrontDesk" }}</h1>
+			{% if business.vertical %}
+				<p class="tagline">{{ business.vertical }}</p>
+			{% endif %}
+		</div>
+	</header>
+
+	<main>
+		<div class="cta-wrap">
+			<a class="cta" href="/book">Book Appointment</a>
+			{% if active_staff_count %}
+				<p style="margin: 12px 0 0; color: var(--muted); font-size: 14px;">
+					{{ active_staff_count }} barber{{ "" if active_staff_count == 1 else "s" }} ready to serve you
+				</p>
+			{% endif %}
+		</div>
+
+		{% if business.about_text %}
+			<section class="about">
+				<h2>About</h2>
+				<p>{{ business.about_text }}</p>
+			</section>
+		{% endif %}
+
+		{% if business.contact_phone or business.contact_whatsapp or business.contact_email or business.instagram %}
+			<section class="contact">
+				<h2>Contact</h2>
+				<div class="contact-list">
+					{% if business.contact_phone %}
+						<a href="tel:{{ business.contact_phone }}">
+							<span class="label">Phone</span>
+							<span>{{ business.contact_phone }}</span>
+						</a>
+					{% endif %}
+					{% if business.contact_whatsapp %}
+						<a href="https://wa.me/{{ business.contact_whatsapp|ltrim('0+')|replace(' ', '') }}" target="_blank" rel="noopener">
+							<span class="label">WhatsApp</span>
+							<span>{{ business.contact_whatsapp }}</span>
+						</a>
+					{% endif %}
+					{% if business.contact_email %}
+						<a href="mailto:{{ business.contact_email }}">
+							<span class="label">Email</span>
+							<span>{{ business.contact_email }}</span>
+						</a>
+					{% endif %}
+					{% if business.instagram %}
+						<a href="https://instagram.com/{{ business.instagram|ltrim('@') }}" target="_blank" rel="noopener">
+							<span class="label">Instagram</span>
+							<span>@{{ business.instagram|ltrim('@') }}</span>
+						</a>
+					{% endif %}
+				</div>
+			</section>
+		{% endif %}
+
+		<footer>&copy; {{ business.business_name or "FrontDesk" }}</footer>
+	</main>
+</body>
+</html>

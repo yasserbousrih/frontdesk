@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ business_name }} — Checkout</title>
+<style>
+  :root {
+    --primary: {{ primary_color }};
+    --accent: {{ accent_color }};
+    --bg: #f1f5f9;
+    --panel: #ffffff;
+    --panel-soft: #f8fafc;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-soft: #64748b;
+    --muted: #94a3b8;
+    --completed: #10b981;
+    --paid: #059669;
+    --danger: #ef4444;
+    --shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.04);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    box-shadow: var(--shadow);
+  }
+  header.topbar h1 { margin: 0; font-size: 22px; font-weight: 700; }
+  header.topbar .meta { font-size: 14px; opacity: .9; }
+
+  main.layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(380px, 1.4fr);
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 64px);
+    min-height: 0;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .panel > header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .panel > header h2 {
+    margin: 0; font-size: 15px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-soft);
+  }
+  .panel > header .count { font-size: 13px; color: var(--text-soft); }
+
+  .panel > .body {
+    flex: 1 1 auto; overflow-y: auto;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 40px 16px;
+    font-size: 14px;
+  }
+
+  /* --- left: booking list --- */
+  .queue-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    cursor: pointer;
+    transition: border-color .12s ease, transform .12s ease, box-shadow .12s ease;
+  }
+  .queue-item:hover { border-color: var(--primary); }
+  .queue-item.active {
+    border-color: var(--primary);
+    background: var(--panel-soft);
+    box-shadow: 0 0 0 2px rgba(99,102,241,.18);
+  }
+  .queue-item .who {
+    grid-column: 1 / 2;
+    font-weight: 600; font-size: 15px; line-height: 1.2;
+  }
+  .queue-item .what {
+    grid-column: 1 / 2;
+    font-size: 13px; color: var(--text-soft);
+  }
+  .queue-item .when {
+    grid-column: 2 / 3; grid-row: 1 / 3;
+    align-self: center;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+  .queue-item .price {
+    grid-column: 1 / 2;
+    font-size: 13px; color: var(--text); font-weight: 600;
+  }
+
+  /* --- right: detail panel --- */
+  .detail-body {
+    padding: 22px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .placeholder {
+    color: var(--muted); text-align: center; padding: 60px 16px;
+    font-size: 14px;
+  }
+
+  .detail .booking-id {
+    font-size: 12px; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+  }
+  .detail .customer {
+    font-size: 26px; font-weight: 700; line-height: 1.2; margin: 4px 0 0;
+  }
+  .detail .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .detail .meta {
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .detail .meta .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-soft); font-weight: 700;
+  }
+  .detail .meta .value {
+    font-size: 16px; font-weight: 600; margin-top: 4px;
+  }
+
+  .detail .total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 18px 18px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    border-radius: 12px;
+  }
+  .detail .total .label {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em;
+    font-weight: 700; opacity: .9;
+  }
+  .detail .total .amount {
+    font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums;
+  }
+
+  .payment-row {
+    display: flex; gap: 10px; align-items: center;
+  }
+  .payment-row label {
+    font-size: 13px; font-weight: 600; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .payment-row select {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 15px;
+    background: var(--panel);
+  }
+  .complete-btn {
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--completed);
+    color: #fff;
+    font-weight: 700; font-size: 16px;
+    cursor: pointer;
+    transition: filter .12s ease;
+  }
+  .complete-btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .complete-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+  .confirmation {
+    border-radius: 10px;
+    background: rgba(16,185,129,.08);
+    border: 1px solid var(--completed);
+    color: #065f46;
+    padding: 14px 16px;
+    font-size: 14px;
+    display: none;
+  }
+  .confirmation.show { display: block; }
+  .confirmation strong { color: #047857; }
+
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: #fff;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 14px; z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    opacity: 0; transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+  .toast.error { background: var(--danger); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>{{ business_name }} — Checkout</h1>
+  <div class="meta">{{ bookings|length }} completed booking{% if bookings|length != 1 %}s{% endif %} awaiting payment</div>
+</header>
+
+<main class="layout">
+  <!-- LEFT: queue -->
+  <section class="panel" aria-label="Booking queue">
+    <header>
+      <h2>Queue</h2>
+      <span class="count">{{ bookings|length }} pending</span>
+    </header>
+    <div class="body" id="queue">
+      {% if not bookings %}
+        <div class="empty">No completed bookings awaiting checkout. 🎉</div>
+      {% endif %}
+
+      {% for b in bookings %}
+        <div class="queue-item" data-booking="{{ b.name }}"
+             data-customer="{{ b.customer_name or b.customer }}"
+             data-staff="{{ b.staff_name or b.staff }}"
+             data-service="{{ b.service_name or b.service }}"
+             data-price="{{ b.price or 0 }}"
+             data-date="{{ b.booking_date }}"
+             data-time="{{ b.start_time }}">
+          <div class="who">{{ b.customer_name or b.customer }}</div>
+          <div class="what">{{ b.service_name or b.service }}</div>
+          <div class="when">
+            {{ b.booking_date }}<br>{{ b.start_time }}
+          </div>
+          <div class="price">{{ b.price or 0 }} {{ currency }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- RIGHT: detail -->
+  <section class="panel" aria-label="Checkout detail">
+    <header>
+      <h2>Checkout</h2>
+      <span class="count" id="detail-sub">Select a booking →</span>
+    </header>
+    <div class="body">
+      <div id="detail-placeholder" class="placeholder">
+        Pick a completed booking from the left to take payment.
+      </div>
+
+      <div id="detail" class="detail" style="display: none;">
+        <div class="detail-body">
+          <div>
+            <div class="booking-id" id="d-id"></div>
+            <div class="customer" id="d-customer"></div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta">
+              <div class="label">Service</div>
+              <div class="value" id="d-service"></div>
+            </div>
+            <div class="meta">
+              <div class="label">Staff</div>
+              <div class="value" id="d-staff"></div>
+            </div>
+            <div class="meta">
+              <div class="label">Date</div>
+              <div class="value" id="d-date"></div>
+            </div>
+            <div class="meta">
+              <div class="label">Time</div>
+              <div class="value" id="d-time"></div>
+            </div>
+          </div>
+
+          <div class="total">
+            <div class="label">Total Due</div>
+            <div class="amount" id="d-total"></div>
+          </div>
+
+          <div class="payment-row">
+            <label for="pay-method">Payment</label>
+            <select id="pay-method">
+              <option value="Cash">Cash</option>
+              <option value="Card">Card</option>
+              <option value="Transfer">Transfer</option>
+            </select>
+          </div>
+
+          <button class="complete-btn" id="complete-btn">Complete Checkout</button>
+
+          <div class="confirmation" id="confirm"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ----- helpers -----
+  function $(sel) { return document.querySelector(sel); }
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  let toastTimer = null;
+  function toast(msg, isError) {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.toggle("error", !!isError);
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2500);
+  }
+
+  function call(method, args) {
+    return new Promise((resolve, reject) => {
+      if (typeof frappe === "undefined" || !frappe.call) {
+        reject(new Error("frappe.call unavailable"));
+        return;
+      }
+      frappe.call({
+        method: method,
+        args: args || {},
+        callback: (r) => resolve(r && r.message),
+        error: (r) => reject(new Error((r && r.message) || "Request failed")),
+      });
+    });
+  }
+
+  // ----- state -----
+  let selectedBooking = null;
+  const currency = "{{ currency }}";
+
+  function selectBooking(item) {
+    selectedBooking = {
+      name: item.dataset.booking,
+      customer: item.dataset.customer,
+      staff: item.dataset.staff,
+      service: item.dataset.service,
+      price: parseFloat(item.dataset.price) || 0,
+      date: item.dataset.date,
+      time: item.dataset.time,
+    };
+
+    document.querySelectorAll(".queue-item").forEach(el => el.classList.remove("active"));
+    item.classList.add("active");
+
+    $("#detail-placeholder").style.display = "none";
+    $("#detail").style.display = "block";
+    $("#detail-sub").textContent = "Booking " + selectedBooking.name;
+
+    $("#d-id").textContent = selectedBooking.name;
+    $("#d-customer").textContent = selectedBooking.customer;
+    $("#d-service").textContent = selectedBooking.service;
+    $("#d-staff").textContent = selectedBooking.staff;
+    $("#d-date").textContent = selectedBooking.date;
+    $("#d-time").textContent = selectedBooking.time;
+    $("#d-total").textContent = selectedBooking.price.toFixed(2) + " " + currency;
+
+    $("#confirm").classList.remove("show");
+    $("#confirm").innerHTML = "";
+    $("#complete-btn").disabled = false;
+  }
+
+  // ----- delegated queue click -----
+  $("#queue").addEventListener("click", (ev) => {
+    const item = ev.target.closest(".queue-item");
+    if (!item) return;
+    selectBooking(item);
+  });
+
+  // ----- complete checkout -----
+  $("#complete-btn").addEventListener("click", async () => {
+    if (!selectedBooking) return;
+    const btn = $("#complete-btn");
+    const method = $("#pay-method").value;
+    btn.disabled = true;
+    btn.textContent = "Processing…";
+    try {
+      const result = await call("frontdesk.api.checkout.create_invoice", {
+        booking_name: selectedBooking.name,
+        payment_method: method,
+      });
+      // Show confirmation
+      $("#confirm").innerHTML =
+        `<strong>Paid.</strong> Sales Invoice <code>${esc(result && result.sales_invoice)}</code> submitted via ${esc(method)}.`;
+      $("#confirm").classList.add("show");
+
+      // Remove booking from queue and reset detail
+      const el = document.querySelector('.queue-item[data-booking="' + cssEscape(selectedBooking.name) + '"]');
+      if (el) el.remove();
+      selectedBooking = null;
+      $("#detail-sub").textContent = "Select a booking →";
+      $("#detail").style.display = "none";
+      $("#detail-placeholder").style.display = "block";
+
+      // If queue is now empty, show empty-state message
+      const remaining = document.querySelectorAll(".queue-item").length;
+      if (remaining === 0) {
+        const queue = $("#queue");
+        queue.innerHTML = '<div class="empty">No completed bookings awaiting checkout. 🎉</div>';
+        document.querySelector(".topbar .meta").textContent = "0 completed bookings awaiting payment";
+      } else {
+        document.querySelector(".topbar .meta").textContent =
+          remaining + " completed booking" + (remaining === 1 ? "" : "s") + " awaiting payment";
+      }
+      toast("Checkout complete");
+    } catch (e) {
+      toast(e.message, true);
+      btn.disabled = false;
+    } finally {
+      btn.textContent = "Complete Checkout";
+    }
+  });
+
+  // Minimal CSS.escape polyfill (older Android tablets)
+  function cssEscape(s) {
+    if (window.CSS && CSS.escape) return CSS.escape(s);
+    return String(s).replace(/[^a-zA-Z0-9_-]/g, c => "\\" + c);
+  }
+})();
+</script>
+
+</body>
+</html>

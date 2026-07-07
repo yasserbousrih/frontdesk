@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="theme-color" content="{{ business.primary_color or '#1a1a2e' }}" />
+	<title>Book &middot; {{ business.business_name or "FrontDesk" }}</title>
+	<style>
+		:root {
+			--primary: {{ business.primary_color or '#1a1a2e' }};
+			--accent: {{ business.accent_color or '#e94560' }};
+			--bg: #fafafa;
+			--surface: #ffffff;
+			--text: #1a1a1a;
+			--muted: #6b7280;
+			--border: #e5e7eb;
+			--selected: var(--primary);
+		}
+		* { box-sizing: border-box; }
+		html, body {
+			margin: 0;
+			padding: 0;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			color: var(--text);
+			background: var(--bg);
+			-webkit-font-smoothing: antialiased;
+			line-height: 1.5;
+		}
+		header {
+			background: var(--primary);
+			color: #fff;
+			padding: 14px 16px;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			position: sticky;
+			top: 0;
+			z-index: 10;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+		}
+		header img {
+			width: 36px;
+			height: 36px;
+			object-fit: cover;
+			border-radius: 50%;
+			background: #fff;
+			padding: 3px;
+		}
+		header h1 {
+			margin: 0;
+			font-size: 17px;
+			font-weight: 600;
+			flex: 1;
+		}
+		header a {
+			color: #fff;
+			text-decoration: none;
+			font-size: 14px;
+			padding: 6px 10px;
+			border-radius: 8px;
+		}
+		header a:active { background: rgba(255,255,255,0.15); }
+
+		.progress {
+			max-width: 640px;
+			margin: 16px auto 8px;
+			padding: 0 16px;
+			display: flex;
+			gap: 6px;
+		}
+		.progress .pip {
+			flex: 1;
+			height: 4px;
+			background: var(--border);
+			border-radius: 2px;
+			transition: background 0.2s ease;
+		}
+		.progress .pip.done { background: var(--accent); }
+		.progress .pip.current { background: var(--primary); }
+		.step-label {
+			max-width: 640px;
+			margin: 0 auto 12px;
+			padding: 0 16px;
+			color: var(--muted);
+			font-size: 13px;
+			font-weight: 500;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+		}
+
+		main {
+			max-width: 640px;
+			margin: 0 auto;
+			padding: 8px 16px 120px;
+		}
+		h2.step-title {
+			margin: 8px 0 16px;
+			font-size: 22px;
+			font-weight: 700;
+			letter-spacing: -0.01em;
+			color: var(--primary);
+		}
+
+		/* Cards (staff) */
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+			gap: 12px;
+		}
+		.card {
+			background: var(--surface);
+			border: 2px solid var(--border);
+			border-radius: 14px;
+			padding: 14px;
+			text-align: center;
+			cursor: pointer;
+			transition: border-color 0.15s ease, transform 0.1s ease;
+			min-height: 160px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: flex-start;
+		}
+		.card:active { transform: scale(0.98); }
+		.card.selected {
+			border-color: var(--accent);
+			background: #fff;
+			box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.12);
+		}
+		.card .avatar {
+			width: 72px;
+			height: 72px;
+			border-radius: 50%;
+			background: var(--bg);
+			object-fit: cover;
+			margin-bottom: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 26px;
+			font-weight: 700;
+			color: var(--primary);
+			overflow: hidden;
+		}
+		.card .avatar img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		.card .name {
+			font-weight: 600;
+			font-size: 15px;
+			margin-bottom: 4px;
+		}
+		.card .bio {
+			font-size: 12px;
+			color: var(--muted);
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+
+		/* Service list */
+		.svc-list { display: flex; flex-direction: column; gap: 10px; }
+		.svc {
+			background: var(--surface);
+			border: 2px solid var(--border);
+			border-radius: 12px;
+			padding: 14px 16px;
+			cursor: pointer;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			min-height: 64px;
+			transition: border-color 0.15s ease, transform 0.1s ease;
+		}
+		.svc:active { transform: scale(0.99); }
+		.svc.selected {
+			border-color: var(--accent);
+			background: #fff;
+			box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.12);
+		}
+		.svc .svc-name { font-weight: 600; font-size: 15px; }
+		.svc .svc-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+		.svc .svc-price { font-weight: 700; color: var(--primary); white-space: nowrap; font-size: 16px; }
+
+		/* Date + slots */
+		.date-row {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 16px;
+		}
+		.date-row input {
+			flex: 1;
+			padding: 14px;
+			border: 2px solid var(--border);
+			border-radius: 10px;
+			font-size: 16px;
+			background: var(--surface);
+			color: var(--text);
+			min-height: 48px;
+			font-family: inherit;
+		}
+		.date-row input:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.slots-label {
+			font-size: 13px;
+			color: var(--muted);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			margin-bottom: 8px;
+			font-weight: 500;
+		}
+		.slots {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+			gap: 8px;
+		}
+		.slot {
+			background: var(--surface);
+			border: 2px solid var(--border);
+			border-radius: 10px;
+			padding: 12px 4px;
+			text-align: center;
+			cursor: pointer;
+			font-size: 15px;
+			font-weight: 600;
+			min-height: 48px;
+			font-family: inherit;
+			color: var(--text);
+			transition: border-color 0.15s ease, transform 0.1s ease;
+		}
+		.slot:active { transform: scale(0.97); }
+		.slot.selected {
+			border-color: var(--accent);
+			background: var(--accent);
+			color: #fff;
+		}
+		.slot:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+		.empty {
+			text-align: center;
+			color: var(--muted);
+			padding: 32px 16px;
+			font-size: 14px;
+		}
+
+		/* Form */
+		.form-row { margin-bottom: 14px; }
+		.form-row label {
+			display: block;
+			font-size: 13px;
+			color: var(--muted);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			margin-bottom: 6px;
+			font-weight: 500;
+		}
+		.form-row input {
+			width: 100%;
+			padding: 14px;
+			border: 2px solid var(--border);
+			border-radius: 10px;
+			font-size: 16px;
+			background: var(--surface);
+			color: var(--text);
+			min-height: 48px;
+			font-family: inherit;
+		}
+		.form-row input:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.summary {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 14px 16px;
+			margin-bottom: 20px;
+			font-size: 14px;
+		}
+		.summary div { display: flex; justify-content: space-between; padding: 4px 0; }
+		.summary div span:first-child { color: var(--muted); }
+
+		/* Buttons */
+		.btn-row {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: var(--surface);
+			border-top: 1px solid var(--border);
+			padding: 12px 16px;
+			display: flex;
+			gap: 10px;
+			z-index: 20;
+		}
+		.btn {
+			flex: 1;
+			padding: 14px 16px;
+			border: 2px solid var(--border);
+			background: var(--surface);
+			color: var(--text);
+			border-radius: 10px;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			font-family: inherit;
+			min-height: 52px;
+			transition: background 0.15s ease, border-color 0.15s ease;
+		}
+		.btn:active { transform: scale(0.98); }
+		.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+		.btn-primary {
+			background: var(--accent);
+			border-color: var(--accent);
+			color: #fff;
+		}
+		.btn-primary:hover { background: #d63a55; border-color: #d63a55; }
+		.btn-primary:disabled { background: var(--accent); }
+		.btn-ghost { flex: 0 0 auto; padding: 14px 18px; }
+
+		/* Confirmation */
+		.confirm {
+			background: var(--surface);
+			border-radius: 16px;
+			padding: 32px 20px;
+			text-align: center;
+			border: 1px solid var(--border);
+		}
+		.confirm .check {
+			width: 72px;
+			height: 72px;
+			border-radius: 50%;
+			background: var(--accent);
+			color: #fff;
+			font-size: 40px;
+			line-height: 72px;
+			margin: 0 auto 16px;
+		}
+		.confirm h3 { margin: 0 0 6px; font-size: 22px; color: var(--primary); }
+		.confirm .sub { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+		.confirm .details { text-align: left; margin: 20px auto; max-width: 320px; }
+		.confirm .details div {
+			display: flex;
+			justify-content: space-between;
+			padding: 8px 0;
+			border-bottom: 1px solid var(--border);
+		}
+		.confirm .details div:last-child { border-bottom: none; }
+		.confirm .details span:first-child { color: var(--muted); }
+
+		/* Loading */
+		.spinner {
+			display: inline-block;
+			width: 18px;
+			height: 18px;
+			border: 2px solid rgba(255,255,255,0.4);
+			border-top-color: #fff;
+			border-radius: 50%;
+			animation: spin 0.7s linear infinite;
+			vertical-align: middle;
+		}
+		.spinner.dark {
+			border-color: rgba(0,0,0,0.15);
+			border-top-color: var(--text);
+		}
+		@keyframes spin { to { transform: rotate(360deg); } }
+		.loading-overlay {
+			text-align: center;
+			padding: 24px;
+			color: var(--muted);
+			font-size: 14px;
+		}
+
+		/* Error */
+		.error-banner {
+			background: #fff0f3;
+			border: 1px solid #f5b5be;
+			color: #b00020;
+			padding: 12px 14px;
+			border-radius: 10px;
+			margin-bottom: 12px;
+			font-size: 14px;
+		}
+
+		.no-data {
+			text-align: center;
+			padding: 48px 16px;
+		}
+		.no-data h2 { color: var(--primary); margin: 0 0 8px; }
+		.no-data p { color: var(--muted); }
+	</style>
+</head>
+<body>
+	<header>
+		{% if business.logo %}
+			<img src="{{ business.logo }}" alt="" />
+		{% endif %}
+		<h1>{{ business.business_name or "FrontDesk" }}</h1>
+		<a href="/index">Home</a>
+	</header>
+
+	<div class="progress" id="progress">
+		<div class="pip" data-step="1"></div>
+		<div class="pip" data-step="2"></div>
+		<div class="pip" data-step="3"></div>
+		<div class="pip" data-step="4"></div>
+	</div>
+	<div class="step-label" id="stepLabel">Step 1 of 4</div>
+
+	<main id="app">
+		<div class="loading-overlay">
+			<div class="spinner dark"></div>
+			<div>Loading…</div>
+		</div>
+	</main>
+
+	<div class="btn-row" id="btnRow" style="display:none;">
+		<button class="btn btn-ghost" id="backBtn" style="display:none;">Back</button>
+		<button class="btn btn-primary" id="nextBtn" disabled>Next</button>
+	</div>
+
+	<!-- Data from server -->
+	<script id="data-staff" type="application/json">{{ staff_list | tojson }}</script>
+	<script id="data-services" type="application/json">{{ services | tojson }}</script>
+	<script id="data-business" type="application/json">{{ business | tojson }}</script>
+
+	<!-- Frappe web bundle (provides window.frappe + frappe.call) -->
+	<script src="/assets/frappe/dist/js/frappe-web.bundle.js" defer></script>
+
+	<script defer>
+	(function() {
+		'use strict';
+
+		// ---- Bootstrap data ----
+		function readJSON(id) {
+			var el = document.getElementById(id);
+			try { return JSON.parse(el.textContent || '[]'); }
+			catch (e) { return []; }
+		}
+		var STAFF = readJSON('data-staff');
+		var SERVICES = readJSON('data-services');
+		var BUSINESS = readJSON('data-business');
+
+		// ---- State ----
+		var state = {
+			step: 1,
+			staff: null,        // staff object
+			service: null,      // service object
+			date: null,         // YYYY-MM-DD
+			slot: null,         // "HH:MM"
+			name: '',
+			phone: '',
+			bookingResult: null
+		};
+		var TOTAL_STEPS = 4;
+
+		// ---- DOM refs ----
+		var appEl = document.getElementById('app');
+		var progressEl = document.getElementById('progress');
+		var stepLabelEl = document.getElementById('stepLabel');
+		var btnRowEl = document.getElementById('btnRow');
+		var backBtn = document.getElementById('backBtn');
+		var nextBtn = document.getElementById('nextBtn');
+
+		// ---- Date helpers ----
+		function todayISO() {
+			var d = new Date();
+			var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+			return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+		}
+		function plusDaysISO(days) {
+			var d = new Date();
+			d.setDate(d.getDate() + days);
+			var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+			return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+		}
+		function formatDate(iso) {
+			if (!iso) return '';
+			var parts = iso.split('-');
+			var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+			return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+		}
+		function formatTime(hhmm) {
+			if (!hhmm) return '';
+			var parts = hhmm.split(':');
+			var h = Number(parts[0]);
+			var m = Number(parts[1]);
+			var ampm = h >= 12 ? 'PM' : 'AM';
+			var h12 = h % 12; if (h12 === 0) h12 = 12;
+			return h12 + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm;
+		}
+		function initials(name) {
+			if (!name) return '?';
+			var words = String(name).trim().split(/\s+/);
+			if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+			return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+		}
+		function escapeHTML(s) {
+			if (s === null || s === undefined) return '';
+			return String(s)
+				.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+		}
+		function currency(v) {
+			if (v === null || v === undefined || v === '') return '';
+			var code = (BUSINESS && BUSINESS.currency) || 'USD';
+			try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code, maximumFractionDigits: 2 }).format(Number(v)); }
+			catch (e) { return code + ' ' + Number(v).toFixed(2); }
+		}
+
+		// ---- Frappe.call wrapper ----
+		function frappeReady(cb) {
+			if (window.frappe && window.frappe.call) { cb(); return; }
+			var tries = 0;
+			var iv = setInterval(function() {
+				tries++;
+				if (window.frappe && window.frappe.call) { clearInterval(iv); cb(); return; }
+				if (tries > 100) { clearInterval(iv); cb(new Error('frappe bundle failed to load')); }
+			}, 50);
+		}
+		function fc(method, args) {
+			return new Promise(function(resolve, reject) {
+				frappe.call({
+					method: method,
+					args: args || {},
+					callback: function(r) { resolve(r && r.message !== undefined ? r.message : r); },
+					error: function(r) {
+						var msg = (r && r._server_messages)
+							? JSON.parse(r._server_messages).map(function(m) {
+								try { var o = JSON.parse(m); return o.message || o; } catch(e) { return m; }
+							}).join('\n')
+							: (r && r.exc) ? r.exc : 'Request failed';
+						reject(new Error(msg));
+					}
+				});
+			});
+		}
+
+		// ---- Renderers ----
+		function renderProgress() {
+			var pips = progressEl.querySelectorAll('.pip');
+			for (var i = 0; i < pips.length; i++) {
+				var s = Number(pips[i].getAttribute('data-step'));
+				pips[i].classList.remove('done', 'current');
+				if (s < state.step) pips[i].classList.add('done');
+				else if (s === state.step) pips[i].classList.add('current');
+			}
+			if (state.step === 5) {
+				stepLabelEl.textContent = 'Confirmed';
+			} else {
+				stepLabelEl.textContent = 'Step ' + state.step + ' of ' + TOTAL_STEPS;
+			}
+		}
+
+		function renderEmpty(title, body) {
+			appEl.innerHTML =
+				'<div class="no-data">' +
+					'<h2>' + escapeHTML(title) + '</h2>' +
+					'<p>' + escapeHTML(body) + '</p>' +
+				'</div>';
+			btnRowEl.style.display = 'none';
+		}
+
+		function renderStep1() {
+			renderProgress();
+			btnRowEl.style.display = 'flex';
+			backBtn.style.display = 'none';
+			nextBtn.textContent = 'Next';
+			nextBtn.disabled = !state.staff;
+
+			if (!STAFF.length) {
+				renderEmpty('No barbers available', 'Please check back later or contact us directly.');
+				return;
+			}
+
+			var html = '<h2 class="step-title">Choose your barber</h2>';
+			html += '<div class="grid">';
+			for (var i = 0; i < STAFF.length; i++) {
+				var s = STAFF[i];
+				var selected = state.staff && state.staff.name === s.name;
+				var avatar = s.photo
+					? '<div class="avatar"><img src="' + escapeHTML(s.photo) + '" alt="" /></div>'
+					: '<div class="avatar">' + escapeHTML(initials(s.staff_name)) + '</div>';
+				html += '<div class="card' + (selected ? ' selected' : '') + '" data-staff="' + escapeHTML(s.name) + '">'
+					+ avatar
+					+ '<div class="name">' + escapeHTML(s.staff_name) + '</div>'
+					+ '<div class="bio">' + escapeHTML(s.bio || '') + '</div>'
+					+ '</div>';
+			}
+			html += '</div>';
+			appEl.innerHTML = html;
+
+			var cards = appEl.querySelectorAll('.card');
+			for (var j = 0; j < cards.length; j++) {
+				cards[j].addEventListener('click', function() {
+					var name = this.getAttribute('data-staff');
+					state.staff = STAFF.filter(function(x) { return x.name === name; })[0] || null;
+					renderStep1();
+				});
+			}
+		}
+
+		function renderStep2() {
+			renderProgress();
+			btnRowEl.style.display = 'flex';
+			backBtn.style.display = '';
+			nextBtn.textContent = 'Next';
+			nextBtn.disabled = !state.service;
+
+			if (!SERVICES.length) {
+				renderEmpty('No services available', 'Please check back later or contact us directly.');
+				return;
+			}
+
+			var html = '<h2 class="step-title">Choose a service</h2>';
+			html += '<div class="svc-list">';
+			for (var i = 0; i < SERVICES.length; i++) {
+				var s = SERVICES[i];
+				var selected = state.service && state.service.name === s.name;
+				var priceLabel = (s.price !== null && s.price !== undefined && s.price !== '')
+					? currency(s.price)
+					: '';
+				html += '<div class="svc' + (selected ? ' selected' : '') + '" data-svc="' + escapeHTML(s.name) + '">'
+					+ '<div><div class="svc-name">' + escapeHTML(s.service_name) + '</div>'
+					+ '<div class="svc-meta">' + escapeHTML(s.duration_minutes) + ' min</div></div>'
+					+ '<div class="svc-price">' + escapeHTML(priceLabel) + '</div>'
+					+ '</div>';
+			}
+			html += '</div>';
+			appEl.innerHTML = html;
+
+			var rows = appEl.querySelectorAll('.svc');
+			for (var j = 0; j < rows.length; j++) {
+				rows[j].addEventListener('click', function() {
+					var name = this.getAttribute('data-svc');
+					state.service = SERVICES.filter(function(x) { return x.name === name; })[0] || null;
+					renderStep2();
+				});
+			}
+		}
+
+		function renderStep3() {
+			renderProgress();
+			btnRowEl.style.display = 'flex';
+			backBtn.style.display = '';
+			nextBtn.textContent = 'Next';
+			nextBtn.disabled = !state.slot;
+
+			var minD = todayISO();
+			var maxD = plusDaysISO(14);
+
+			var html = '<h2 class="step-title">Pick a time</h2>';
+			html += '<div class="date-row">'
+				+ '<input type="date" id="dateInput" min="' + minD + '" max="' + maxD + '" value="' + escapeHTML(state.date || minD) + '" />'
+				+ '</div>';
+			html += '<div class="slots-label">Available times</div>';
+			html += '<div id="slotsWrap"><div class="loading-overlay"><div class="spinner dark"></div><div>Loading slots…</div></div></div>';
+			appEl.innerHTML = html;
+
+			state.date = state.date || minD;
+			loadSlots(state.date);
+
+			document.getElementById('dateInput').addEventListener('change', function(e) {
+				state.date = e.target.value;
+				state.slot = null;
+				renderStep3();
+			});
+		}
+
+		function loadSlots(date) {
+			var wrap = document.getElementById('slotsWrap');
+			if (!wrap) return;
+			wrap.innerHTML = '<div class="loading-overlay"><div class="spinner dark"></div><div>Loading slots…</div></div>';
+			nextBtn.disabled = true;
+
+			frappeReady(function(err) {
+				if (err) {
+					wrap.innerHTML = '<div class="error-banner">Failed to load booking system. Please refresh.</div>';
+					return;
+				}
+				fc('frontdesk.api.availability.get_available_slots', {
+					staff: state.staff.name,
+					service: state.service.name,
+					date: date
+				}).then(function(slots) {
+					if (!slots || !slots.length) {
+						wrap.innerHTML = '<div class="empty">No times available on ' + escapeHTML(formatDate(date)) + '. Try another date.</div>';
+						return;
+					}
+					var html = '<div class="slots">';
+					for (var i = 0; i < slots.length; i++) {
+						var sl = slots[i];
+						var selected = state.slot === sl.start;
+						html += '<button type="button" class="slot' + (selected ? ' selected' : '') + '" data-slot="' + escapeHTML(sl.start) + '">'
+							+ escapeHTML(formatTime(sl.start)) + '</button>';
+					}
+					html += '</div>';
+					wrap.innerHTML = html;
+					var btns = wrap.querySelectorAll('.slot');
+					for (var j = 0; j < btns.length; j++) {
+						btns[j].addEventListener('click', function() {
+							state.slot = this.getAttribute('data-slot');
+							renderStep3();
+						});
+					}
+				}).catch(function(e) {
+					wrap.innerHTML = '<div class="error-banner">' + escapeHTML(e.message) + '</div>';
+				});
+			});
+		}
+
+		function renderStep4() {
+			renderProgress();
+			btnRowEl.style.display = 'flex';
+			backBtn.style.display = '';
+			nextBtn.textContent = 'Confirm booking';
+			nextBtn.disabled = !(state.phone && state.name);
+
+			var summarySvc = state.service
+				? escapeHTML(state.service.service_name) + ' &middot; ' + escapeHTML(state.service.duration_minutes) + ' min'
+					+ (state.service.price ? ' &middot; ' + escapeHTML(currency(state.service.price)) : '')
+				: '';
+			var html = '<h2 class="step-title">Your details</h2>';
+			html += '<div class="summary">'
+				+ '<div><span>Barber</span><span>' + escapeHTML(state.staff.staff_name) + '</span></div>'
+				+ '<div><span>Service</span><span>' + summarySvc + '</span></div>'
+				+ '<div><span>Date</span><span>' + escapeHTML(formatDate(state.date)) + '</span></div>'
+				+ '<div><span>Time</span><span>' + escapeHTML(formatTime(state.slot)) + '</span></div>'
+				+ '</div>';
+			html += '<div class="form-row"><label for="nameInput">Full name</label>'
+				+ '<input id="nameInput" type="text" autocomplete="name" placeholder="Jane Doe" value="' + escapeHTML(state.name) + '" /></div>';
+			html += '<div class="form-row"><label for="phoneInput">Phone number</label>'
+				+ '<input id="phoneInput" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 555 0100" value="' + escapeHTML(state.phone) + '" /></div>';
+			html += '<div id="errBox"></div>';
+			appEl.innerHTML = html;
+
+			var nameInput = document.getElementById('nameInput');
+			var phoneInput = document.getElementById('phoneInput');
+
+			function refreshNext() {
+				state.name = nameInput.value.trim();
+				state.phone = phoneInput.value.trim();
+				nextBtn.disabled = !(state.name && state.phone);
+			}
+			nameInput.addEventListener('input', refreshNext);
+			phoneInput.addEventListener('input', refreshNext);
+
+			refreshNext();
+		}
+
+		function renderStep5() {
+			renderProgress();
+			btnRowEl.style.display = 'flex';
+			backBtn.style.display = 'none';
+			nextBtn.textContent = 'Book another';
+			nextBtn.disabled = false;
+			nextBtn.classList.remove('btn-primary');
+			nextBtn.classList.add('btn');
+
+			var b = state.bookingResult || {};
+			var html = '<div class="confirm">'
+				+ '<div class="check">✓</div>'
+				+ '<h3>Booking confirmed</h3>'
+				+ '<div class="sub">Reference ' + escapeHTML(b.booking || '') + '</div>'
+				+ '<div class="details">'
+				+ '<div><span>Barber</span><span>' + escapeHTML(b.staff || '') + '</span></div>'
+				+ '<div><span>Service</span><span>' + escapeHTML(b.service || '') + '</span></div>'
+				+ '<div><span>Date</span><span>' + escapeHTML(formatDate(b.date)) + '</span></div>'
+				+ '<div><span>Time</span><span>' + escapeHTML(formatTime(b.time)) + '</span></div>'
+				+ '</div>'
+				+ '<p style="margin-top: 16px; color: var(--muted); font-size: 13px;">A confirmation will be sent to your phone.</p>'
+				+ '</div>';
+			appEl.innerHTML = html;
+		}
+
+		function render() {
+			nextBtn.classList.remove('btn');
+			nextBtn.classList.add('btn-primary');
+			if (state.step === 1) renderStep1();
+			else if (state.step === 2) renderStep2();
+			else if (state.step === 3) renderStep3();
+			else if (state.step === 4) renderStep4();
+			else if (state.step === 5) renderStep5();
+		}
+
+		// ---- Navigation ----
+		function goNext() {
+			if (state.step === 5) {
+				// reset wizard
+				state = {
+					step: 1, staff: null, service: null,
+					date: null, slot: null, name: '', phone: '', bookingResult: null
+				};
+				render();
+				return;
+			}
+			if (state.step === 4) {
+				submitBooking();
+				return;
+			}
+			if (state.step < TOTAL_STEPS) {
+				state.step++;
+				render();
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		}
+		function goBack() {
+			if (state.step > 1 && state.step < 5) {
+				state.step--;
+				render();
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		}
+
+		function submitBooking() {
+			var errBox = document.getElementById('errBox');
+			if (errBox) errBox.innerHTML = '';
+			nextBtn.disabled = true;
+			var originalLabel = nextBtn.textContent;
+			nextBtn.innerHTML = '<span class="spinner"></span> Booking…';
+
+			frappeReady(function(err) {
+				if (err) {
+					showError('Failed to load booking system. Please refresh and try again.');
+					resetBtn(originalLabel);
+					return;
+				}
+				fc('frontdesk.api.bookings.create_web_booking', {
+					staff: state.staff.name,
+					service: state.service.name,
+					booking_date: state.date,
+					start_time: state.slot,
+					phone: state.phone,
+					customer_name: state.name
+				}).then(function(res) {
+					state.bookingResult = res;
+					state.step = 5;
+					render();
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+				}).catch(function(e) {
+					showError(e.message);
+					resetBtn(originalLabel);
+				});
+			});
+		}
+		function resetBtn(label) {
+			nextBtn.disabled = false;
+			nextBtn.innerHTML = label;
+		}
+		function showError(msg) {
+			var errBox = document.getElementById('errBox');
+			if (errBox) errBox.innerHTML = '<div class="error-banner">' + escapeHTML(msg) + '</div>';
+		}
+
+		backBtn.addEventListener('click', goBack);
+		nextBtn.addEventListener('click', goNext);
+
+		// ---- Init ----
+		if (!STAFF.length && !SERVICES.length) {
+			renderEmpty('Online booking is unavailable', 'Please contact us directly to schedule.');
+			return;
+		}
+		render();
+	})();
+	</script>
+</body>
+</html>

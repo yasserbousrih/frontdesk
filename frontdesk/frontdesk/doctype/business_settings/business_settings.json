@@ -22,7 +22,11 @@
   "booking_rules_section",
   "slot_buffer_minutes",
   "cancellation_window_hours",
-  "currency"
+  "currency",
+  "omnichat_section",
+  "omnichat_api_url",
+  "omnichat_api_token",
+  "omnichat_sender_id"
  ],
  "fields": [
   {
@@ -119,6 +123,26 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "omnichat_section",
+   "fieldtype": "Section Break",
+   "label": "Omnichat / WhatsApp"
+  },
+  {
+   "fieldname": "omnichat_api_url",
+   "fieldtype": "Data",
+   "label": "Omnichat API URL"
+  },
+  {
+   "fieldname": "omnichat_api_token",
+   "fieldtype": "Password",
+   "label": "Omnichat API Token"
+  },
+  {
+   "fieldname": "omnichat_sender_id",
+   "fieldtype": "Data",
+   "label": "Omnichat Sender ID"
   }
  ],
  "index_web_pages_for_search": 1,

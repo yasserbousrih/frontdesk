@@ -22,14 +22,19 @@ class Booking(Document):
     """
 
     def validate(self):
+        self._snapshot_service_fields()
+        self._compute_end_time()
         self._enforce_timing()
         self._enforce_staff_active()
         self._enforce_no_overlap()
-        self._snapshot_service_fields()
 
-    def before_save(self):
-        # Compute end_time from start + duration if not explicitly set.
-        if self.start_time and (self.duration_minutes or 0) > 0 and not self.end_time:
+    def _compute_end_time(self):
+        """Derive end_time from start_time + service duration if not set.
+
+        Must run BEFORE the overlap check so that bookings created without an
+        explicit end_time (e.g. web bookings) are still validated for conflicts.
+        """
+        if self.start_time and not self.end_time and (self.duration_minutes or 0) > 0:
             self.end_time = overlap.add_minutes_to_time(self.start_time, self.duration_minutes)
 
     # ----- internals -----

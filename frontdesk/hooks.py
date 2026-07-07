@@ -28,11 +28,11 @@ def after_install():
 # -------------------
 # Document events
 # -------------------
-# doc_events = {
-#     "Booking": {
-#         "on_update": "frontdesk.frontdesk.doctype.booking.booking.on_booking_update"
-#     }
-# }
+doc_events = {
+    "Booking": {
+        "after_insert": "frontdesk.api.notifications.send_booking_confirmation",
+    }
+}
 
 # -------------------
 # Scheduled tasks (Phase 2)

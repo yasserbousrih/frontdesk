@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{ business_name }} — Staff Board</title>
+<style>
+  :root {
+    --primary: {{ primary_color }};
+    --accent: {{ accent_color }};
+    --bg: #0f172a;
+    --panel: #ffffff;
+    --panel-soft: #f8fafc;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-soft: #64748b;
+    --muted: #94a3b8;
+    --booked: #6366f1;
+    --seated: #0ea5e9;
+    --in-progress: #f59e0b;
+    --completed: #10b981;
+    --paid: #059669;
+    --cancelled: #ef4444;
+    --shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.04);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--panel-soft);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    box-shadow: var(--shadow);
+  }
+  header.topbar .brand { display: flex; align-items: center; gap: 14px; }
+  header.topbar h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  header.topbar .meta { display: flex; gap: 18px; align-items: center; font-size: 14px; opacity: .95; }
+  header.topbar .meta .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #34d399;
+    display: inline-block; margin-right: 6px; vertical-align: middle;
+    box-shadow: 0 0 0 0 rgba(52,211,153,.7);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,.7); }
+    70%  { box-shadow: 0 0 0 10px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  }
+
+  .board-wrap {
+    padding: 18px;
+    overflow-x: auto;
+    height: calc(100vh - 64px);
+  }
+  .board {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    min-height: 100%;
+  }
+
+  .column {
+    flex: 1 1 0;
+    min-width: 320px;
+    max-width: 380px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .column header.staff {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .column header.staff .avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .column header.staff .name {
+    font-weight: 600; font-size: 17px; line-height: 1.2;
+  }
+  .column header.staff .count {
+    font-size: 12px; color: var(--text-soft); margin-top: 2px;
+  }
+
+  .column .bookings {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 32px 12px;
+    font-size: 14px;
+  }
+
+  .booking {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--booked);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .booking:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  .booking.status-Booked      { border-left-color: var(--booked); }
+  .booking.status-Seated      { border-left-color: var(--seated); }
+  .booking.status-In-Progress { border-left-color: var(--in-progress); }
+  .booking.status-Completed   { border-left-color: var(--completed); }
+  .booking.status-Paid        { border-left-color: var(--paid); }
+
+  .booking.next-up    { box-shadow: 0 0 0 2px rgba(99,102,241,.25); }
+  .booking.in-progress {
+    background: linear-gradient(180deg, #fff7ed 0%, #fff 70%);
+    box-shadow: 0 0 0 2px rgba(245,158,11,.45);
+  }
+
+  .booking .row1 {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  }
+  .booking .time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700; font-size: 15px;
+    color: var(--text);
+  }
+  .booking .end {
+    color: var(--text-soft); font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .booking .customer {
+    font-weight: 600; font-size: 15px; line-height: 1.25;
+  }
+  .booking .service {
+    color: var(--text-soft); font-size: 13px;
+  }
+  .booking .price {
+    font-weight: 600; color: var(--text); font-size: 14px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: var(--booked);
+  }
+  .badge.status-Booked      { background: var(--booked); }
+  .badge.status-Seated      { background: var(--seated); }
+  .badge.status-In-Progress { background: var(--in-progress); }
+  .badge.status-Completed   { background: var(--completed); }
+  .badge.status-Paid        { background: var(--paid); }
+
+  .booking .actions {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .booking .actions button {
+    flex: 1 1 auto;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+    transition: background .12s ease, border-color .12s ease;
+  }
+  .booking .actions button:hover:not(:disabled) {
+    background: var(--panel-soft);
+    border-color: var(--text-soft);
+  }
+  .booking .actions button:disabled {
+    opacity: .45; cursor: not-allowed;
+  }
+  .booking .actions button.primary {
+    background: var(--primary); color: #fff; border-color: var(--primary);
+  }
+  .booking .actions button.primary:hover { filter: brightness(1.08); }
+
+  .walkin {
+    border-top: 1px dashed var(--border);
+    padding: 12px;
+    background: var(--panel-soft);
+  }
+  .walkin summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary);
+    list-style: none;
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px dashed var(--primary);
+    user-select: none;
+  }
+  .walkin summary::-webkit-details-marker { display: none; }
+  .walkin summary::before {
+    content: "+"; font-size: 18px; margin-right: 6px; font-weight: 700;
+  }
+  .walkin[open] summary::before { content: "−"; }
+  .walkin[open] summary { margin-bottom: 10px; }
+
+  .walkin .form {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .walkin select {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    background: var(--panel);
+    width: 100%;
+  }
+  .walkin button.go {
+    background: var(--accent); color: #fff;
+    border: none; padding: 10px;
+    border-radius: 6px; font-weight: 700; cursor: pointer;
+    font-size: 14px;
+  }
+  .walkin button.go:disabled { opacity: .5; cursor: not-allowed; }
+
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: #fff;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 14px; z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    opacity: 0; transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+  .toast.error { background: var(--cancelled); }
+
+  .last-updated {
+    font-size: 12px; opacity: .85;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>{{ business_name }} — Staff Board</h1>
+  </div>
+  <div class="meta">
+    <span><span class="dot"></span>Live</span>
+    <span class="last-updated" id="last-updated">—</span>
+  </div>
+</header>
+
+<div class="board-wrap">
+  <div class="board" id="board">
+    {% if not board_data %}
+      <div class="column" style="max-width: none; flex: 1; align-items: center; justify-content: center;">
+        <div class="empty">No active staff configured yet. Add a Staff Member to get started.</div>
+      </div>
+    {% endif %}
+
+    {% for staff in board_data %}
+      <div class="column" data-staff="{{ staff.name }}">
+        <header class="staff">
+          {% if staff.photo %}
+            <img class="avatar" src="{{ staff.photo }}" alt="{{ staff.staff_name }}">
+          {% else %}
+            <div class="avatar">{{ staff.staff_name[:1] | upper }}</div>
+          {% endif %}
+          <div>
+            <div class="name">{{ staff.staff_name }}</div>
+            <div class="count">
+              {{ staff.bookings|length }} booking{% if staff.bookings|length != 1 %}s{% endif %} today
+            </div>
+          </div>
+        </header>
+
+        <div class="bookings" data-staff-bookings="{{ staff.name }}">
+          {% if not staff.bookings %}
+            <div class="empty">No bookings today</div>
+          {% endif %}
+
+          {% for b in staff.bookings %}
+            {% set next_up = (loop.first and b.status == 'Booked') %}
+            <div class="booking status-{{ b.status|replace(' ', '-') }} {% if b.status == 'In Progress' %}in-progress{% elif next_up %}next-up{% endif %}"
+                 data-booking="{{ b.name }}">
+              <div class="row1">
+                <div>
+                  <span class="time">{{ b.start_time }}</span>
+                  <span class="end">→ {{ b.end_time or '?' }}</span>
+                </div>
+                <span class="badge status-{{ b.status|replace(' ', '-') }}">{{ b.status }}</span>
+              </div>
+              <div class="customer">{{ b.customer_name or b.customer }}</div>
+              <div class="service">
+                {{ b.service_name or b.service }}
+                {% if b.price %} · <span class="price">{{ b.price }} {{ currency }}</span>{% endif %}
+              </div>
+
+              <div class="actions">
+                <button data-action="seated"      {% if b.status != 'Booked' %}disabled{% endif %}>Seated</button>
+                <button data-action="in-progress" {% if b.status not in ['Booked','Seated'] %}disabled{% endif %}>In&nbsp;Progress</button>
+                <button data-action="completed"   class="primary" {% if b.status not in ['Seated','In Progress'] %}disabled{% endif %}>Complete</button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <details class="walkin">
+          <summary>Add Walk-in</summary>
+          <form class="form" data-staff="{{ staff.name }}">
+            <select required name="service">
+              <option value="" disabled selected>Select service…</option>
+              {% for s in services %}
+                <option value="{{ s.name }}">{{ s.service_name }} ({{ s.duration_minutes }} min)</option>
+              {% endfor %}
+            </select>
+            <button class="go" type="submit">Start Walk-in Now</button>
+          </form>
+        </details>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  const STATUS_FLOW = ["Booked", "Seated", "In Progress", "Completed"];
+
+  // ----- helpers -----
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function fmtTime(t) {
+    if (!t) return "";
+    if (typeof t === "string") return t.slice(0, 5);
+    return String(t).slice(0, 5);
+  }
+  function statusClass(s) { return "status-" + String(s).replace(/\s+/g, "-"); }
+
+  let toastTimer = null;
+  function toast(msg, isError) {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.toggle("error", !!isError);
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+  }
+
+  // ----- rendering -----
+  function renderStaffColumn(staff) {
+    const col = document.createElement("div");
+    col.className = "column";
+    col.dataset.staff = staff.name;
+
+    const avatarHtml = staff.photo
+      ? `<img class="avatar" src="${esc(staff.photo)}" alt="${esc(staff.staff_name)}">`
+      : `<div class="avatar">${esc((staff.staff_name || "?").charAt(0).toUpperCase())}</div>`;
+
+    const bookingsHtml = (staff.bookings && staff.bookings.length)
+      ? staff.bookings.map((b, i) => {
+          const st = b.status || "Booked";
+          const cls = statusClass(st);
+          const nextUp = (i === 0 && st === "Booked");
+          const inProgress = (st === "In Progress");
+          let rowCls = "booking " + cls;
+          if (inProgress) rowCls += " in-progress";
+          else if (nextUp) rowCls += " next-up";
+          return `
+            <div class="${rowCls}" data-booking="${esc(b.name)}">
+              <div class="row1">
+                <div>
+                  <span class="time">${esc(fmtTime(b.start_time))}</span>
+                  <span class="end">→ ${esc(fmtTime(b.end_time) || "?")}</span>
+                </div>
+                <span class="badge ${cls}">${esc(st)}</span>
+              </div>
+              <div class="customer">${esc(b.customer_name || b.customer)}</div>
+              <div class="service">
+                ${esc(b.service_name || b.service)}
+                ${b.price != null ? `· <span class="price">${esc(b.price)} ${esc(window.__currency || "")}</span>` : ""}
+              </div>
+              <div class="actions">
+                <button data-action="seated"      ${st !== "Booked" ? "disabled" : ""}>Seated</button>
+                <button data-action="in-progress" ${["Booked","Seated"].includes(st) ? "" : "disabled"}>In&nbsp;Progress</button>
+                <button data-action="completed"   class="primary" ${["Seated","In Progress"].includes(st) ? "" : "disabled"}>Complete</button>
+              </div>
+            </div>`;
+        }).join("")
+      : `<div class="empty">No bookings today</div>`;
+
+    const servicesHtml = (window.__services || []).map(s =>
+      `<option value="${esc(s.name)}">${esc(s.service_name)} (${esc(s.duration_minutes)} min)</option>`
+    ).join("");
+
+    col.innerHTML = `
+      <header class="staff">
+        ${avatarHtml}
+        <div>
+          <div class="name">${esc(staff.staff_name)}</div>
+          <div class="count">${(staff.bookings || []).length} booking${(staff.bookings || []).length === 1 ? "" : "s"} today</div>
+        </div>
+      </header>
+      <div class="bookings" data-staff-bookings="${esc(staff.name)}">${bookingsHtml}</div>
+      <details class="walkin">
+        <summary>Add Walk-in</summary>
+        <form class="form" data-staff="${esc(staff.name)}">
+          <select required name="service">
+            <option value="" disabled selected>Select service…</option>
+            ${servicesHtml}
+          </select>
+          <button class="go" type="submit">Start Walk-in Now</button>
+        </form>
+      </details>`;
+    return col;
+  }
+
+  function renderBoard(staffList) {
+    const board = $("#board");
+    board.innerHTML = "";
+    if (!staffList || !staffList.length) {
+      const empty = document.createElement("div");
+      empty.className = "column";
+      empty.style.cssText = "max-width:none; flex:1; align-items:center; justify-content:center;";
+      empty.innerHTML = `<div class="empty">No active staff configured yet. Add a Staff Member to get started.</div>`;
+      board.appendChild(empty);
+      return;
+    }
+    staffList.forEach(s => board.appendChild(renderStaffColumn(s)));
+  }
+
+  // ----- API calls -----
+  function call(method, args) {
+    return new Promise((resolve, reject) => {
+      if (typeof frappe === "undefined" || !frappe.call) {
+        reject(new Error("frappe.call unavailable"));
+        return;
+      }
+      frappe.call({
+        method: method,
+        args: args || {},
+        callback: (r) => resolve(r && r.message),
+        error: (r) => reject(new Error((r && r.message) || "Request failed")),
+      });
+    });
+  }
+
+  async function refresh() {
+    try {
+      const data = await call("frontdesk.api.board.get_board_data");
+      renderBoard(data || []);
+      const ts = new Date();
+      $("#last-updated").textContent =
+        "Updated " + ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    } catch (e) {
+      toast("Refresh failed: " + e.message, true);
+    }
+  }
+
+  function nextStatus(current, action) {
+    if (action === "seated")      return "Seated";
+    if (action === "in-progress") return "In Progress";
+    if (action === "completed")   return "Completed";
+    return current;
+  }
+
+  // ----- delegated handlers -----
+  document.addEventListener("click", async (ev) => {
+    const btn = ev.target.closest("button[data-action]");
+    if (!btn) return;
+    const card = btn.closest(".booking");
+    if (!card) return;
+    const bookingName = card.dataset.booking;
+    const action = btn.dataset.action;
+    const target = nextStatus(card.querySelector(".badge").textContent.trim(), action);
+    btn.disabled = true;
+    try {
+      await call("frontdesk.api.board.update_status", { booking_name: bookingName, status: target });
+      await refresh();
+      toast("Marked " + target);
+    } catch (e) {
+      btn.disabled = false;
+      toast(e.message, true);
+    }
+  });
+
+  document.addEventListener("submit", async (ev) => {
+    const form = ev.target.closest("form[data-staff]");
+    if (!form) return;
+    ev.preventDefault();
+    const staff = form.dataset.staff;
+    const fd = new FormData(form);
+    const service = fd.get("service");
+    if (!service) return;
+    const btn = form.querySelector("button.go");
+    btn.disabled = true;
+    try {
+      await call("frontdesk.api.board.add_walkin", { staff: staff, service: service });
+      form.reset();
+      // Collapse the <details> after success
+      const details = form.closest("details");
+      if (details) details.open = false;
+      await refresh();
+      toast("Walk-in added");
+    } catch (e) {
+      toast(e.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // Expose services + currency for render
+  window.__services = {{ services|tojson }};
+  window.__currency = "{{ currency }}";
+
+  // First render from server context (so the page is instant), then poll.
+  refresh();
+  setInterval(refresh, 15000);
+})();
+</script>
+
+</body>
+</html>

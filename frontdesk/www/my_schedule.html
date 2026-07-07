@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>My Schedule · {{ business.business_name }}</title>
+<style>
+  :root {
+    --primary: {{ business.primary_color or '#1f6feb' }};
+    --accent:  {{ business.accent_color  or '#0d419d' }};
+    --bg:      #f5f7fa;
+    --card:    #ffffff;
+    --text:    #1c1f24;
+    --muted:   #6b7280;
+    --border:  #e5e7eb;
+
+    --st-booked:     #2563eb;
+    --st-seated:     #ea580c;
+    --st-inprogress: #ca8a04;
+    --st-completed:  #16a34a;
+    --st-paid:       #15803d;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    padding: 28px 20px 24px;
+  }
+  header .biz {
+    font-size: 13px;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  section {
+    margin-bottom: 28px;
+  }
+  section h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px;
+    padding-left: 4px;
+  }
+  .empty {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .booking {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .booking .time {
+    flex: 0 0 auto;
+    text-align: center;
+    min-width: 70px;
+  }
+  .booking .time .start {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .booking .time .end {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .booking .body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .booking .body .customer {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .booking .body .service {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .badge {
+    flex: 0 0 auto;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .badge.booked     { background: var(--st-booked); }
+  .badge.seated     { background: var(--st-seated); }
+  .badge.inprogress,
+  .badge.in-progress { background: var(--st-inprogress); }
+  .badge.completed  { background: var(--st-completed); }
+  .badge.paid       { background: var(--st-paid); }
+  .badge.confirmed  { background: var(--st-booked); }
+  .badge.default    { background: #6b7280; }
+
+  .date-group {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 12px 4px 6px;
+    border-top: 1px solid var(--border);
+    margin-top: 6px;
+  }
+  .date-group:first-of-type {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 20px;
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 22px 16px 18px; }
+    header h1 { font-size: 20px; }
+    .booking { padding: 12px; gap: 10px; }
+    .booking .time { min-width: 60px; }
+    .booking .time .start { font-size: 16px; }
+    .badge { font-size: 10px; padding: 3px 8px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="biz">{{ business.business_name }}</div>
+  <h1>Hello, {{ staff_name }} 👋</h1>
+</header>
+
+<main>
+  <section>
+    <h2>Today</h2>
+    {% if today_bookings and today_bookings|length %}
+      {% for b in today_bookings %}
+        <div class="booking">
+          <div class="time">
+            <div class="start">{{ (b.start_time|string)[:5] }}</div>
+            <div class="end">→ {{ (b.end_time|string)[:5] }}</div>
+          </div>
+          <div class="body">
+            <div class="customer">{{ b.customer_name }}</div>
+            <div class="service">{{ b.service_name }}</div>
+          </div>
+          <span class="badge {{ b.status|lower|replace('_','-') }}">{{ b.status }}</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">No bookings today. Enjoy your day off ✂️</div>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Upcoming</h2>
+    {% if upcoming_bookings and upcoming_bookings|length %}
+      {% set ns = namespace(last_date='') %}
+      {% for b in upcoming_bookings %}
+        {% if b.booking_date|string != ns.last_date %}
+          {% set ns.last_date = b.booking_date|string %}
+          <div class="date-group">{{ b.booking_date }}</div>
+        {% endif %}
+        <div class="booking">
+          <div class="time">
+            <div class="start">{{ (b.start_time|string)[:5] }}</div>
+            <div class="end">→ {{ (b.end_time|string)[:5] }}</div>
+          </div>
+          <div class="body">
+            <div class="customer">{{ b.customer_name }}</div>
+            <div class="service">{{ b.service_name }}</div>
+          </div>
+          <span class="badge {{ b.status|lower|replace('_','-') }}">{{ b.status }}</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">No upcoming bookings this week.</div>
+    {% endif %}
+  </section>
+
+  <footer>Powered by FrontDesk</footer>
+</main>
+</body>
+</html>
