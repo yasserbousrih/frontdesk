@@ -4,7 +4,8 @@ from frappe.utils import today, add_days
 def get_context(context):
     # Require login — redirect if not authenticated
     if frappe.session.user == "Guest":
-        frappe.throw("Please log in to view your schedule.", frappe.PermissionError)
+        frappe.local.login_manager.require_login = True
+        raise frappe.Redirect
 
     # Find Staff Member linked to this user
     staff = frappe.db.get_value("Staff Member", {"user": frappe.session.user}, "name")

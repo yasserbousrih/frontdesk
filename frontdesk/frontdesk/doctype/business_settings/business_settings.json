@@ -21,7 +21,6 @@
   "instagram",
   "booking_rules_section",
   "slot_buffer_minutes",
-  "cancellation_window_hours",
   "currency",
   "omnichat_section",
   "omnichat_api_url",
@@ -109,13 +108,6 @@
    "fieldname": "slot_buffer_minutes",
    "fieldtype": "Int",
    "label": "Slot Buffer (minutes)",
-   "non_negative": 1
-  },
-  {
-   "default": "4",
-   "fieldname": "cancellation_window_hours",
-   "fieldtype": "Int",
-   "label": "Cancellation Window (hours)",
    "non_negative": 1
   },
   {

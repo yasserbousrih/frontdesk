@@ -17,7 +17,7 @@ def to_minutes(t) -> int:
     """Convert a `datetime.time` (or hour*60+min scalar from tests) to minutes since midnight."""
     if isinstance(t, (int, float)):
         return int(t)
-    return t.hour * 60 + t.minute
+    return t.hour * 60 + t.minute + (1 if t.second >= 30 else 0)
 
 
 def times_overlap(a_start, a_end, b_start, b_end) -> bool:

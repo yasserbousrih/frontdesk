@@ -100,7 +100,7 @@ def update_status(booking_name, status):
     Returns:
         str: the new status, echoed back for client convenience.
     """
-    allowed = {"Booked", "Seated", "In Progress", "Completed", "Paid", "Cancelled", "No-Show"}
+    allowed = {"Booked", "Seated", "In Progress", "Completed", "Cancelled", "No-Show"}
     if status not in allowed:
         frappe.throw(f"Invalid status: {status}")
 

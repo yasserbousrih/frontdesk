@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 
 import frappe
 import requests
+from frappe.utils import now_datetime
 
 
 def send_2h_reminders():
@@ -25,7 +26,7 @@ def send_2h_reminders():
     if not (bs.get("omnichat_api_url") and bs.get("omnichat_api_token")):
         return  # WhatsApp not configured
 
-    now = datetime.now()
+    now = now_datetime()
     window_start = now + timedelta(minutes=90)
     window_end = now + timedelta(minutes=150)
 
@@ -44,10 +45,8 @@ def send_2h_reminders():
         if start is None:
             continue
         if window_start <= start <= window_end:
-            _send_reminder(b, bs)
-            # Mark as sent regardless of API success — we don't want to
-            # retry on every hourly tick if Omnichat is down.
-            frappe.db.set_value("Booking", b["name"], "reminder_sent", 1, update_modified=False)
+            if _send_reminder(b, bs):
+                frappe.db.set_value("Booking", b["name"], "reminder_sent", 1, update_modified=False)
 
 
 def _send_reminder(booking, bs):
@@ -78,8 +77,10 @@ def _send_reminder(booking, bs):
             json=payload, timeout=10,
         )
         resp.raise_for_status()
+        return True
     except Exception:
         frappe.log_error(f"FrontDesk: 2h reminder failed for booking {booking['name']}")
+        return False
 
 
 def _to_datetime(booking_date, start_time):

@@ -5,9 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 from frontdesk.frontdesk.doctype.booking import overlap
-
-
-CANCELLED_STATES = {"Cancelled", "No-Show"}
+from frontdesk.frontdesk.doctype.booking.overlap import CANCELLED_STATES
 
 
 class Booking(Document):

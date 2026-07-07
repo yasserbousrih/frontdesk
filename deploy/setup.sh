@@ -132,6 +132,11 @@ echo ">>> Enabling scheduler..."
 docker compose -p "$PROJECT_NAME" exec -T backend bench --site "$SITENAME" scheduler enable
 green "✓ Scheduler enabled"
 
+# ── 9. Rate limiting (Frappe built-in, Redis-backed) ─────────
+echo ">>> Configuring rate limiting..."
+docker compose -p "$PROJECT_NAME" exec -T backend bench --site "$SITENAME" set-config rate_limit '{"limit": 100, "window": 60}'
+green "✓ Rate limit: 100 req / 60s window"
+
 # ── Done ────────────────────────────────────────────────────
 echo ""
 green "════════════════════════════════════════════"
