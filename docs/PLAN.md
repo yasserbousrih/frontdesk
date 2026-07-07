@@ -9,55 +9,51 @@ Infra ─┐
 Phase 0 ┴→ Phase 1 (MVP) → pilot shop 30 days → Phase 2 / Phase 3 (independent) → Phase 4
 ```
 
-## Infra (parallel with Phase 0)
+## Infra (deferred)
 
-frappe_docker layered image (erpnext + frontdesk) → GHCR → Coolify Docker Compose resource. Local dev = same stack in Docker Desktop.
+frappe_docker layered image (erpnext + frontdesk) → GHCR → Hetzner CX22 (4 GB, separate VM). Deploy artifacts in `deploy/`.
 
-**Done when:** site live on Coolify with frontdesk installed; push → redeploy in one step.
+**Done when:** site live on Hetzner with frontdesk installed; push → redeploy in one step.
 
-## Phase 0 — Foundation (week 1–2)
+## Phase 0 — Foundation ✅ (week 1–2)
 
-Scaffold `bench new-app frontdesk` and merge into this repo. Build:
+- [x] All DocTypes (Staff Member, Service, Booking, Customer Profile, Business Settings)
+- [x] Availability engine + double-booking validation
+- [x] `test_availability.py` — working hours, overlaps, closing-time edge (15 tests)
+- [x] Clean `bench install-app frontdesk` on Frappe v15 + ERPNext v15
+- [x] Custom roles: Frontdesk Manager, Frontdesk User
 
-- All DocTypes (Staff Member, Service, Booking, Customer Profile, Business Settings)
-- Availability engine + double-booking validation
-- `test_availability.py` — working hours, overlaps, closing-time edge
-- Clean `bench install-app frontdesk` on Frappe v15 + ERPNext v15
+## Phase 1 — The MVP loop ✅ (week 2–4)
 
-**Done when:** barbers, services, and bookings are manageable in Desk; the slots API returns correct free slots; double-booking is rejected.
+- [x] Booking website (`/book`) with Business Settings branding
+- [x] Staff availability board (tablet) with walk-in check-in
+- [x] Checkout → ERPNext Sales Invoice
+- [x] Staff `/my-schedule` page
+- [x] Rate limiting (Frappe built-in, config-only)
+- [x] Booking confirmations (notifications module)
+- [x] Race condition protection (SELECT FOR UPDATE on staff row)
 
-## Phase 1 — The MVP loop (week 2–4) — the sellable product
+## Phase 2 — Retention ✅ (week 4–6)
 
-- Booking website (`/book`) with Business Settings branding
-- Staff availability board (tablet) with walk-in check-in
-- Checkout → ERPNext Sales Invoice
-- WhatsApp booking confirmations via Omnichat send API
-- Staff `/my-schedule` page
+- [x] 2h pre-appointment reminders (hourly scheduler)
+- [x] Post-paid follow-up tracking
+- [x] ERPNext Loyalty Program — "FrontDesk Rewards" (auto-created on install)
+- [x] Basira CRM sync — Customer Profile pushes to Basira on update
+- [x] N+1 query fixes across all board/schedule/checkout pages
 
-**Done when:** customer books from a phone → barber sees it on the tablet → checkout → visit logged. The full loop on real devices with zero WhatsApp coordination. This version goes to the first barbershop.
-
-## Phase 2 — Retention (week 4–6)
-
-All Frappe scheduler + hooks, no new architecture:
-
-- Visit history on Customer Profile
-- Hourly scheduler job → WhatsApp reminder 2h before appointment
-- ERPNext Loyalty Program — points per visit
-- Post-Paid hook → "book your next?" + Google review prompt via Omnichat
-
-## Phase 3 — AI channels (week 6–8)
+## Phase 3 — AI channels (to do)
 
 Wire the existing VoxAI (voice) and Omnichat (WhatsApp conversational) into the integration API. Add `get_alternative_staff` for "Ahmed is full, Omar is free at the same time" suggestions.
 
 **Done when:** a WhatsApp message and a phone call can each produce a confirmed booking with zero human involvement.
 
-## Phase 4 — Verticals (week 8+)
+## Phase 4 — Verticals (to do)
 
 Ship salon / clinic / spa **templates** (JSON fixtures — service lists, terminology, page wording). Vertical-specific features (packages, consent forms, multi-service visits) get built only when a paying client in that vertical exists.
 
 ## Verification
 
-- **Phase 0:** `test_availability.py` + fresh-site install
-- **Phase 1:** manual end-to-end on phone + tablet against Coolify staging
+- **Phase 0:** `test_availability.py` — 15/15 green ✅
+- **Phase 1:** manual end-to-end on phone + tablet against staging (pending deploy)
 - **Phase 2/3:** every automation tested with a real WhatsApp number / test call before pilot
 - **North star (ROADMAP):** one barbershop, 30 consecutive days, zero WhatsApp fallback
