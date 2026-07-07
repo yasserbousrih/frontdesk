@@ -16,6 +16,29 @@ def create_web_booking(staff, service, booking_date, start_time, phone, customer
 	"""Create a booking from the public website.
 	Find-or-create Customer Profile by phone, then create a Booking with status Booked, source Web.
 	Returns dict with booking name + details."""
+	# --- input validation ---
+	_missing = [f for f, v in {
+		"staff": staff, "service": service, "booking_date": booking_date,
+		"start_time": start_time, "phone": phone, "customer_name": customer_name,
+	}.items() if not v]
+	if _missing:
+		frappe.throw(f"Missing required field(s): {', '.join(_missing)}")
+
+	if not frappe.db.exists("Staff Member", staff):
+		frappe.throw(f"Invalid staff member: {staff}")
+	if not frappe.db.exists("Service", service):
+		frappe.throw(f"Invalid service: {service}")
+
+	from frappe.utils import getdate, today as today_date
+	try:
+		_bd = getdate(booking_date)
+	except Exception:
+		frappe.throw(f"Invalid booking date: {booking_date}")
+	if _bd < getdate(today_date()):
+		frappe.throw("Cannot book a date in the past.")
+
+	# --- end validation ---
+
 	# Find or create customer by phone
 	existing = frappe.db.get_value("Customer Profile", {"phone": phone}, "name")
 	if existing:

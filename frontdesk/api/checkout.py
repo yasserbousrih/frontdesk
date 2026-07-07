@@ -33,8 +33,16 @@ def create_invoice(booking_name, payment_method="Cash"):
     if payment_method not in {"Cash", "Card", "Transfer"}:
         frappe.throw(f"Unsupported payment method: {payment_method}")
 
+    if not frappe.db.exists("DocType", "Sales Invoice"):
+        frappe.throw("ERPNext is required for checkout. Install the 'erpnext' app first.")
+
     booking = frappe.get_doc("Booking", booking_name)
-    if booking.status not in {"Completed", "Paid"}:
+    if booking.status == "Paid":
+        frappe.throw(
+            f"Booking {booking_name} already has a Sales Invoice — "
+            "duplicate checkout prevented."
+        )
+    if booking.status != "Completed":
         frappe.throw(
             f"Booking {booking_name} is in status '{booking.status}'; "
             "only Completed bookings can be checked out."
@@ -48,6 +56,7 @@ def create_invoice(booking_name, payment_method="Cash"):
     si = frappe.get_doc({
         "doctype": "Sales Invoice",
         "customer": customer,
+        "company": frappe.db.get_single_value("Global Defaults", "default_company"),
         "items": [{"item_code": item, "qty": 1, "rate": booking.price}],
         # Stash the payment method on the invoice's remarks so the cashier
         # sees it when posting payment (a richer integration would create a
