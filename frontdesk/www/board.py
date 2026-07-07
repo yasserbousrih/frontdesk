@@ -36,38 +36,41 @@ def get_context(context):
         order_by="staff_name",
     )
 
+    all_bookings = frappe.get_all(
+        "Booking",
+        filters={
+            "staff": ["in", [s.name for s in staff_rows]],
+            "booking_date": today_str,
+            "status": ["not in", ["Cancelled", "No-Show"]],
+        },
+        fields=["name", "customer", "start_time", "end_time", "service", "status", "price", "staff"],
+        order_by="start_time",
+    )
+
+    # Batch-load names to avoid N+1
+    customer_ids = {b["customer"] for b in all_bookings}
+    service_ids = {b["service"] for b in all_bookings}
+    customer_names = {
+        r["name"]: r["customer_name"]
+        for r in frappe.get_all("Customer Profile", filters={"name": ["in", list(customer_ids)]}, fields=["name", "customer_name"])
+    }
+    service_names = {
+        r["name"]: r["service_name"]
+        for r in frappe.get_all("Service", filters={"name": ["in", list(service_ids)]}, fields=["name", "service_name"])
+    }
+
+    # Group by staff
+    bookings_by_staff = {}
+    for b in all_bookings:
+        b["customer_name"] = customer_names.get(b["customer"], "")
+        b["service_name"] = service_names.get(b["service"], "")
+        b["start_time"] = _fmt_time(b["start_time"])
+        b["end_time"] = _fmt_time(b.get("end_time"))
+        bookings_by_staff.setdefault(b["staff"], []).append(b)
+
     board_data = []
     for s in staff_rows:
-        bookings = frappe.get_all(
-            "Booking",
-            filters={
-                "staff": s.name,
-                "booking_date": today_str,
-                "status": ["not in", ["Cancelled", "No-Show"]],
-            },
-            fields=[
-                "name",
-                "customer",
-                "start_time",
-                "end_time",
-                "service",
-                "status",
-                "price",
-            ],
-            order_by="start_time",
-        )
-        for b in bookings:
-            b["customer_name"] = frappe.db.get_value(
-                "Customer Profile", b["customer"], "customer_name"
-            )
-            b["service_name"] = frappe.db.get_value(
-                "Service", b["service"], "service_name"
-            )
-            # Frappe Times come as datetime.time / "HH:MM:SS" — normalise
-            # to "HH:MM" so the template can compare/render directly.
-            b["start_time"] = _fmt_time(b["start_time"])
-            b["end_time"] = _fmt_time(b.get("end_time"))
-        s["bookings"] = bookings
+        s["bookings"] = bookings_by_staff.get(s.name, [])
         board_data.append(s)
 
     context.board_data = board_data
