@@ -12,6 +12,7 @@
   "phone",
   "bio",
   "active",
+  "commission_pct",
   "working_hours_section",
   "working_hours",
   "services_section",
@@ -51,6 +52,13 @@
    "fieldname": "active",
    "fieldtype": "Check",
    "label": "Active"
+  },
+  {
+   "default": "0",
+   "fieldname": "commission_pct",
+   "fieldtype": "Percent",
+   "label": "Commission %",
+   "description": "Percentage of service revenue paid to this staff member"
   },
   {
    "fieldname": "working_hours_section",

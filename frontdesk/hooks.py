@@ -22,6 +22,7 @@ def after_install():
                 ignore_permissions=True
             )
     _ensure_loyalty_program()
+    _ensure_custom_fields()
 
 
 def _ensure_loyalty_program():
@@ -41,6 +42,38 @@ def _ensure_loyalty_program():
             "minimum_total_spent": 0,
         }],
     }).insert(ignore_permissions=True)
+
+
+def _ensure_custom_fields():
+    """Create Custom Fields that FrontDesk needs on ERPNext doctypes.
+
+    - Sales Invoice Item: ``staff_member`` — link to Staff Member for
+      commission tracking."""
+    if not frappe.db.exists("DocType", "Sales Invoice"):
+        return  # ERPNext not installed — nothing to patch
+
+    _upsert_custom_field(
+        dt="Sales Invoice Item",
+        fieldname="staff_member",
+        label="Staff Member",
+        fieldtype="Link",
+        options="Staff Member",
+        insert_after="item_name",
+        read_only=1,
+    )
+
+
+def _upsert_custom_field(dt, fieldname, **kwargs):
+    """Create a Custom Field if it doesn't exist; no-op otherwise."""
+    if frappe.db.exists("Custom Field", f"{dt}-{fieldname}"):
+        return
+    frappe.get_doc({
+        "doctype": "Custom Field",
+        "dt": dt,
+        "fieldname": fieldname,
+        **kwargs,
+    }).insert(ignore_permissions=True)
+
 
 # -------------------
 # Fixtures (none for now — vertical templates come in Phase 4)
