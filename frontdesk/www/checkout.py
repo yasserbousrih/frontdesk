@@ -10,20 +10,19 @@ sees the queue immediately, then refreshes via
 
 import frappe
 
+from ._branding import get_branding
+
 
 def get_context(context):
-    """Populate ``context`` for ``www/checkout.html``.
+    """Populate ``context`` for ``www/checkout.html``."""
+    b = get_branding()
 
-    Pulls:
-      * branding from the ``Business Settings`` single
-      * the 50 most recent ``Completed`` bookings awaiting checkout
-    """
-    # --- Branding (same fallbacks as the board page) ---
-    settings = _safe_single("Business Settings") or {}
-    context.business_name = settings.get("business_name") or "FrontDesk"
-    context.primary_color = settings.get("primary_color") or "#1f2937"
-    context.accent_color = settings.get("accent_color") or "#f59e0b"
-    context.currency = settings.get("currency") or "QAR"
+    context.business_name = b["brand_name"]
+    context.primary_color = b["primary_color"]
+    context.accent_color = b["accent_color"]
+    context.currency = b["currency"]
+    context.footer_powered = b["footer_powered"]
+    context.copyright_text = b["copyright_text"]
 
     # --- Queue: completed bookings, most-recent first ---
     bookings = frappe.get_all(
@@ -38,7 +37,6 @@ def get_context(context):
     )
 
     if bookings:
-        # Batch-load names to avoid N+1 (up to 150 saved queries)
         customer_ids = {b["customer"] for b in bookings}
         service_ids = {b["service"] for b in bookings}
         staff_ids = {b["staff"] for b in bookings}
@@ -66,16 +64,7 @@ def get_context(context):
 
 # ---------- helpers ----------
 
-def _safe_single(doctype):
-    """Return the single DocType as a dict, or ``None`` if not installed."""
-    try:
-        return frappe.get_single(doctype).as_dict()
-    except Exception:
-        return None
-
-
 def _fmt_time(t):
-    """Coerce a Frappe Time value to ``"HH:MM"`` (empty string if missing)."""
     if not t:
         return ""
     if isinstance(t, str):

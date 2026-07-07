@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>My Schedule · {{ business.business_name }}</title>
+<title>My Schedule · {{ business.brand_name }}</title>
 <style>
   :root {
     --primary: {{ business.primary_color or '#1f6feb' }};
@@ -166,7 +166,7 @@
 </head>
 <body>
 <header>
-  <div class="biz">{{ business.business_name }}</div>
+  <div class="biz">{{ business.brand_name }}</div>
   <h1>Hello, {{ staff_name }} 👋</h1>
 </header>
 
@@ -218,7 +218,7 @@
     {% endif %}
   </section>
 
-  <footer>&copy; {{ business.business_name }} &middot; Powered by <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">Basira</a></footer>
+  <footer>{{ business.copyright_text or "© " + business.brand_name }} &middot; <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">{{ business.footer_powered or "Basira" }}</a></footer>
 </main>
 </body>
 </html>

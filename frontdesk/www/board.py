@@ -11,21 +11,19 @@ tablet sees something immediately; after that the frontend polls
 import frappe
 from frappe.utils import today
 
+from ._branding import get_branding
+
 
 def get_context(context):
-    """Populate ``context`` for ``www/board.html``.
+    """Populate ``context`` for ``www/board.html``."""
+    b = get_branding()
 
-    Pulls:
-      * branding from the ``Business Settings`` single
-      * active staff + their bookings for today
-      * active services for the per-column walk-in form
-    """
-    # --- Branding (single DocType, with sane fallbacks if not configured yet) ---
-    settings = _safe_single("Business Settings") or {}
-    context.business_name = settings.get("business_name") or "FrontDesk"
-    context.primary_color = settings.get("primary_color") or "#1f2937"
-    context.accent_color = settings.get("accent_color") or "#f59e0b"
-    context.currency = settings.get("currency") or "QAR"
+    context.business_name = b["brand_name"]
+    context.primary_color = b["primary_color"]
+    context.accent_color = b["accent_color"]
+    context.currency = b["currency"]
+    context.footer_powered = b["footer_powered"]
+    context.copyright_text = b["copyright_text"]
 
     # --- Board snapshot: staff + today's non-cancelled bookings ---
     today_str = today()
@@ -83,23 +81,14 @@ def get_context(context):
         order_by="service_name",
     )
 
-    # The path is implicit but exposing it makes the JS cleaner.
     context.today = today_str
     context.no_cache = 1
 
 
 # ---------- helpers ----------
 
-def _safe_single(doctype):
-    """Return the single DocType as a dict, or ``None`` if it isn't installed yet."""
-    try:
-        return frappe.get_single(doctype).as_dict()
-    except Exception:
-        return None
-
-
 def _fmt_time(t):
-    """Coerce a Frappe Time value (``datetime.time`` or ``"HH:MM:SS"``) to ``"HH:MM"``."""
+    """Coerce a Frappe Time value to ``"HH:MM"``."""
     if not t:
         return ""
     if isinstance(t, str):

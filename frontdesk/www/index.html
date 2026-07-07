@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<meta name="theme-color" content="{{ business.primary_color or '#1a1a2e' }}" />
-	<title>{{ business.business_name or "FrontDesk" }}</title>
+	<title>{{ business.brand_name or "FrontDesk" }}</title>
 	<style>
 		:root {
 			--primary: {{ business.primary_color or '#1a1a2e' }};
@@ -177,16 +177,16 @@
 </head>
 <body>
 	<header class="hero">
-		{% if business.cover_image %}
-			<img src="{{ business.cover_image }}" alt="" />
+		{% if business.brand_cover %}
+			<img src="{{ business.brand_cover }}" alt="" />
 		{% endif %}
 		<div class="hero-content">
 			<div class="brand-row">
-				{% if business.logo %}
-					<img src="{{ business.logo }}" alt="{{ business.business_name }} logo" />
+				{% if business.brand_logo %}
+					<img src="{{ business.brand_logo }}" alt="{{ business.brand_name }} logo" />
 				{% endif %}
 			</div>
-			<h1>{{ business.business_name or "FrontDesk" }}</h1>
+			<h1>{{ business.brand_name or "FrontDesk" }}</h1>
 			{% if business.vertical %}
 				<p class="tagline">{{ business.vertical }}</p>
 			{% endif %}
@@ -242,7 +242,7 @@
 			</section>
 		{% endif %}
 
-		<footer>&copy; {{ business.business_name or "FrontDesk" }} &middot; Powered by <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">Basira</a></footer>
+		<footer>&copy; {{ business.copyright_text or business.brand_name }} &middot; <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">{{ business.footer_powered or "Basira" }}</a></footer>
 	</main>
 </body>
 </html>

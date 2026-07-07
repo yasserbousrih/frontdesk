@@ -1,6 +1,9 @@
 import frappe
 from frappe.utils import today, add_days
 
+from ._branding import get_branding
+
+
 def get_context(context):
     # Require login — redirect if not authenticated
     if frappe.session.user == "Guest":
@@ -12,8 +15,10 @@ def get_context(context):
     if not staff:
         frappe.throw("No staff profile linked to your account.", frappe.PermissionError)
 
+    b = get_branding()
+
     context.no_cache = 1
-    context.business = frappe.get_single("Business Settings")
+    context.business = b
     context.staff_name = frappe.db.get_value("Staff Member", staff, "staff_name")
 
     # Today's bookings
@@ -21,6 +26,7 @@ def get_context(context):
     # Upcoming (next 7 days, excluding today)
     context.upcoming_bookings = _get_bookings(staff, add_days(today(), 1), add_days(today(), 7))
     return context
+
 
 def _get_bookings(staff, from_date, to_date):
     bookings = frappe.get_all("Booking",
