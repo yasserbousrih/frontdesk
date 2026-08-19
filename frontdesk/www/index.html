@@ -274,6 +274,7 @@
 			font-weight: 700;
 		}
 		.service-card .svc-name { font-size: 17px; font-weight: 700; font-family: var(--font-display); }
+		.service-card .svc-name .svc-name-ar { font-family: 'Amiri', 'Noto Naskh Arabic', serif; font-weight: 400; direction: rtl; unicode-bidi: isolate; color: #6b7280; font-size: 15px; margin-inline-start: 6px; }
 		.service-card .svc-desc { font-size: 13px; color: var(--muted); flex: 1; }
 		.service-card .svc-meta {
 			display: flex;
@@ -488,7 +489,7 @@
 						{% endif %}
 						<div class="svc-body">
 							{% if s.category %}<div class="svc-cat">{{ s.category }}</div>{% endif %}
-							<div class="svc-name">{{ s.name }}</div>
+							<div class="svc-name">{{ s.name }}{% if s.name_ar %} <span class="svc-name-ar" lang="ar">{{ s.name_ar }}</span>{% endif %}</div>
 							{% if s.description %}<div class="svc-desc">{{ s.description }}</div>{% endif %}
 							<div class="svc-meta">
 								{% if business.show_prices %}<span class="svc-price">{{ "%.2f"|format(s.price) }} {{ business.currency }}</span>{% endif %}

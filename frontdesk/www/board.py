@@ -10,6 +10,7 @@ tablet sees something immediately; after that the frontend polls
 
 import frappe
 from frappe.utils import today
+from datetime import timedelta
 
 from ._branding import get_branding
 
@@ -56,12 +57,17 @@ def get_context(context):
         r["name"]: r["item_name"]
         for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name"])
     }
+    service_names_ar = {
+        r["name"]: r["item_name_ar"] or ""
+        for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name_ar"])
+    }
 
     # Group by staff
     bookings_by_staff = {}
     for b in all_bookings:
         b["customer_name"] = customer_names.get(b["customer"], "")
         b["service_name"] = service_names.get(b["service"], "")
+        b["service_name_ar"] = service_names_ar.get(b["service"], "")
         b["start_time"] = _fmt_time(b["start_time"])
         b["end_time"] = _fmt_time(b.get("end_time"))
         bookings_by_staff.setdefault(b["staff"], []).append(b)
@@ -78,13 +84,14 @@ def get_context(context):
         {
             "name": r["name"],
             "service_name": r["item_name"],
+            "service_name_ar": r["item_name_ar"] or "",
             "duration_minutes": r["duration_minutes"],
             "price": r["standard_rate"],
         }
         for r in frappe.get_all(
             "Item",
             filters={"item_group": "Services", "disabled": 0},
-            fields=["name", "item_name", "duration_minutes", "standard_rate"],
+            fields=["name", "item_name", "item_name_ar", "duration_minutes", "standard_rate"],
             order_by="item_name",
         )
     ]
@@ -96,9 +103,16 @@ def get_context(context):
 # ---------- helpers ----------
 
 def _fmt_time(t):
-    """Coerce a Frappe Time value to ``"HH:MM"``."""
+    """Coerce a Frappe Time value to ``"HH:MM"``.
+
+    v16 returns Time columns as `datetime.timedelta` from db.sql/get_all
+    (no `.hour`) and `datetime.time` / str from other paths — normalize.
+    """
     if not t:
         return ""
     if isinstance(t, str):
         return t[:5]
+    if isinstance(t, timedelta):
+        total = int(t.total_seconds()) % 86400
+        return f"{total // 3600:02d}:{(total % 3600) // 60:02d}"
     return f"{t.hour:02d}:{t.minute:02d}"

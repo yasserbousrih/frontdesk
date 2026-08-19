@@ -9,6 +9,7 @@ sees the queue immediately, then refreshes via
 """
 
 import frappe
+from datetime import timedelta
 
 from ._branding import get_branding
 
@@ -48,6 +49,10 @@ def get_context(context):
             r["name"]: r["item_name"]
             for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name"])
         }
+        service_names_ar = {
+            r["name"]: r["item_name_ar"] or ""
+            for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name_ar"])
+        }
         staff_names = {
             r["name"]: r["staff_name"]
             for r in frappe.get_all("Staff Member", filters={"name": ["in", list(staff_ids)]}, fields=["name", "staff_name"])
@@ -55,6 +60,7 @@ def get_context(context):
         for b in bookings:
             b["customer_name"] = customer_names.get(b["customer"], "")
             b["service_name"] = service_names.get(b["service"], "")
+            b["service_name_ar"] = service_names_ar.get(b["service"], "")
             b["staff_name"] = staff_names.get(b["staff"], "")
             b["start_time"] = _fmt_time(b.get("start_time"))
 
@@ -65,8 +71,16 @@ def get_context(context):
 # ---------- helpers ----------
 
 def _fmt_time(t):
+    """Coerce a Frappe Time value to ``"HH:MM"``.
+
+    v16 returns Time columns as `datetime.timedelta` from db.sql/get_all
+    (no `.hour`) and `datetime.time` / str from other paths — normalize.
+    """
     if not t:
         return ""
     if isinstance(t, str):
         return t[:5]
+    if isinstance(t, timedelta):
+        total = int(t.total_seconds()) % 86400
+        return f"{total // 3600:02d}:{(total % 3600) // 60:02d}"
     return f"{t.hour:02d}:{t.minute:02d}"

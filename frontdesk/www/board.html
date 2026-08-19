@@ -155,6 +155,7 @@
   .booking .service {
     color: var(--text-soft); font-size: 13px;
   }
+  .booking .service .name-ar, .name-ar { font-family: 'Amiri', 'Noto Naskh Arabic', serif; direction: rtl; unicode-bidi: isolate; color: var(--text-soft); }
   .booking .price {
     font-weight: 600; color: var(--text); font-size: 14px;
   }
@@ -316,7 +317,7 @@
               </div>
               <div class="customer">{{ b.customer_name or b.customer }}</div>
               <div class="service">
-                {{ b.service_name or b.service }}
+                {{ b.service_name or b.service }}{% if b.service_name_ar %} <span class="name-ar" lang="ar">{{ b.service_name_ar }}</span>{% endif %}
                 {% if b.price %} · <span class="price">{{ b.price }} {{ currency }}</span>{% endif %}
               </div>
 
@@ -335,7 +336,7 @@
             <select required name="service">
               <option value="" disabled selected>Select service…</option>
               {% for s in services %}
-                <option value="{{ s.name }}">{{ s.service_name }} ({{ s.duration_minutes }} min)</option>
+                <option value="{{ s.name }}">{{ s.service_name }}{% if s.service_name_ar %} ({{ s.service_name_ar }}){% endif %} ({{ s.duration_minutes }} min)</option>
               {% endfor %}
             </select>
             <button class="go" type="submit">Start Walk-in Now</button>
@@ -415,6 +416,7 @@
               <div class="customer">${esc(b.customer_name || b.customer)}</div>
               <div class="service">
                 ${esc(b.service_name || b.service)}
+                ${b.service_name_ar ? ` <span class="name-ar" lang="ar">${esc(b.service_name_ar)}</span>` : ""}
                 ${b.price != null ? `· <span class="price">${esc(b.price)} ${esc(window.__currency || "")}</span>` : ""}
               </div>
               <div class="actions">
@@ -427,7 +429,7 @@
       : `<div class="empty">No bookings today</div>`;
 
     const servicesHtml = (window.__services || []).map(s =>
-      `<option value="${esc(s.name)}">${esc(s.service_name)} (${esc(s.duration_minutes)} min)</option>`
+      `<option value="${esc(s.name)}">${esc(s.service_name)}${s.service_name_ar ? ` (${esc(s.service_name_ar)})` : ""} (${esc(s.duration_minutes)} min)</option>`
     ).join("");
 
     col.innerHTML = `

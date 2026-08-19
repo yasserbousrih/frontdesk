@@ -183,6 +183,7 @@
 			box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.12);
 		}
 		.svc .svc-name { font-weight: 600; font-size: 15px; }
+		.svc .svc-name .svc-name-ar { font-family: 'Amiri', 'Noto Naskh Arabic', serif; font-weight: 400; direction: rtl; unicode-bidi: isolate; color: #6b7280; font-size: 13px; margin-inline-start: 6px; }
 		.svc .svc-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
 		.svc .svc-price { font-weight: 700; color: var(--primary); white-space: nowrap; font-size: 16px; }
 
@@ -629,7 +630,7 @@
 					? currency(s.price)
 					: '';
 				html += '<div class="svc' + (selected ? ' selected' : '') + '" data-svc="' + escapeHTML(s.name) + '">'
-					+ '<div><div class="svc-name">' + escapeHTML(s.service_name) + '</div>'
+					+ '<div><div class="svc-name">' + escapeHTML(s.service_name) + (s.service_name_ar ? ' <span class="svc-name-ar" lang="ar">' + escapeHTML(s.service_name_ar) + '</span>' : '') + '</div>'
 					+ '<div class="svc-meta">' + escapeHTML(s.duration_minutes) + ' min</div></div>'
 					+ '<div class="svc-price">' + escapeHTML(priceLabel) + '</div>'
 					+ '</div>';
@@ -725,7 +726,8 @@
 			nextBtn.disabled = !(state.phone && state.name);
 
 			var summarySvc = state.service
-				? escapeHTML(state.service.service_name) + ' &middot; ' + escapeHTML(state.service.duration_minutes) + ' min'
+				? escapeHTML(state.service.service_name) + (state.service.service_name_ar ? ' (' + escapeHTML(state.service.service_name_ar) + ')' : '')
+					+ ' &middot; ' + escapeHTML(state.service.duration_minutes) + ' min'
 					+ (state.service.price ? ' &middot; ' + escapeHTML(currency(state.service.price)) : '')
 				: '';
 			var html = '<h2 class="step-title">Your details</h2>';

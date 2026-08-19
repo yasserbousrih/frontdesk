@@ -52,6 +52,10 @@ def get_board_data():
         r["name"]: r["item_name"]
         for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name"])
     }
+    service_names_ar = {
+        r["name"]: r["item_name_ar"] or ""
+        for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name_ar"])
+    }
     # Group by staff
     bookings_by_staff = {}
     for b in bookings:
@@ -61,6 +65,7 @@ def get_board_data():
         for b in s.bookings:
             b["customer_name"] = customer_names.get(b["customer"], "")
             b["service_name"] = service_names.get(b["service"], "")
+            b["service_name_ar"] = service_names_ar.get(b["service"], "")
     return staff_list
 
 

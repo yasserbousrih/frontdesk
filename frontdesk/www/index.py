@@ -26,7 +26,7 @@ def get_context(context):
     try:
         rows = frappe.get_all(
             "Item",
-            fields=["name", "item_name", "service_category", "duration_minutes", "standard_rate", "description", "image"],
+            fields=["name", "item_name", "item_name_ar", "service_category", "duration_minutes", "standard_rate", "description", "image"],
             filters={"item_group": "Services", "disabled": 0, "show_on_homepage": 1},
             order_by="modified desc",
             limit_page_length=b["services_count"],
@@ -34,6 +34,7 @@ def get_context(context):
         for r in rows:
             services.append({
                 "name": r.item_name,
+                "name_ar": r.item_name_ar or "",
                 "category": r.service_category or "",
                 "duration_minutes": r.duration_minutes,
                 "price": r.standard_rate,
