@@ -188,6 +188,13 @@ def _ensure_custom_fields():
         label="Item Name (Arabic)",
         fieldtype="Data",
     )
+    _upsert_custom_field(
+        dt="Item",
+        fieldname="department",
+        label="Department",
+        fieldtype="Select",
+        options="\nDermatology\nCardiology\nPediatrics\nGeneral Medicine\nDental\nOphthalmology\nOrthopedics\nENT\nGynecology\nOther",
+    )
 
     # Receipts print the Arabic name — the Sales Invoice Item row snapshots it
     # so epson_middleware renders bilingual EN/AR rows without re-looking-up.

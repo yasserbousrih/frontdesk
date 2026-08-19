@@ -20,25 +20,28 @@ from frontdesk.frontdesk.doctype.booking.overlap import (
 
 
 @frappe.whitelist(allow_guest=True)
-def get_available_slots(staff: str, service: str, date: str) -> list:
+def get_available_slots(staff: str = "", service: str = "", date: str = "") -> list:
     """Return a list of free slot start times for the given staff + service + date.
 
     Args:
-        staff: name of the Staff Member DocType record.
+        staff: name of the Staff Member DocType record. If empty/blank, slots
+            are aggregated across ALL active staff members: a start time is
+            available if at least one active staff member can serve it.
         service: name of the Item (services-as-items) record.
         date: ISO date string (YYYY-MM-DD).
 
     Returns:
         List of {"start": "HH:MM", "start_iso": "<ISO datetime>"} dicts, sorted
-        ascending. Empty list if the staff is off, the service is too long for
-        the working window, or the day is fully booked.
+        ascending. Empty list if no staff can serve the slot (staff off, service
+        too long for the working window, or the day fully booked).
 
     Raises:
-        frappe.ValidationError: if staff or service is missing, inactive, or
-        the date string is malformed.
+        frappe.ValidationError: if a specific (non-empty) staff member is
+        missing, the service is missing, or the date string is malformed.
     """
-    if not frappe.db.exists("Staff Member", staff):
-        frappe.throw(_("Staff member not found: {0}").format(staff))
+    if staff and staff.strip():
+        if not frappe.db.exists("Staff Member", staff):
+            frappe.throw(_("Staff member not found: {0}").format(staff))
 
     if not frappe.db.exists("Item", service):
         frappe.throw(_("Service not found: {0}").format(service))
@@ -48,45 +51,32 @@ def get_available_slots(staff: str, service: str, date: str) -> list:
     except ValueError:
         frappe.throw(_("Invalid date format. Use YYYY-MM-DD."))
 
-    staff_doc = frappe.get_doc("Staff Member", staff)
-    if not staff_doc.active:
-        return []
-
     service_doc = frappe.get_doc("Item", service)
     if service_doc.disabled:
         return []
 
     weekday = day.strftime("%A")
-    working_hours = [
-        (row.weekday, _time_to_minutes(row.start_time), _time_to_minutes(row.end_time))
-        for row in staff_doc.working_hours
-        if row.weekday == weekday
-    ]
-    if not working_hours:
-        return []
 
     slot_buffer = 0
     if frappe.db.exists("DocType", "Business Settings"):
         bs = frappe.get_single("Business Settings")
         slot_buffer = int(bs.slot_buffer_minutes or 0)
 
-    existing = frappe.get_all(
-        "Booking",
-        filters={
-            "staff": staff,
-            "booking_date": day,
-            "status": ["not in", list(CANCELLED_STATES)],
-        },
-        fields=["start_time", "end_time"],
-    )
-    busy = [(_time_to_minutes(b.start_time), _time_to_minutes(b.end_time)) for b in existing]
-
-    starts = compute_available_slots(
-        working_hours=working_hours,
-        service_duration_min=int(service_doc.duration_minutes),
-        existing_bookings=busy,
-        slot_buffer_min=slot_buffer,
-    )
+    if staff and staff.strip():
+        # Single-staff path: exact per-staff availability (unchanged behavior).
+        if not frappe.db.exists("Staff Member", staff):
+            frappe.throw(_("Staff member not found: {0}").format(staff))
+        starts = _slots_for_staff(staff, service_doc, day, weekday, slot_buffer)
+    else:
+        # Empty staff: union of slot starts across all active staff members.
+        active_staff = frappe.get_all(
+            "Staff Member", filters={"active": 1}, pluck="name"
+        )
+        starts = sorted({
+            m
+            for s in active_staff
+            for m in _slots_for_staff(s, service_doc, day, weekday, slot_buffer)
+        })
 
     # Format for the wire: HH:MM string + full ISO datetime.
     out = []
@@ -100,6 +90,43 @@ def get_available_slots(staff: str, service: str, date: str) -> list:
 
 
 # ---------- internal helpers ----------
+
+def _slots_for_staff(staff_name: str, service_doc, day, weekday: str, slot_buffer: int) -> list:
+    """Compute the available slot start-minutes for ONE staff member.
+
+    Returns [] when the staff member is inactive, has no working hours on that
+    weekday, or the service does not fit into the working window.
+    """
+    staff_doc = frappe.get_doc("Staff Member", staff_name)
+    if not staff_doc.active:
+        return []
+
+    working_hours = [
+        (row.weekday, _time_to_minutes(row.start_time), _time_to_minutes(row.end_time))
+        for row in staff_doc.working_hours
+        if row.weekday == weekday
+    ]
+    if not working_hours:
+        return []
+
+    existing = frappe.get_all(
+        "Booking",
+        filters={
+            "staff": staff_name,
+            "booking_date": day,
+            "status": ["not in", list(CANCELLED_STATES)],
+        },
+        fields=["start_time", "end_time"],
+    )
+    busy = [(_time_to_minutes(b.start_time), _time_to_minutes(b.end_time)) for b in existing]
+
+    return compute_available_slots(
+        working_hours=working_hours,
+        service_duration_min=int(service_doc.duration_minutes),
+        existing_bookings=busy,
+        slot_buffer_min=slot_buffer,
+    )
+
 
 def _time_to_minutes(t) -> int:
     """Frappe `Time` value comes in as a `datetime.time`, `datetime.timedelta`

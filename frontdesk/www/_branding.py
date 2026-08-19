@@ -36,6 +36,18 @@ VERTICAL_LOOKS = {
     "Other": {"preset": "Slate", "ar_font": "Noto Naskh Arabic", "layout": "Modern (Card & Booking)"},
 }
 
+# Per-vertical booking-wizard FLOW — which steps each industry runs and in
+# what order. 'staff' steps are skipped entirely for verticals that don't
+# need a staff pick (Spa, Other).
+VERTICAL_FLOWS = {
+    "Barbershop": ["staff", "service", "time", "details"],  # barber first — regulars follow their barber
+    "Salon": ["service", "staff", "time", "details"],  # service first, then stylist
+    "Clinic": ["department", "service", "staff", "time", "details"],  # department first (dermatology etc), then service, then doctor
+    "Spa": ["service", "time", "details"],  # no staff pick — treatment then time
+    "Nail Studio": ["service", "staff", "time", "details"],  # service first, then artist
+    "Other": ["service", "time", "details"],  # no staff pick — simplest
+}
+
 HOW_DEFAULTS = [
     ("Pick Your Service", "Browse our services and pick the one that suits you."),
     ("Choose a Time", "See real-time availability and lock in your slot in seconds."),
@@ -70,6 +82,7 @@ def get_branding() -> dict:
     vertical = bs.get("vertical") or "Barbershop"
     vd = VERTICAL_DEFAULTS.get(vertical, VERTICAL_DEFAULTS["Other"])
     vl = VERTICAL_LOOKS.get(vertical, VERTICAL_LOOKS["Other"])
+    vf = VERTICAL_FLOWS.get(vertical, VERTICAL_FLOWS["Other"])
 
     # Industry default look: each vertical has its own theme preset, Arabic
     # font and layout — Business Settings appearance fields override.
@@ -135,6 +148,7 @@ def get_branding() -> dict:
         "primary_color": theme["light"]["primary"],
         "accent_color": theme["light"]["accent"],
         "vertical": vertical,
+        "flow": vf,
         # -- appearance (Back House structure: colors / typography / layout) -
         "theme": theme,
         "theme_mode": theme_mode,  # 'light' | 'dark' | 'auto'

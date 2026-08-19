@@ -432,6 +432,7 @@
 	<script id="data-staff" type="application/json">{{ staff_list | tojson }}</script>
 	<script id="data-services" type="application/json">{{ services | tojson }}</script>
 	<script id="data-business" type="application/json">{{ business | tojson }}</script>
+	<script id="data-flow" type="application/json">{{ business.flow | tojson }}</script>
 
 	<!-- Frappe web bundle (provides window.frappe + frappe.call) -->
 	<script src="/assets/frappe/dist/js/frappe-web.bundle.js" defer></script>
@@ -449,11 +450,15 @@
 		var STAFF = readJSON('data-staff');
 		var SERVICES = readJSON('data-services');
 		var BUSINESS = readJSON('data-business');
+		var FLOW = readJSON('data-flow');
+		if (!FLOW || !FLOW.length) FLOW = ['staff', 'service', 'time', 'details'];
 
 		// ---- State ----
 		var state = {
-			step: 1,
+			step: 0,
+			department: null,   // department key (Clinic flow)
 			staff: null,        // staff object
+			noStaffPref: false, // "No preference" chosen — auto-assign
 			service: null,      // service object
 			date: null,         // YYYY-MM-DD
 			slot: null,         // "HH:MM"
@@ -461,7 +466,7 @@
 			phone: '',
 			bookingResult: null
 		};
-		var TOTAL_STEPS = 4;
+		var TOTAL_STEPS = FLOW.length;
 
 		// ---- DOM refs ----
 		var appEl = document.getElementById('app');
@@ -548,16 +553,25 @@
 		// ---- Renderers ----
 		function renderProgress() {
 			var pips = progressEl.querySelectorAll('.pip');
-			for (var i = 0; i < pips.length; i++) {
-				var s = Number(pips[i].getAttribute('data-step'));
-				pips[i].classList.remove('done', 'current');
-				if (s < state.step) pips[i].classList.add('done');
-				else if (s === state.step) pips[i].classList.add('current');
+			if (pips.length !== FLOW.length) {
+				progressEl.innerHTML = '';
+				for (var p = 0; p < FLOW.length; p++) {
+					var pip = document.createElement('div');
+					pip.className = 'pip';
+					pip.setAttribute('data-step', p + 1);
+					progressEl.appendChild(pip);
+				}
+				pips = progressEl.querySelectorAll('.pip');
 			}
-			if (state.step === 5) {
+			for (var i = 0; i < pips.length; i++) {
+				pips[i].classList.remove('done', 'current');
+				if (i < state.step) pips[i].classList.add('done');
+				else if (i === state.step) pips[i].classList.add('current');
+			}
+			if (state.step >= FLOW.length) {
 				stepLabelEl.textContent = 'Confirmed';
 			} else {
-				stepLabelEl.textContent = 'Step ' + state.step + ' of ' + TOTAL_STEPS;
+				stepLabelEl.textContent = 'Step ' + (state.step + 1) + ' of ' + FLOW.length;
 			}
 		}
 
@@ -575,15 +589,21 @@
 			btnRowEl.style.display = 'flex';
 			backBtn.style.display = 'none';
 			nextBtn.textContent = 'Next';
-			nextBtn.disabled = !state.staff;
+			nextBtn.disabled = !(state.staff || state.noStaffPref);
 
 			if (!STAFF.length) {
-				renderEmpty('No barbers available', 'Please check back later or contact us directly.');
+				renderEmpty('No ' + (BUSINESS.staff_label_plural || 'staff') + ' available', 'Please check back later or contact us directly.');
 				return;
 			}
 
-			var html = '<h2 class="step-title">Choose your barber</h2>';
-			html += '<div class="grid">';
+			var label = escapeHTML(BUSINESS.staff_label || 'staff');
+			var html = '<h2 class="step-title">Choose your ' + label + '</h2>';
+			html += '<div class="grid">'
+				+ '<div class="card' + (state.noStaffPref ? ' selected' : '') + '" data-nopref="1">'
+				+ '<div class="avatar">✦</div>'
+				+ '<div class="name">No preference</div>'
+				+ '<div class="bio">Assign the first available ' + label + '</div>'
+				+ '</div>';
 			for (var i = 0; i < STAFF.length; i++) {
 				var s = STAFF[i];
 				var selected = state.staff && state.staff.name === s.name;
@@ -602,9 +622,62 @@
 			var cards = appEl.querySelectorAll('.card');
 			for (var j = 0; j < cards.length; j++) {
 				cards[j].addEventListener('click', function() {
-					var name = this.getAttribute('data-staff');
-					state.staff = STAFF.filter(function(x) { return x.name === name; })[0] || null;
+					var np = this.getAttribute('data-nopref');
+					if (np) {
+						state.staff = null;
+						state.noStaffPref = true;
+					} else {
+						var name = this.getAttribute('data-staff');
+						state.staff = STAFF.filter(function(x) { return x.name === name; })[0] || null;
+						state.noStaffPref = false;
+					}
 					renderStep1();
+				});
+			}
+		}
+
+		function renderStepDept() {
+			renderProgress();
+			btnRowEl.style.display = 'flex';
+			backBtn.style.display = 'none';
+			nextBtn.textContent = 'Next';
+			nextBtn.disabled = !state.department;
+
+			// Distinct departments from the services that actually have one.
+			var depts = [];
+			var seen = {};
+			for (var i = 0; i < SERVICES.length; i++) {
+				var d = SERVICES[i].department;
+				if (d && !seen[d]) { seen[d] = 1; depts.push(d); }
+			}
+			if (!depts.length) {
+				// No departments configured — fall through to service pick.
+				state.department = null;
+				nextBtn.disabled = false;
+				var html = '<h2 class="step-title">Choose a department</h2>'
+					+ '<div class="empty">No departments available.</div>';
+				appEl.innerHTML = html;
+				return;
+			}
+
+			var html = '<h2 class="step-title">Choose a department</h2>';
+			html += '<div class="grid">';
+			for (var i = 0; i < depts.length; i++) {
+				var d = depts[i];
+				var selected = state.department === d;
+				html += '<div class="card' + (selected ? ' selected' : '') + '" data-dept="' + escapeHTML(d) + '">'
+					+ '<div class="avatar">' + escapeHTML(initials(d)) + '</div>'
+					+ '<div class="name">' + escapeHTML(d) + '</div>'
+					+ '</div>';
+			}
+			html += '</div>';
+			appEl.innerHTML = html;
+
+			var cards = appEl.querySelectorAll('.card');
+			for (var j = 0; j < cards.length; j++) {
+				cards[j].addEventListener('click', function() {
+					state.department = this.getAttribute('data-dept');
+					renderStepDept();
 				});
 			}
 		}
@@ -616,15 +689,21 @@
 			nextBtn.textContent = 'Next';
 			nextBtn.disabled = !state.service;
 
-			if (!SERVICES.length) {
+			// Department filter (Clinic flow): show only services in the
+			// chosen department. If no department step, show everything.
+			var pool = SERVICES;
+			if (state.department) {
+				pool = SERVICES.filter(function(s) { return s.department === state.department; });
+			}
+			if (!pool.length) {
 				renderEmpty('No services available', 'Please check back later or contact us directly.');
 				return;
 			}
 
 			var html = '<h2 class="step-title">Choose a service</h2>';
 			html += '<div class="svc-list">';
-			for (var i = 0; i < SERVICES.length; i++) {
-				var s = SERVICES[i];
+			for (var i = 0; i < pool.length; i++) {
+				var s = pool[i];
 				var selected = state.service && state.service.name === s.name;
 				var priceLabel = (s.price !== null && s.price !== undefined && s.price !== '')
 					? currency(s.price)
@@ -688,7 +767,7 @@
 					return;
 				}
 				fc('frontdesk.api.availability.get_available_slots', {
-					staff: state.staff.name,
+					staff: (state.staff ? state.staff.name : ''),
 					service: state.service.name,
 					date: date
 				}).then(function(slots) {
@@ -718,6 +797,11 @@
 			});
 		}
 
+		function staffLabel() {
+			var label = (BUSINESS && BUSINESS.staff_label) || 'Barber';
+			return label.charAt(0).toUpperCase() + label.slice(1);
+		}
+
 		function renderStep4() {
 			renderProgress();
 			btnRowEl.style.display = 'flex';
@@ -732,7 +816,9 @@
 				: '';
 			var html = '<h2 class="step-title">Your details</h2>';
 			html += '<div class="summary">'
-				+ '<div><span>Barber</span><span>' + escapeHTML(state.staff.staff_name) + '</span></div>'
+				+ (state.department ? '<div><span>Department</span><span>' + escapeHTML(state.department) + '</span></div>' : '')
+				+ (state.staff ? '<div><span>' + escapeHTML(staffLabel()) + '</span><span>' + escapeHTML(state.staff.staff_name) + '</span></div>' : '')
+				+ (state.noStaffPref ? '<div><span>' + escapeHTML(staffLabel()) + '</span><span>No preference</span></div>' : '')
 				+ '<div><span>Service</span><span>' + summarySvc + '</span></div>'
 				+ '<div><span>Date</span><span>' + escapeHTML(formatDate(state.date)) + '</span></div>'
 				+ '<div><span>Time</span><span>' + escapeHTML(formatTime(state.slot)) + '</span></div>'
@@ -773,7 +859,7 @@
 				+ '<h3>Booking confirmed</h3>'
 				+ '<div class="sub">Reference ' + escapeHTML(b.booking || '') + '</div>'
 				+ '<div class="details">'
-				+ '<div><span>Barber</span><span>' + escapeHTML(b.staff || '') + '</span></div>'
+				+ (b.staff ? '<div><span>' + escapeHTML(staffLabel()) + '</span><span>' + escapeHTML(b.staff) + '</span></div>' : '')
 				+ '<div><span>Service</span><span>' + escapeHTML(b.service || '') + '</span></div>'
 				+ '<div><span>Date</span><span>' + escapeHTML(formatDate(b.date)) + '</span></div>'
 				+ '<div><span>Time</span><span>' + escapeHTML(formatTime(b.time)) + '</span></div>'
@@ -786,36 +872,38 @@
 		function render() {
 			nextBtn.classList.remove('btn');
 			nextBtn.classList.add('btn-primary');
-			if (state.step === 1) renderStep1();
-			else if (state.step === 2) renderStep2();
-			else if (state.step === 3) renderStep3();
-			else if (state.step === 4) renderStep4();
-			else if (state.step === 5) renderStep5();
+			var key = FLOW[state.step];
+			if (key === 'staff') renderStep1();
+			else if (key === 'department') renderStepDept();
+			else if (key === 'service') renderStep2();
+			else if (key === 'time') renderStep3();
+			else if (key === 'details') renderStep4();
+			else if (state.step >= FLOW.length) renderStep5();
 		}
 
 		// ---- Navigation ----
 		function goNext() {
-			if (state.step === 5) {
+			if (state.step >= FLOW.length) {
 				// reset wizard
 				state = {
-					step: 1, staff: null, service: null,
+					step: 0, department: null, staff: null, noStaffPref: false, service: null,
 					date: null, slot: null, name: '', phone: '', bookingResult: null
 				};
 				render();
 				return;
 			}
-			if (state.step === 4) {
+			if (FLOW[state.step] === 'details') {
 				submitBooking();
 				return;
 			}
-			if (state.step < TOTAL_STEPS) {
+			if (state.step < FLOW.length) {
 				state.step++;
 				render();
 				window.scrollTo({ top: 0, behavior: 'smooth' });
 			}
 		}
 		function goBack() {
-			if (state.step > 1 && state.step < 5) {
+			if (state.step > 0 && state.step < FLOW.length) {
 				state.step--;
 				render();
 				window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -836,7 +924,7 @@
 					return;
 				}
 				fc('frontdesk.api.bookings.create_web_booking', {
-					staff: state.staff.name,
+					staff: (state.staff ? state.staff.name : ''),
 					service: state.service.name,
 					booking_date: state.date,
 					start_time: state.slot,
@@ -844,7 +932,7 @@
 					customer_name: state.name
 				}).then(function(res) {
 					state.bookingResult = res;
-					state.step = 5;
+					state.step = FLOW.length;
 					render();
 					window.scrollTo({ top: 0, behavior: 'smooth' });
 				}).catch(function(e) {
