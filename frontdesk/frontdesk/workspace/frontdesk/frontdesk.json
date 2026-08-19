@@ -1,0 +1,206 @@
+{
+ "app": "frontdesk",
+ "charts": [],
+ "content": "[{\"id\": \"fd_h1\", \"type\": \"header\", \"data\": {\"text\": \"Service Business Front Desk\"}}, {\"id\": \"fd_sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Booking\", \"col\": 3}}, {\"id\": \"fd_sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Customer Profile\", \"col\": 3}}, {\"id\": \"fd_sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Staff Member\", \"col\": 3}}, {\"id\": \"fd_sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Services\", \"col\": 3}}, {\"id\": \"fd_sc5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Business Settings\", \"col\": 6}}, {\"id\": \"fd_c1\", \"type\": \"card\", \"data\": {\"card_name\": \"Operations\", \"col\": 4}}, {\"id\": \"fd_c2\", \"type\": \"card\", \"data\": {\"card_name\": \"CRM & Clients\", \"col\": 4}}, {\"id\": \"fd_c3\", \"type\": \"card\", \"data\": {\"card_name\": \"Team & Services\", \"col\": 4}}, {\"id\": \"fd_c4\", \"type\": \"card\", \"data\": {\"card_name\": \"Settings & Setup\", \"col\": 4}}]",
+ "creation": "2026-07-07 10:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "calendar-check",
+ "idx": 1,
+ "is_hidden": 0,
+ "label": "FrontDesk",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Operations",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bookings",
+   "link_count": 0,
+   "link_to": "Booking",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CRM & Clients",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Profile",
+   "link_count": 0,
+   "link_to": "Customer Profile",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Loyalty Program",
+   "link_count": 0,
+   "link_to": "Loyalty Program",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Loyalty Point Entry",
+   "link_count": 0,
+   "link_to": "Loyalty Point Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Team & Services",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Staff Member",
+   "link_count": 0,
+   "link_to": "Staff Member",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Services (Items)",
+   "link_count": 0,
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Settings & Setup",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Settings",
+   "link_count": 0,
+   "link_to": "Business Settings",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Invoice",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Role Profile",
+   "link_count": 0,
+   "link_to": "Role Profile",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-07-07 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Frontdesk",
+ "name": "FrontDesk",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Frontdesk Manager"
+  },
+  {
+   "role": "Frontdesk User"
+  }
+ ],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "icon": "calendar",
+   "label": "Booking",
+   "link_to": "Booking",
+   "type": "DocType"
+  },
+  {
+   "icon": "users",
+   "label": "Customer Profile",
+   "link_to": "Customer Profile",
+   "type": "DocType"
+  },
+  {
+   "icon": "user-check",
+   "label": "Staff Member",
+   "link_to": "Staff Member",
+   "type": "DocType"
+  },
+  {
+   "icon": "tag",
+   "label": "Services",
+   "link_to": "Item",
+   "type": "DocType"
+  },
+  {
+   "icon": "settings",
+   "label": "Business Settings",
+   "link_to": "Business Settings",
+   "type": "DocType"
+  }
+ ],
+ "title": "FrontDesk",
+ "type": "Workspace"
+}

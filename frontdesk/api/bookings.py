@@ -135,3 +135,47 @@ def _auto_assign_staff(service, booking_date, start_time):
 			return staff
 
 	frappe.throw("No staff member is available at that time. Please pick a different slot.")
+
+
+@frappe.whitelist()
+def get_booking_events(start, end, filters=None):
+	"""Calendar event source for Booking."""
+	import json
+	from frappe.utils import getdate
+
+	if isinstance(filters, str):
+		filters = json.loads(filters)
+	filters = filters or {}
+
+	booking_filters = [
+		["booking_date", ">=", getdate(start)],
+		["booking_date", "<=", getdate(end)],
+	]
+	for k, v in filters.items():
+		if v:
+			booking_filters.append([k, "=", v])
+
+	bookings = frappe.get_all(
+		"Booking",
+		filters=booking_filters,
+		fields=["name", "customer", "staff", "service", "booking_date", "start_time", "end_time", "status"],
+	)
+
+	events = []
+	for b in bookings:
+		c_name = frappe.db.get_value("Customer Profile", b.customer, "customer_name") or b.customer
+		s_name = frappe.db.get_value("Staff Member", b.staff, "staff_name") or b.staff
+		i_name = frappe.db.get_value("Item", b.service, "item_name") or b.service
+		title = f"{c_name} ({s_name} - {i_name})"
+
+		st_str = str(b.start_time)[:5] if b.start_time else "09:00"
+		et_str = str(b.end_time)[:5] if b.end_time else "10:00"
+		events.append({
+			"name": b.name,
+			"title": title,
+			"start": f"{b.booking_date} {st_str}:00",
+			"end": f"{b.booking_date} {et_str}:00",
+			"status": b.status,
+			"allDay": 0,
+		})
+	return events
