@@ -27,6 +27,30 @@ def to_minutes(t) -> int:
     return t.hour * 60 + t.minute + (1 if t.second >= 30 else 0)
 
 
+def normalize_time(t):
+    """Return a datetime.time for any accepted time-ish value, or None.
+
+    Frappe Time fields arrive as THREE different types depending on access
+    path (str from API args, timedelta from db.sql/get_all, time from get_doc)
+    — never compare raw values. Tolerates fractional seconds ('14:16:57.678').
+    """
+    if not t:
+        return None
+    if isinstance(t, time):
+        return t
+    if isinstance(t, timedelta):
+        total = int(t.total_seconds()) % 86400
+        return time(hour=total // 3600, minute=(total % 3600) // 60, second=total % 60)
+    if isinstance(t, str):
+        parts = t.split(":")
+        sec = parts[2].split(".")[0] if len(parts) > 2 else "0"
+        return time(hour=int(parts[0]), minute=int(parts[1]), second=int(sec))
+    if isinstance(t, (int, float)):
+        total = int(t) % 1440
+        return time(hour=total // 60, minute=total % 60)
+    return t
+
+
 def times_overlap(a_start, a_end, b_start, b_end) -> bool:
     """True iff half-open intervals [a_start, a_end) and [b_start, b_end) share any minute.
 

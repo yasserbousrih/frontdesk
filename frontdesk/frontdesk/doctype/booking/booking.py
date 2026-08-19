@@ -21,10 +21,17 @@ class Booking(Document):
 
     def validate(self):
         self._snapshot_service_fields()
+        self._normalize_times()
         self._compute_end_time()
         self._enforce_timing()
         self._enforce_staff_active()
         self._enforce_no_overlap()
+
+    def _normalize_times(self):
+        """Coerce start/end to datetime.time regardless of how they arrived
+        (API str, DB timedelta, or doc time) — raw cross-type compares raise."""
+        self.start_time = overlap.normalize_time(self.start_time)
+        self.end_time = overlap.normalize_time(self.end_time)
 
     def _compute_end_time(self):
         """Derive end_time from start_time + service duration if not set.

@@ -72,6 +72,8 @@ def create_invoice(
         "company": frappe.db.get_single_value(
             "Global Defaults", "default_company"
         ),
+        "is_pos": 1,  # POS invoice — payments table is applied at submit,
+        #             # recording the payment (no separate Payment Entry).
         "items": _build_items(
             booking.service, booking.price, staff_member,
             extra_items, tip,
@@ -85,11 +87,27 @@ def create_invoice(
     _attach_loyalty(si)
     si.insert(ignore_permissions=True)
 
-    # Payment details for receipt printing (epson_middleware reads this table)
+    # Payment details for receipt printing (epson_middleware reads this table).
+    # POS payments need an explicit account — Mode of Payment carries no
+    # company default on a fresh setup wizard, which 500s the GL entry
+    # ("Account is required"). Resolve from the company's cash account.
     mode_map = {"Cash": "Cash", "Card": "Credit Card", "Transfer": "Bank Transfer"}
+    company = si.company
+    mop_name = mode_map.get(payment_method, "Cash")
+    account = frappe.db.get_value(
+        "Mode of Payment Account", {"parent": mop_name, "company": company}, "default_account"
+    )
+    if not account:
+        account = frappe.db.get_value("Company", company, "default_cash_account")
+    if not account:
+        frappe.throw(
+            f"No payment account resolvable for {mop_name} / {company} — "
+            "set the Mode of Payment default account or the company cash account."
+        )
     si.append("payments", {
-        "mode_of_payment": mode_map.get(payment_method, "Cash"),
+        "mode_of_payment": mop_name,
         "amount": si.grand_total,
+        "account": account,
     })
 
     si.submit()
@@ -154,12 +172,35 @@ def _ensure_customer(customer_profile):
     cust = frappe.get_doc({
         "doctype": "Customer",
         "customer_name": cp.customer_name,
-        "customer_group": "All Customer Groups",
-        "territory": "All Territories",
+        "customer_group": _leaf_customer_group(),
+        "territory": _leaf_teritory(),
     }).insert(ignore_permissions=True)
     cp.db_set("erpnext_customer", cust.name)
     _enroll_loyalty(cust.name)
     return cust.name
+
+
+def _leaf_customer_group() -> str:
+    """ERPNext rejects group-type Customer Groups on Customer — pick a leaf
+    (Individual by default, any non-group fallback)."""
+    if frappe.db.exists("Customer Group", "Individual"):
+        return "Individual"
+    leaf = frappe.db.get_value(
+        "Customer Group", {"is_group": 0}, "name", order_by="lft"
+    )
+    if not leaf:
+        frappe.throw("No non-group Customer Group exists — create one (e.g. Individual).")
+    return leaf
+
+
+def _leaf_teritory() -> str:
+    """Same for Territory — group nodes are rejected on Customer."""
+    if frappe.db.exists("Territory", "Qatar"):
+        return "Qatar"
+    leaf = frappe.db.get_value("Territory", {"is_group": 0}, "name", order_by="lft")
+    if not leaf:
+        frappe.throw("No non-group Territory exists — create one first.")
+    return leaf
 
 
 def _ensure_tip_item():
