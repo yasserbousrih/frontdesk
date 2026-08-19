@@ -26,7 +26,7 @@ def create_web_booking(staff, service, booking_date, start_time, phone, customer
 
 	if not frappe.db.exists("Staff Member", staff):
 		frappe.throw(f"Invalid staff member: {staff}")
-	if not frappe.db.exists("Service", service):
+	if not frappe.db.exists("Item", service):
 		frappe.throw(f"Invalid service: {service}")
 
 	from frappe.utils import getdate, today as today_date
@@ -64,7 +64,7 @@ def create_web_booking(staff, service, booking_date, start_time, phone, customer
 
 	return {
 		"booking": booking.name,
-		"service": frappe.db.get_value("Service", service, "service_name"),
+		"service": frappe.db.get_value("Item", service, "item_name"),
 		"staff": frappe.db.get_value("Staff Member", staff, "staff_name"),
 		"date": str(booking.booking_date),
 		"time": str(booking.start_time)[:5],

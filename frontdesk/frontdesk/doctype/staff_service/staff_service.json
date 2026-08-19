@@ -11,8 +11,9 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Service",
-   "options": "Service",
-   "reqd": 1
+   "options": "Item",
+   "reqd": 1,
+   "filters": [["item_group", "=", "Services"]]
   }
  ],
  "index_web_pages_for_search": 1,

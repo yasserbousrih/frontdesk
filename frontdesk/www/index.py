@@ -25,25 +25,25 @@ def get_context(context):
     gallery = []
     try:
         rows = frappe.get_all(
-            "Service",
-            fields=["service_name", "category", "duration_minutes", "price", "description", "image"],
-            filters={"active": 1},
+            "Item",
+            fields=["name", "item_name", "service_category", "duration_minutes", "standard_rate", "description", "image"],
+            filters={"item_group": "Services", "disabled": 0, "show_on_homepage": 1},
             order_by="modified desc",
             limit_page_length=b["services_count"],
         )
         for r in rows:
             services.append({
-                "name": r.service_name,
-                "category": r.category or "",
+                "name": r.item_name,
+                "category": r.service_category or "",
                 "duration_minutes": r.duration_minutes,
-                "price": r.price,
+                "price": r.standard_rate,
                 "description": r.description or "",
                 "image": r.image or "",
             })
             if r.image:
                 gallery.append(r.image)
     except Exception:
-        frappe.log_error("Service fetch failed", "FrontDesk Home")
+        frappe.log_error("Item fetch failed", "FrontDesk Home")
 
     context.business = b
     context.services = services

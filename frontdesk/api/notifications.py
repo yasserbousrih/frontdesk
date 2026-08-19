@@ -20,7 +20,7 @@ def send_booking_confirmation(doc, method):
         return
 
     staff_name = frappe.db.get_value("Staff Member", doc.staff, "staff_name")
-    service_name = frappe.db.get_value("Service", doc.service, "service_name")
+    service_name = frappe.db.get_value("Item", doc.service, "item_name")
 
     message = (
         f"✅ Booking Confirmed\n\n"

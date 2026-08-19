@@ -45,8 +45,8 @@ def get_context(context):
             for r in frappe.get_all("Customer Profile", filters={"name": ["in", list(customer_ids)]}, fields=["name", "customer_name"])
         }
         service_names = {
-            r["name"]: r["service_name"]
-            for r in frappe.get_all("Service", filters={"name": ["in", list(service_ids)]}, fields=["name", "service_name"])
+            r["name"]: r["item_name"]
+            for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name"])
         }
         staff_names = {
             r["name"]: r["staff_name"]

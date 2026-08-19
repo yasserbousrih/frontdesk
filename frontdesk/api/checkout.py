@@ -105,10 +105,9 @@ def _build_items(service_name, service_price, staff_member, extra_items, tip):
     """Return the list of Sales Invoice Item dicts."""
     items = []
 
-    # 1. Primary service from the booking
-    item_code = _ensure_item(service_name, service_price)
+    # 1. Primary service from the booking — the Item code IS the service name
     items.append({
-        "item_code": item_code,
+        "item_code": service_name,
         "qty": 1,
         "rate": service_price,
         "staff_member": staff_member,
@@ -122,14 +121,7 @@ def _build_items(service_name, service_price, staff_member, extra_items, tip):
         qty = flt(ei.get("qty", 1))
         rate = flt(ei.get("rate", 0))
         if rate <= 0:
-            svc = frappe.db.get_value("Service", code, "price")
-            if svc:
-                rate = flt(svc)
-            else:
-                rate = flt(
-                    frappe.db.get_value("Item", code, "standard_rate") or 0
-                )
-        _ensure_item(code, rate if rate else None)
+            rate = flt(frappe.db.get_value("Item", code, "standard_rate") or 0)
         items.append({
             "item_code": code,
             "qty": qty,
@@ -168,37 +160,6 @@ def _ensure_customer(customer_profile):
     cp.db_set("erpnext_customer", cust.name)
     _enroll_loyalty(cust.name)
     return cust.name
-
-
-def _ensure_item(service_name, standard_rate=None):
-    """Get or create an ERPNext Item for a Frontdesk Service.
-
-    Uses the Service name as the item code. Items are non‑stock.
-    If ``standard_rate`` is provided, the Item's rate is updated.
-    """
-    if frappe.db.exists("Item", service_name):
-        if standard_rate is not None:
-            frappe.db.set_value(
-                "Item", service_name, "standard_rate", standard_rate
-            )
-        return service_name
-
-    svc = frappe.db.get_value(
-        "Service", service_name, ["service_name", "price"]
-    )
-    svc_name = svc[0] if svc else service_name
-    svc_price = standard_rate if standard_rate else (svc[1] if svc else 0)
-
-    item = frappe.get_doc({
-        "doctype": "Item",
-        "item_code": service_name,
-        "item_name": svc_name,
-        "stock_uom": "Nos",
-        "is_stock_item": 0,
-        "item_group": "Services",
-        "standard_rate": svc_price,
-    }).insert(ignore_permissions=True)
-    return item.name
 
 
 def _ensure_tip_item():

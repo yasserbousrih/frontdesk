@@ -49,8 +49,8 @@ def get_board_data():
         for r in frappe.get_all("Customer Profile", filters={"name": ["in", list(customer_ids)]}, fields=["name", "customer_name"])
     }
     service_names = {
-        r["name"]: r["service_name"]
-        for r in frappe.get_all("Service", filters={"name": ["in", list(service_ids)]}, fields=["name", "service_name"])
+        r["name"]: r["item_name"]
+        for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name"])
     }
     # Group by staff
     bookings_by_staff = {}
@@ -68,13 +68,13 @@ def get_board_data():
 def add_walkin(staff, service):
     """Create a walk-in booking starting now.
 
-    The Booking controller snapshots duration + price from the Service and
+    The Booking controller snapshots duration + price from the Item and
     enforces overlap rules, so a walk-in that collides with an existing
     booking will raise a ``ValidationError`` to the caller.
 
     Args:
         staff: Staff Member name.
-        service: Service name.
+        service: Item name (services-as-items).
 
     Returns:
         str: name of the newly-created Booking.
@@ -82,7 +82,7 @@ def add_walkin(staff, service):
     # Validate inputs early for clearer error messages than the doc-level checks.
     if not frappe.db.exists("Staff Member", staff):
         frappe.throw(f"Staff Member not found: {staff}")
-    if not frappe.db.exists("Service", service):
+    if not frappe.db.exists("Item", service):
         frappe.throw(f"Service not found: {service}")
 
     booking = frappe.get_doc({

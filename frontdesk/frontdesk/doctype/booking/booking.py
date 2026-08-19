@@ -13,7 +13,7 @@ class Booking(Document):
 
     The controller:
       * snapshots the service duration + price onto the booking so historical
-        records survive changes to the Service / Staff Member rows.
+        records survive changes to the Item / Staff Member rows.
       * validates that the staff member is active and works on the booking day.
       * rejects overlaps with other non-cancelled bookings for the same staff
         member (the same guarantee `get_available_slots` honors).
@@ -89,11 +89,11 @@ class Booking(Document):
                 )
 
     def _snapshot_service_fields(self):
-        """Copy duration + price from Service if not already set on the booking."""
+        """Copy duration + price from Item if not already set on the booking."""
         if not self.service:
             return
-        svc = frappe.get_doc("Service", self.service)
+        svc = frappe.get_doc("Item", self.service)
         if not self.duration_minutes:
             self.duration_minutes = svc.duration_minutes
         if self.price is None:
-            self.price = svc.price
+            self.price = svc.standard_rate

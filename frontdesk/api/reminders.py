@@ -56,7 +56,7 @@ def _send_reminder(booking, bs):
         return True  # no phone to send to — mark as handled
 
     staff_name = frappe.db.get_value("Staff Member", booking["staff"], "staff_name")
-    service_name = frappe.db.get_value("Service", booking["service"], "service_name")
+    service_name = frappe.db.get_value("Item", booking["service"], "item_name")
     time_str = str(booking["start_time"])[:5]
 
     message = (

@@ -31,7 +31,7 @@ def send_post_paid_message(doc):
         return True  # no phone to send to — mark as handled
 
     staff_name = frappe.db.get_value("Staff Member", doc.staff, "staff_name")
-    service_name = frappe.db.get_value("Service", doc.service, "service_name")
+    service_name = frappe.db.get_value("Item", doc.service, "item_name")
     book_link = frappe.utils.get_url("/book")
     review_link = bs.get("google_review_url") or ""
 

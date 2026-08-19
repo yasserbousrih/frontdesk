@@ -25,7 +25,7 @@ def get_available_slots(staff: str, service: str, date: str) -> list:
 
     Args:
         staff: name of the Staff Member DocType record.
-        service: name of the Service DocType record.
+        service: name of the Item (services-as-items) record.
         date: ISO date string (YYYY-MM-DD).
 
     Returns:
@@ -40,7 +40,7 @@ def get_available_slots(staff: str, service: str, date: str) -> list:
     if not frappe.db.exists("Staff Member", staff):
         frappe.throw(_("Staff member not found: {0}").format(staff))
 
-    if not frappe.db.exists("Service", service):
+    if not frappe.db.exists("Item", service):
         frappe.throw(_("Service not found: {0}").format(service))
 
     try:
@@ -52,8 +52,8 @@ def get_available_slots(staff: str, service: str, date: str) -> list:
     if not staff_doc.active:
         return []
 
-    service_doc = frappe.get_doc("Service", service)
-    if not service_doc.active:
+    service_doc = frappe.get_doc("Item", service)
+    if service_doc.disabled:
         return []
 
     weekday = day.strftime("%A")

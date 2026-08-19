@@ -84,16 +84,23 @@ def _seed_homepage_defaults():
         if changed:
             bs.save(ignore_permissions=True)
 
-        if frappe.db.count("Service") == 0:
+        if frappe.db.exists("DocType", "Item") and frappe.db.count(
+            "Item", filters={"item_group": "Services"}
+        ) == 0:
             for name, category, dur, price, desc in _SAMPLE_SERVICES:
                 frappe.get_doc({
-                    "doctype": "Service",
-                    "service_name": name,
-                    "category": category,
+                    "doctype": "Item",
+                    "item_code": name,
+                    "item_name": name,
+                    "item_group": "Services",
+                    "is_stock_item": 0,
+                    "stock_uom": "Nos",
+                    "standard_rate": price,
                     "duration_minutes": dur,
-                    "price": price,
+                    "service_category": category,
                     "description": desc,
-                    "active": 1,
+                    "show_on_homepage": 1,
+                    "disabled": 0,
                 }).insert(ignore_permissions=True)
     except Exception as e:
         frappe.log_error(f"Homepage seed failed: {e}", "FrontDesk Install")
@@ -122,7 +129,10 @@ def _ensure_custom_fields():
     """Create Custom Fields that FrontDesk needs on ERPNext doctypes.
 
     - Sales Invoice Item: ``staff_member`` — link to Staff Member for
-      commission tracking."""
+      commission tracking.
+    - Item: ``duration_minutes``, ``service_category``, ``show_on_homepage``
+      — services-as-items metadata used by the booking/availability engine
+      and the public homepage."""
     if not frappe.db.exists("DocType", "Sales Invoice"):
         return  # ERPNext not installed — nothing to patch
 
@@ -134,6 +144,30 @@ def _ensure_custom_fields():
         options="Staff Member",
         insert_after="item_name",
         read_only=1,
+    )
+
+    if not frappe.db.exists("DocType", "Item"):
+        return
+
+    _upsert_custom_field(
+        dt="Item",
+        fieldname="duration_minutes",
+        label="Duration (minutes)",
+        fieldtype="Int",
+        non_negative=1,
+    )
+    _upsert_custom_field(
+        dt="Item",
+        fieldname="service_category",
+        label="Service Category",
+        fieldtype="Data",
+    )
+    _upsert_custom_field(
+        dt="Item",
+        fieldname="show_on_homepage",
+        label="Show on Homepage",
+        fieldtype="Check",
+        default="1",
     )
 
 

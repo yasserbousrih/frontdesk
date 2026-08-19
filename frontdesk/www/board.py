@@ -53,8 +53,8 @@ def get_context(context):
         for r in frappe.get_all("Customer Profile", filters={"name": ["in", list(customer_ids)]}, fields=["name", "customer_name"])
     }
     service_names = {
-        r["name"]: r["service_name"]
-        for r in frappe.get_all("Service", filters={"name": ["in", list(service_ids)]}, fields=["name", "service_name"])
+        r["name"]: r["item_name"]
+        for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name"])
     }
 
     # Group by staff
@@ -74,12 +74,20 @@ def get_context(context):
     context.board_data = board_data
 
     # --- Services for the per-column "Add Walk-in" form ---
-    context.services = frappe.get_all(
-        "Service",
-        filters={"active": 1},
-        fields=["name", "service_name", "duration_minutes", "price"],
-        order_by="service_name",
-    )
+    context.services = [
+        {
+            "name": r["name"],
+            "service_name": r["item_name"],
+            "duration_minutes": r["duration_minutes"],
+            "price": r["standard_rate"],
+        }
+        for r in frappe.get_all(
+            "Item",
+            filters={"item_group": "Services", "disabled": 0},
+            fields=["name", "item_name", "duration_minutes", "standard_rate"],
+            order_by="item_name",
+        )
+    ]
 
     context.today = today_str
     context.no_cache = 1

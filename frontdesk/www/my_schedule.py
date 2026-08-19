@@ -43,8 +43,8 @@ def _get_bookings(staff, from_date, to_date):
         for r in frappe.get_all("Customer Profile", filters={"name": ["in", list(customer_ids)]}, fields=["name", "customer_name"])
     }
     service_names = {
-        r["name"]: r["service_name"]
-        for r in frappe.get_all("Service", filters={"name": ["in", list(service_ids)]}, fields=["name", "service_name"])
+        r["name"]: r["item_name"]
+        for r in frappe.get_all("Item", filters={"name": ["in", list(service_ids)]}, fields=["name", "item_name"])
     }
     for b in bookings:
         b.customer_name = customer_names.get(b.customer, "")

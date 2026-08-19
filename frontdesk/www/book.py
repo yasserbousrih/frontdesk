@@ -24,11 +24,21 @@ def get_context(context):
 	)
 
 	services = frappe.get_all(
-		"Service",
-		filters={"active": 1},
-		fields=["name", "service_name", "duration_minutes", "price", "description"],
-		order_by="service_name asc",
+		"Item",
+		filters={"item_group": "Services", "disabled": 0},
+		fields=["name", "item_name", "duration_minutes", "standard_rate", "description"],
+		order_by="item_name asc",
 	)
+	services = [
+		{
+			"name": r["name"],
+			"service_name": r["item_name"],
+			"duration_minutes": r["duration_minutes"],
+			"price": r["standard_rate"],
+			"description": r.get("description") or "",
+		}
+		for r in services
+	]
 
 	context.business = b
 	context.staff_list = staff_list
