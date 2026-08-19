@@ -10,6 +10,8 @@ Every page that renders a booking-site template should call
 
 import frappe
 
+from ._theme import FONT_URLS, resolve_theme
+
 # Per-vertical defaults for the homepage copy (mirrors the Back House
 # pattern: every string on the page is overridable from Business Settings,
 # and these only fill the gap until the owner customises them).
@@ -38,9 +40,49 @@ def get_branding() -> dict:
     ws = _safe_single("Website Settings") or {}
     bs = _safe_single("Business Settings") or {}
 
+    # LIVE PREVIEW: when ?preview_settings=<urlencoded JSON> is present,
+    # overlay those draft values on top so the page renders unsaved desk
+    # edits (Back House Website Settings desk preview button pattern).
+    pv = frappe.form_dict.get("preview_settings") or ""
+    if pv:
+        try:
+            import json as _json
+            overlay = _json.loads(pv)
+            for k, v in (overlay or {}).items():
+                if v is not None and v != "":
+                    bs[k] = v
+        except Exception:
+            frappe.log_error("Bad preview_settings param", "get_branding")
+
     business_name = bs.get("business_name") or ws.get("app_name") or "FrontDesk"
     vertical = bs.get("vertical") or "Barbershop"
     vd = VERTICAL_DEFAULTS.get(vertical, VERTICAL_DEFAULTS["Other"])
+
+    theme = resolve_theme(bs)
+
+    # Typography: Google Fonts for the body + heading (when a serif pair is
+    # chosen), base size, radius + shadow tokens, layout name.
+    font_family = bs.get("font_family") or "Inter"
+    heading_font = bs.get("heading_font") or "Same as Body"
+    font_urls = []
+    if FONT_URLS.get(font_family):
+        font_urls.append(FONT_URLS[font_family])
+    if heading_font.startswith("Serif (Playfair") and font_family != "Playfair Display":
+        font_urls.append("family=Playfair+Display:wght@600;700;800")
+    elif heading_font.startswith("Serif (Cormorant") and font_family != "Cormorant Garamond":
+        font_urls.append("family=Cormorant+Garamond:wght@500;600;700")
+    font_display = (
+        "'Playfair Display', Georgia, serif" if heading_font.startswith("Serif (Playfair")
+        else "'Cormorant Garamond', Georgia, serif" if heading_font.startswith("Serif (Cormorant")
+        else f"{font_family}, sans-serif"
+    )
+    font_size_base = bs.get("font_size_base") or "Normal (16px)"
+    radius_map = {"Sharp (0px)": "0px", "Soft (8px)": "8px", "Rounded (16px)": "16px", "Pill (999px)": "999px"}
+    shadow_map = {"None": "none", "Subtle": "0 2px 10px rgba(0,0,0,0.08)",
+                  "Medium": "0 6px 20px rgba(0,0,0,0.12)", "Strong": "0 12px 32px rgba(0,0,0,0.2)"}
+    layout_map = {"Minimal (Editorial)": "minimal", "Vibrant (Bold)": "vibrant"}
+    site_layout = bs.get("site_layout") or "Modern (Card & Booking)"
+    theme_mode = (bs.get("theme_mode") or "Light").strip().lower()
 
     # Section toggles: Check fields default to ON on a fresh site (the
     # Back House pattern — `setting_bool(bs, name, default)`).
@@ -67,9 +109,19 @@ def get_branding() -> dict:
         "copyright_text": ws.get("copyright") or f"© {business_name}",
         "head_html": ws.get("head_html") or "",
         # -- from Business Settings (no Website Settings equivalent) ----------
-        "primary_color": bs.get("primary_color") or "#1a1a2e",
-        "accent_color": bs.get("accent_color") or "#e94560",
+        "primary_color": theme["light"]["primary"],
+        "accent_color": theme["light"]["accent"],
         "vertical": vertical,
+        # -- appearance (Back House structure: colors / typography / layout) -
+        "theme": theme,
+        "theme_mode": theme_mode,  # 'light' | 'dark' | 'auto'
+        "font_family": font_family,
+        "font_urls": font_urls,
+        "font_display": font_display,
+        "font_size": "14px" if font_size_base.startswith("Small") else "18px" if font_size_base.startswith("Large") else "16px",
+        "radius": radius_map.get(bs.get("border_radius")) or "16px",
+        "shadow": shadow_map.get(bs.get("card_shadow")) or "0 2px 10px rgba(0,0,0,0.08)",
+        "site_layout": layout_map.get(site_layout) or "modern",  # 'modern' | 'minimal' | 'vibrant'
         # -- homepage copy (all overridable, defaults per vertical) -----------
         "hero_tagline": bs.get("hero_tagline") or vd["tagline"],
         "cta_label": bs.get("cta_label") or vd["cta"],

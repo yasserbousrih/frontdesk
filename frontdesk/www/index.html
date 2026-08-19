@@ -1,26 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ business.theme_mode }}">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<meta name="theme-color" content="{{ business.primary_color }}" />
+	<meta name="theme-color" content="{{ business.theme.light.primary }}" />
 	<title>{{ business.brand_name }}</title>
 	{{ business.head_html }}
+	{% if business.font_urls %}
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?{{ business.font_urls|join('&') }}&display=swap" rel="stylesheet">
+	{% endif %}
+	<script>
+		// restore the visitor's saved theme before first paint (no flash)
+		try { var _t = localStorage.getItem('fd_theme'); if (_t === 'dark' || _t === 'light') document.documentElement.dataset.theme = _t; } catch (e) {}
+	</script>
 	<style>
 		:root {
-			--primary: {{ business.primary_color }};
-			--accent: {{ business.accent_color }};
-			--bg: #fafafa;
-			--surface: #ffffff;
-			--text: #1a1a1a;
-			--muted: #6b7280;
-			--border: #e5e7eb;
+			--primary: {{ business.theme.light.primary }};
+			--secondary: {{ business.theme.light.secondary }};
+			--accent: {{ business.theme.light.accent }};
+			--bg: {{ business.theme.light.bg }};
+			--surface: {{ business.theme.light.card }};
+			--text: {{ business.theme.light.text }};
+			--muted: {{ business.theme.light.muted }};
+			--border: {{ business.theme.light.border }};
+			--font-family: {{ business.font_family }}, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			--font-display: {{ business.font_display }};
+			--font-size: {{ business.font_size }};
+			--radius: {{ business.radius }};
+			--shadow: {{ business.shadow }};
+		}
+		:root[data-theme="dark"] {
+			--primary: {{ business.theme.dark.primary }};
+			--secondary: {{ business.theme.dark.secondary }};
+			--accent: {{ business.theme.dark.accent }};
+			--bg: {{ business.theme.dark.bg }};
+			--surface: {{ business.theme.dark.card }};
+			--text: {{ business.theme.dark.text }};
+			--muted: {{ business.theme.dark.muted }};
+			--border: {{ business.theme.dark.border }};
+		}
+		:root[data-theme="auto"] {
+			--primary: {{ business.theme.light.primary }};
+			--secondary: {{ business.theme.light.secondary }};
+			--accent: {{ business.theme.light.accent }};
+			--bg: {{ business.theme.light.bg }};
+			--surface: {{ business.theme.light.card }};
+			--text: {{ business.theme.light.text }};
+			--muted: {{ business.theme.light.muted }};
+			--border: {{ business.theme.light.border }};
+		}
+		@media (prefers-color-scheme: dark) {
+			:root[data-theme="auto"] {
+				--primary: {{ business.theme.dark.primary }};
+				--secondary: {{ business.theme.dark.secondary }};
+				--accent: {{ business.theme.dark.accent }};
+				--bg: {{ business.theme.dark.bg }};
+				--surface: {{ business.theme.dark.card }};
+				--text: {{ business.theme.dark.text }};
+				--muted: {{ business.theme.dark.muted }};
+				--border: {{ business.theme.dark.border }};
+			}
 		}
 		* { box-sizing: border-box; }
 		html, body {
 			margin: 0;
 			padding: 0;
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			font-family: var(--font-family);
+			font-size: var(--font-size);
 			color: var(--text);
 			background: var(--bg);
 			-webkit-font-smoothing: antialiased;
@@ -62,6 +110,28 @@
 			padding: 48px 20px;
 			max-width: 720px;
 		}
+		.theme-toggle {
+			position: absolute;
+			top: 14px;
+			right: 14px;
+			z-index: 2;
+			width: 38px;
+			height: 38px;
+			border-radius: 50%;
+			border: 1px solid rgba(255,255,255,0.45);
+			background: rgba(0,0,0,0.2);
+			color: #fff;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: background 0.15s;
+		}
+		.theme-toggle:hover { background: rgba(0,0,0,0.35); }
+		.theme-toggle svg { width: 18px; height: 18px; }
+		.theme-toggle .icon-sun { display: none; }
+		:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+		:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 		.brand-row {
 			display: flex;
 			align-items: center;
@@ -83,6 +153,7 @@
 			font-size: 34px;
 			font-weight: 800;
 			letter-spacing: -0.02em;
+			font-family: var(--font-display);
 			text-shadow: 0 2px 12px rgba(0,0,0,0.3);
 		}
 		.hero .tagline {
@@ -107,7 +178,7 @@
 		.btn {
 			display: inline-block;
 			background: var(--accent);
-			color: #fff;
+			color: {{ business.theme.light.btn_accent_text }};
 			text-decoration: none;
 			font-weight: 600;
 			font-size: 16px;
@@ -124,6 +195,7 @@
 			backdrop-filter: blur(4px);
 			-webkit-backdrop-filter: blur(4px);
 			border: 1px solid rgba(255,255,255,0.5);
+			color: #fff;
 		}
 
 		/* ---------- Layout ---------- */
@@ -142,6 +214,7 @@
 			font-size: 24px;
 			letter-spacing: -0.01em;
 			color: var(--primary);
+			font-family: var(--font-display);
 		}
 
 		/* ---------- Story ---------- */
@@ -151,14 +224,15 @@
 			align-items: center;
 			background: var(--surface);
 			border: 1px solid var(--border);
-			border-radius: 16px;
+			border-radius: var(--radius);
 			padding: 24px;
+			box-shadow: var(--shadow);
 		}
 		.story img {
 			width: 200px;
 			height: 200px;
 			object-fit: cover;
-			border-radius: 14px;
+			border-radius: calc(var(--radius) - 2px);
 			flex-shrink: 0;
 		}
 		.story p { margin: 0; color: var(--muted); font-size: 15px; white-space: pre-line; }
@@ -172,20 +246,21 @@
 		.service-card {
 			background: var(--surface);
 			border: 1px solid var(--border);
-			border-radius: 16px;
+			border-radius: var(--radius);
 			overflow: hidden;
 			display: flex;
 			flex-direction: column;
+			box-shadow: var(--shadow);
 			transition: box-shadow 0.15s ease, transform 0.15s ease;
 		}
-		.service-card:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+		.service-card:active { transform: translateY(1px); box-shadow: none; }
 		.service-card .svc-img {
 			height: 120px;
 			background: linear-gradient(135deg, var(--primary), var(--accent));
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			color: #fff;
+			color: {{ business.theme.light.btn_text }};
 			font-size: 40px;
 			font-weight: 800;
 		}
@@ -198,7 +273,7 @@
 			color: var(--accent);
 			font-weight: 700;
 		}
-		.service-card .svc-name { font-size: 17px; font-weight: 700; }
+		.service-card .svc-name { font-size: 17px; font-weight: 700; font-family: var(--font-display); }
 		.service-card .svc-desc { font-size: 13px; color: var(--muted); flex: 1; }
 		.service-card .svc-meta {
 			display: flex;
@@ -213,7 +288,7 @@
 			margin-top: 10px;
 			text-align: center;
 			background: var(--accent);
-			color: #fff;
+			color: {{ business.theme.light.btn_accent_text }};
 			text-decoration: none;
 			font-weight: 600;
 			font-size: 14px;
@@ -226,23 +301,24 @@
 		.how-card {
 			background: var(--surface);
 			border: 1px solid var(--border);
-			border-radius: 16px;
+			border-radius: var(--radius);
 			padding: 20px;
 			text-align: center;
+			box-shadow: var(--shadow);
 		}
 		.how-card .how-num {
 			width: 40px;
 			height: 40px;
 			border-radius: 50%;
 			background: linear-gradient(135deg, var(--primary), var(--accent));
-			color: #fff;
+			color: {{ business.theme.light.btn_text }};
 			font-weight: 800;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			margin: 0 auto 10px;
 		}
-		.how-card h3 { margin: 0 0 6px; font-size: 16px; }
+		.how-card h3 { margin: 0 0 6px; font-size: 16px; font-family: var(--font-display); }
 		.how-card p { margin: 0; font-size: 13px; color: var(--muted); }
 
 		/* ---------- Gallery ---------- */
@@ -251,18 +327,19 @@
 			width: 100%;
 			height: 110px;
 			object-fit: cover;
-			border-radius: 10px;
+			border-radius: calc(var(--radius) - 4px);
 		}
 
 		/* ---------- Testimonials ---------- */
 		.quote-band {
 			background: var(--surface);
 			border: 1px solid var(--border);
-			border-radius: 16px;
+			border-radius: var(--radius);
 			padding: 28px 24px;
 			display: flex;
 			flex-direction: column;
 			gap: 22px;
+			box-shadow: var(--shadow);
 		}
 		.quote-band blockquote {
 			margin: 0;
@@ -284,8 +361,9 @@
 		.info-card {
 			background: var(--surface);
 			border: 1px solid var(--border);
-			border-radius: 14px;
+			border-radius: calc(var(--radius) - 2px);
 			padding: 16px;
+			box-shadow: var(--shadow);
 		}
 		.info-card .info-label {
 			font-size: 11px;
@@ -301,13 +379,13 @@
 		/* ---------- CTA band ---------- */
 		.cta-band {
 			background: linear-gradient(135deg, var(--primary), var(--accent));
-			color: #fff;
-			border-radius: 20px;
+			color: {{ business.theme.light.btn_text }};
+			border-radius: var(--radius);
 			padding: 36px 24px;
 			text-align: center;
 			margin-bottom: 40px;
 		}
-		.cta-band h2 { margin: 0 0 8px; font-size: 24px; color: #fff; }
+		.cta-band h2 { margin: 0 0 8px; font-size: 24px; color: inherit; font-family: var(--font-display); }
 		.cta-band p { margin: 0 0 20px; opacity: 0.9; font-size: 15px; }
 		.cta-band .btn { background: #fff; color: var(--primary); }
 
@@ -318,6 +396,30 @@
 			padding: 0 16px 32px;
 		}
 
+		/* ---------- Layout variations (Site Layout) ---------- */
+		/* Minimal: flat hero, no shadows, quieter surfaces */
+		body.layout-minimal .hero {
+			background: var(--primary);
+		}
+		body.layout-minimal .hero::after { display: none; }
+		body.layout-minimal .story,
+		body.layout-minimal .service-card,
+		body.layout-minimal .how-card,
+		body.layout-minimal .quote-band,
+		body.layout-minimal .info-card { box-shadow: none; }
+		body.layout-minimal .section h2 { letter-spacing: 0; }
+		/* Vibrant: stronger gradients and shadows */
+		body.layout-vibrant .hero {
+			background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+		}
+		body.layout-vibrant .service-card { border-color: transparent; }
+		body.layout-vibrant .story,
+		body.layout-vibrant .service-card,
+		body.layout-vibrant .how-card,
+		body.layout-vibrant .quote-band,
+		body.layout-vibrant .info-card { box-shadow: 0 10px 28px rgba(0,0,0,0.16); }
+		body.layout-vibrant .eyebrow { font-size: 13px; }
+
 		@media (min-width: 600px) {
 			.hero { min-height: 420px; }
 			.hero h1 { font-size: 46px; }
@@ -326,13 +428,17 @@
 		}
 	</style>
 </head>
-<body>
+<body class="layout-{{ business.site_layout }}">
 
 {% if business.show_hero %}
 	<header class="hero">
 		{% if business.brand_cover %}
 			<img class="cover" src="{{ business.brand_cover }}" alt="" />
 		{% endif %}
+		<button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+			<svg class="icon-moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+			<svg class="icon-sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+		</button>
 		<div class="hero-content">
 			<div class="brand-row">
 				{% if business.brand_logo %}
@@ -500,5 +606,20 @@
 
 	<footer>{{ business.copyright_text }} &middot; <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">{{ business.footer_powered }}</a></footer>
 </main>
+
+<script>
+	(function () {
+		var KEY = 'fd_theme';
+		var btn = document.getElementById('themeToggle');
+		if (!btn) return;
+		btn.addEventListener('click', function () {
+			var cur = document.documentElement.dataset.theme;
+			var darkNow = cur === 'dark' || (cur === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+			var next = darkNow ? 'light' : 'dark';
+			document.documentElement.dataset.theme = next;
+			try { localStorage.setItem(KEY, next); } catch (e) {}
+		});
+	})();
+</script>
 </body>
 </html>

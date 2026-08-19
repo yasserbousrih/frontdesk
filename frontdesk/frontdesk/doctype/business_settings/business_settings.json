@@ -11,9 +11,34 @@
   "branding_section",
   "logo",
   "cover_image",
-  "primary_color",
-  "accent_color",
   "about_text",
+  "appearance_tab",
+  "colors_section",
+  "preset_theme",
+  "cb_color1",
+  "theme_mode",
+  "colors2_section",
+  "primary_color",
+  "cb_color2",
+  "secondary_color",
+  "colors3_section",
+  "accent_color",
+  "cb_color3",
+  "background_color",
+  "colors4_section",
+  "text_color",
+  "typography_section",
+  "font_family",
+  "cb_typo",
+  "heading_font",
+  "font_size_base",
+  "layout_section",
+  "border_radius",
+  "cb_layout",
+  "card_shadow",
+  "site_layout",
+  "preview_section",
+  "live_preview",
   "contact_section",
   "contact_phone",
   "contact_whatsapp",
@@ -89,7 +114,8 @@
    "fieldname": "business_name",
    "fieldtype": "Data",
    "label": "Business Name",
-   "reqd": 1
+   "reqd": 1,
+   "idx": 1
   },
   {
    "default": "Barbershop",
@@ -97,438 +123,627 @@
    "fieldtype": "Select",
    "label": "Vertical",
    "options": "Barbershop\nSalon\nClinic\nSpa\nNail Studio\nOther",
-   "reqd": 1
+   "reqd": 1,
+   "idx": 2
   },
   {
    "fieldname": "branding_section",
    "fieldtype": "Section Break",
-   "label": "Branding"
+   "label": "Branding",
+   "idx": 3
   },
   {
    "fieldname": "logo",
    "fieldtype": "Attach Image",
-   "label": "Logo"
+   "label": "Logo",
+   "idx": 4
   },
   {
    "fieldname": "cover_image",
    "fieldtype": "Attach Image",
-   "label": "Cover Image"
-  },
-  {
-   "fieldname": "primary_color",
-   "fieldtype": "Color",
-   "label": "Primary Color"
-  },
-  {
-   "fieldname": "accent_color",
-   "fieldtype": "Color",
-   "label": "Accent Color"
+   "label": "Cover Image",
+   "idx": 5
   },
   {
    "fieldname": "about_text",
    "fieldtype": "Text",
-   "label": "About"
+   "label": "About",
+   "idx": 6
   },
   {
    "fieldname": "contact_section",
    "fieldtype": "Section Break",
-   "label": "Contact"
+   "label": "Contact",
+   "idx": 7
   },
   {
    "fieldname": "contact_phone",
    "fieldtype": "Data",
-   "label": "Phone"
+   "label": "Phone",
+   "idx": 8
   },
   {
    "fieldname": "contact_whatsapp",
    "fieldtype": "Data",
-   "label": "WhatsApp"
+   "label": "WhatsApp",
+   "idx": 9
   },
   {
    "fieldname": "contact_email",
    "fieldtype": "Data",
-   "label": "Email"
+   "label": "Email",
+   "idx": 10
   },
   {
    "fieldname": "instagram",
    "fieldtype": "Data",
-   "label": "Instagram"
+   "label": "Instagram",
+   "idx": 11
   },
   {
    "fieldname": "booking_rules_section",
    "fieldtype": "Section Break",
-   "label": "Booking Rules"
+   "label": "Booking Rules",
+   "idx": 12
   },
   {
    "default": "0",
    "fieldname": "slot_buffer_minutes",
    "fieldtype": "Int",
    "label": "Slot Buffer (minutes)",
-   "non_negative": 1
+   "non_negative": 1,
+   "idx": 13
   },
   {
    "default": "QAR",
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "options": "Currency"
+   "options": "Currency",
+   "idx": 14
   },
   {
    "fieldname": "omnichat_section",
    "fieldtype": "Section Break",
-   "label": "Omnichat / WhatsApp"
+   "label": "Omnichat / WhatsApp",
+   "idx": 15
   },
   {
    "fieldname": "omnichat_api_url",
    "fieldtype": "Data",
-   "label": "Omnichat API URL"
+   "label": "Omnichat API URL",
+   "idx": 16
   },
   {
    "fieldname": "omnichat_api_token",
    "fieldtype": "Password",
-   "label": "Omnichat API Token"
+   "label": "Omnichat API Token",
+   "idx": 17
   },
   {
    "fieldname": "omnichat_sender_id",
    "fieldtype": "Data",
-   "label": "Omnichat Sender ID"
+   "label": "Omnichat Sender ID",
+   "idx": 18
   },
   {
    "fieldname": "google_review_url",
    "fieldtype": "Data",
-   "label": "Google Review URL"
+   "label": "Google Review URL",
+   "idx": 19
   },
   {
    "fieldname": "basira_crm_section",
    "fieldtype": "Section Break",
-   "label": "Basira CRM"
+   "label": "Basira CRM",
+   "idx": 20
   },
   {
    "fieldname": "basira_crm_api_url",
    "fieldtype": "Data",
-   "label": "Basira CRM API URL"
+   "label": "Basira CRM API URL",
+   "idx": 21
   },
   {
    "fieldname": "basira_crm_secret",
    "fieldtype": "Password",
-   "label": "Basira CRM Secret"
+   "label": "Basira CRM Secret",
+   "idx": 22
   },
   {
    "fieldname": "homepage_section",
    "fieldtype": "Section Break",
-   "idx": 25,
+   "idx": 23,
    "label": "Homepage"
   },
   {
    "fieldname": "homepage_col_1",
    "fieldtype": "Column Break",
-   "idx": 26
+   "idx": 24
   },
   {
    "fieldname": "show_hero",
    "fieldtype": "Check",
-   "idx": 27,
+   "idx": 25,
    "label": "Show Hero",
    "default": "1"
   },
   {
    "fieldname": "hero_tagline",
    "fieldtype": "Data",
-   "idx": 28,
+   "idx": 26,
    "label": "Hero Tagline"
   },
   {
    "fieldname": "cta_label",
    "fieldtype": "Data",
-   "idx": 29,
+   "idx": 27,
    "label": "CTA Button Label"
   },
   {
    "fieldname": "cta_secondary_label",
    "fieldtype": "Data",
-   "idx": 30,
+   "idx": 28,
    "label": "Secondary CTA Label"
   },
   {
    "fieldname": "cta_secondary_link",
    "fieldtype": "Data",
-   "idx": 31,
+   "idx": 29,
    "label": "Secondary CTA Link"
   },
   {
    "fieldname": "staff_label",
    "fieldtype": "Data",
-   "idx": 32,
+   "idx": 30,
    "label": "Staff Label (barber / stylist / therapist)"
   },
   {
    "fieldname": "homepage_col_2",
    "fieldtype": "Column Break",
-   "idx": 33
+   "idx": 31
   },
   {
    "fieldname": "show_story",
    "fieldtype": "Check",
-   "idx": 34,
+   "idx": 32,
    "label": "Show Story Section",
    "default": "1"
   },
   {
    "fieldname": "story_heading",
    "fieldtype": "Data",
-   "idx": 35,
+   "idx": 33,
    "label": "Story Heading"
   },
   {
    "fieldname": "story_text",
    "fieldtype": "Text",
-   "idx": 36,
+   "idx": 34,
    "label": "Story Text"
   },
   {
    "fieldname": "story_image",
    "fieldtype": "Attach Image",
-   "idx": 37,
+   "idx": 35,
    "label": "Story Image"
   },
   {
    "fieldname": "homepage_col_3",
    "fieldtype": "Column Break",
-   "idx": 38
+   "idx": 36
   },
   {
    "fieldname": "show_services",
    "fieldtype": "Check",
-   "idx": 39,
+   "idx": 37,
    "label": "Show Services Section",
    "default": "1"
   },
   {
    "fieldname": "services_heading",
    "fieldtype": "Data",
-   "idx": 40,
+   "idx": 38,
    "label": "Services Heading"
   },
   {
    "fieldname": "services_count",
    "fieldtype": "Int",
-   "idx": 41,
+   "idx": 39,
    "label": "Services to Show",
    "default": "4"
   },
   {
    "fieldname": "show_prices",
    "fieldtype": "Check",
-   "idx": 42,
+   "idx": 40,
    "label": "Show Prices",
    "default": "1"
   },
   {
    "fieldname": "how_section",
    "fieldtype": "Section Break",
-   "idx": 43,
+   "idx": 41,
    "label": "How It Works"
   },
   {
    "fieldname": "how_col_1",
    "fieldtype": "Column Break",
-   "idx": 44
+   "idx": 42
   },
   {
    "fieldname": "show_how_it_works",
    "fieldtype": "Check",
-   "idx": 45,
+   "idx": 43,
    "label": "Show How It Works",
    "default": "1"
   },
   {
    "fieldname": "how_heading",
    "fieldtype": "Data",
-   "idx": 46,
+   "idx": 44,
    "label": "How It Works Heading"
   },
   {
    "fieldname": "how_step1_title",
    "fieldtype": "Data",
-   "idx": 47,
+   "idx": 45,
    "label": "Step 1 Title"
   },
   {
    "fieldname": "how_step1_text",
    "fieldtype": "Text",
-   "idx": 48,
+   "idx": 46,
    "label": "Step 1 Text"
   },
   {
    "fieldname": "how_col_2",
    "fieldtype": "Column Break",
-   "idx": 49
+   "idx": 47
   },
   {
    "fieldname": "how_step2_title",
    "fieldtype": "Data",
-   "idx": 50,
+   "idx": 48,
    "label": "Step 2 Title"
   },
   {
    "fieldname": "how_step2_text",
    "fieldtype": "Text",
-   "idx": 51,
+   "idx": 49,
    "label": "Step 2 Text"
   },
   {
    "fieldname": "how_col_3",
    "fieldtype": "Column Break",
-   "idx": 52
+   "idx": 50
   },
   {
    "fieldname": "how_step3_title",
    "fieldtype": "Data",
-   "idx": 53,
+   "idx": 51,
    "label": "Step 3 Title"
   },
   {
    "fieldname": "how_step3_text",
    "fieldtype": "Text",
-   "idx": 54,
+   "idx": 52,
    "label": "Step 3 Text"
   },
   {
    "fieldname": "social_section",
    "fieldtype": "Section Break",
-   "idx": 55,
+   "idx": 53,
    "label": "Gallery & Testimonials"
   },
   {
    "fieldname": "social_col_1",
    "fieldtype": "Column Break",
-   "idx": 56
+   "idx": 54
   },
   {
    "fieldname": "show_gallery",
    "fieldtype": "Check",
-   "idx": 57,
+   "idx": 55,
    "label": "Show Gallery (from Service images)",
    "default": "1"
   },
   {
    "fieldname": "show_testimonials",
    "fieldtype": "Check",
-   "idx": 58,
+   "idx": 56,
    "label": "Show Testimonials",
    "default": "1"
   },
   {
    "fieldname": "testimonial_1_text",
    "fieldtype": "Text",
-   "idx": 59,
+   "idx": 57,
    "label": "Testimonial 1"
   },
   {
    "fieldname": "testimonial_1_author",
    "fieldtype": "Data",
-   "idx": 60,
+   "idx": 58,
    "label": "Testimonial 1 Author"
   },
   {
    "fieldname": "social_col_2",
    "fieldtype": "Column Break",
-   "idx": 61
+   "idx": 59
   },
   {
    "fieldname": "testimonial_2_text",
    "fieldtype": "Text",
-   "idx": 62,
+   "idx": 60,
    "label": "Testimonial 2"
   },
   {
    "fieldname": "testimonial_2_author",
    "fieldtype": "Data",
-   "idx": 63,
+   "idx": 61,
    "label": "Testimonial 2 Author"
   },
   {
    "fieldname": "social_col_3",
    "fieldtype": "Column Break",
-   "idx": 64
+   "idx": 62
   },
   {
    "fieldname": "testimonial_3_text",
    "fieldtype": "Text",
-   "idx": 65,
+   "idx": 63,
    "label": "Testimonial 3"
   },
   {
    "fieldname": "testimonial_3_author",
    "fieldtype": "Data",
-   "idx": 66,
+   "idx": 64,
    "label": "Testimonial 3 Author"
   },
   {
    "fieldname": "visit_section",
    "fieldtype": "Section Break",
-   "idx": 67,
+   "idx": 65,
    "label": "Hours & Visit"
   },
   {
    "fieldname": "visit_col_1",
    "fieldtype": "Column Break",
-   "idx": 68
+   "idx": 66
   },
   {
    "fieldname": "show_visit",
    "fieldtype": "Check",
-   "idx": 69,
+   "idx": 67,
    "label": "Show Hours & Visit",
    "default": "1"
   },
   {
    "fieldname": "hours_text",
    "fieldtype": "Data",
-   "idx": 70,
+   "idx": 68,
    "label": "Opening Hours Text"
   },
   {
    "fieldname": "address",
    "fieldtype": "Small Text",
-   "idx": 71,
+   "idx": 69,
    "label": "Address"
   },
   {
    "fieldname": "maps_url",
    "fieldtype": "Data",
-   "idx": 72,
+   "idx": 70,
    "label": "Google Maps URL"
   },
   {
    "fieldname": "visit_col_2",
    "fieldtype": "Column Break",
-   "idx": 73
+   "idx": 71
   },
   {
    "fieldname": "show_cta_band",
    "fieldtype": "Check",
-   "idx": 74,
+   "idx": 72,
    "label": "Show Bottom CTA Band",
    "default": "1"
   },
   {
    "fieldname": "cta_band_heading",
    "fieldtype": "Data",
-   "idx": 75,
+   "idx": 73,
    "label": "CTA Band Heading"
   },
   {
    "fieldname": "cta_band_text",
    "fieldtype": "Text",
-   "idx": 76,
+   "idx": 74,
    "label": "CTA Band Text"
   },
   {
    "fieldname": "cta_band_label",
    "fieldtype": "Data",
-   "idx": 77,
+   "idx": 75,
    "label": "CTA Band Button Label"
+  },
+  {
+   "fieldname": "appearance_tab",
+   "fieldtype": "Tab Break",
+   "label": "Appearance",
+   "idx": 76
+  },
+  {
+   "fieldname": "colors_section",
+   "fieldtype": "Section Break",
+   "label": "Colors & Theme",
+   "idx": 77
+  },
+  {
+   "fieldname": "preset_theme",
+   "fieldtype": "Select",
+   "label": "Preset Theme",
+   "options": "Custom\nBrass\nTeal\nTerracotta\nForest\nNavy\nBurgundy\nMidnight\nDesert\nOcean\nSlate\nRose\nOlive",
+   "default": "Custom",
+   "description": "Pick a ready-made color palette (each includes its own light and dark colors). Choose Custom to set colors manually below.",
+   "idx": 78
+  },
+  {
+   "fieldname": "cb_color1",
+   "fieldtype": "Column Break",
+   "idx": 79
+  },
+  {
+   "fieldname": "theme_mode",
+   "fieldtype": "Select",
+   "label": "Theme Mode",
+   "options": "Light\nDark\nAuto",
+   "default": "Light",
+   "description": "Auto follows the visitor's device setting; visitors can also toggle dark mode on the site itself.",
+   "idx": 80
+  },
+  {
+   "fieldname": "colors2_section",
+   "fieldtype": "Section Break",
+   "idx": 81
+  },
+  {
+   "fieldname": "primary_color",
+   "fieldtype": "Color",
+   "label": "Primary Color",
+   "idx": 82
+  },
+  {
+   "fieldname": "cb_color2",
+   "fieldtype": "Column Break",
+   "idx": 83
+  },
+  {
+   "fieldname": "secondary_color",
+   "fieldtype": "Color",
+   "label": "Secondary Color",
+   "default": "#2b2b4a",
+   "idx": 84
+  },
+  {
+   "fieldname": "colors3_section",
+   "fieldtype": "Section Break",
+   "idx": 85
+  },
+  {
+   "fieldname": "accent_color",
+   "fieldtype": "Color",
+   "label": "Accent Color",
+   "idx": 86
+  },
+  {
+   "fieldname": "cb_color3",
+   "fieldtype": "Column Break",
+   "idx": 87
+  },
+  {
+   "fieldname": "background_color",
+   "fieldtype": "Color",
+   "label": "Background Color",
+   "default": "#fafafa",
+   "idx": 88
+  },
+  {
+   "fieldname": "colors4_section",
+   "fieldtype": "Section Break",
+   "idx": 89
+  },
+  {
+   "fieldname": "text_color",
+   "fieldtype": "Color",
+   "label": "Text Color",
+   "default": "#1a1a1a",
+   "idx": 90
+  },
+  {
+   "fieldname": "typography_section",
+   "fieldtype": "Section Break",
+   "label": "Typography",
+   "description": "Fonts load from Google Fonts automatically.",
+   "idx": 91
+  },
+  {
+   "fieldname": "font_family",
+   "fieldtype": "Select",
+   "label": "Font Family",
+   "options": "Inter\nPoppins\nPlus Jakarta Sans\nDM Sans\nNunito Sans\nMontserrat\nLora\nMerriweather\nPlayfair Display\nCormorant Garamond\nTajawal\nCairo\nNoto Sans Arabic\nNoto Kufi Arabic\nAmiri",
+   "default": "Inter",
+   "idx": 92
+  },
+  {
+   "fieldname": "cb_typo",
+   "fieldtype": "Column Break",
+   "idx": 93
+  },
+  {
+   "fieldname": "heading_font",
+   "fieldtype": "Select",
+   "label": "Heading Font",
+   "options": "Same as Body\nSerif (Playfair Display)\nSerif (Cormorant Garamond)",
+   "default": "Same as Body",
+   "description": "Font used for the business name and section headings.",
+   "idx": 94
+  },
+  {
+   "fieldname": "font_size_base",
+   "fieldtype": "Select",
+   "label": "Font Size Base",
+   "options": "Small (14px)\nNormal (16px)\nLarge (18px)",
+   "default": "Normal (16px)",
+   "idx": 95
+  },
+  {
+   "fieldname": "layout_section",
+   "fieldtype": "Section Break",
+   "label": "Layout & Style",
+   "idx": 96
+  },
+  {
+   "fieldname": "border_radius",
+   "fieldtype": "Select",
+   "label": "Border Radius",
+   "options": "Sharp (0px)\nSoft (8px)\nRounded (16px)\nPill (999px)",
+   "default": "Rounded (16px)",
+   "idx": 97
+  },
+  {
+   "fieldname": "cb_layout",
+   "fieldtype": "Column Break",
+   "idx": 98
+  },
+  {
+   "fieldname": "card_shadow",
+   "fieldtype": "Select",
+   "label": "Card Shadow",
+   "options": "None\nSubtle\nMedium\nStrong",
+   "default": "Subtle",
+   "idx": 99
+  },
+  {
+   "fieldname": "site_layout",
+   "fieldtype": "Select",
+   "label": "Site Layout",
+   "options": "Modern (Card & Booking)\nMinimal (Editorial)\nVibrant (Bold)",
+   "default": "Modern (Card & Booking)",
+   "description": "Modern keeps the card-based booking look. Minimal is a clean editorial style. Vibrant goes bolder with stronger gradients and shadows.",
+   "idx": 100
+  },
+  {
+   "fieldname": "preview_section",
+   "fieldtype": "Section Break",
+   "label": "Live Preview",
+   "idx": 101
+  },
+  {
+   "fieldname": "live_preview",
+   "fieldtype": "HTML",
+   "label": "Live Preview",
+   "idx": 102
   }
  ],
  "index_web_pages_for_search": 1,
