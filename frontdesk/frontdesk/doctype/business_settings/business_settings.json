@@ -29,7 +29,60 @@
   "google_review_url",
   "basira_crm_section",
   "basira_crm_api_url",
-  "basira_crm_secret"
+  "basira_crm_secret",
+  "homepage_section",
+  "homepage_col_1",
+  "show_hero",
+  "hero_tagline",
+  "cta_label",
+  "cta_secondary_label",
+  "cta_secondary_link",
+  "staff_label",
+  "homepage_col_2",
+  "show_story",
+  "story_heading",
+  "story_text",
+  "story_image",
+  "homepage_col_3",
+  "show_services",
+  "services_heading",
+  "services_count",
+  "show_prices",
+  "how_section",
+  "how_col_1",
+  "show_how_it_works",
+  "how_heading",
+  "how_step1_title",
+  "how_step1_text",
+  "how_col_2",
+  "how_step2_title",
+  "how_step2_text",
+  "how_col_3",
+  "how_step3_title",
+  "how_step3_text",
+  "social_section",
+  "social_col_1",
+  "show_gallery",
+  "show_testimonials",
+  "testimonial_1_text",
+  "testimonial_1_author",
+  "social_col_2",
+  "testimonial_2_text",
+  "testimonial_2_author",
+  "social_col_3",
+  "testimonial_3_text",
+  "testimonial_3_author",
+  "visit_section",
+  "visit_col_1",
+  "show_visit",
+  "hours_text",
+  "address",
+  "maps_url",
+  "visit_col_2",
+  "show_cta_band",
+  "cta_band_heading",
+  "cta_band_text",
+  "cta_band_label"
  ],
  "fields": [
   {
@@ -159,6 +212,323 @@
    "fieldname": "basira_crm_secret",
    "fieldtype": "Password",
    "label": "Basira CRM Secret"
+  },
+  {
+   "fieldname": "homepage_section",
+   "fieldtype": "Section Break",
+   "idx": 25,
+   "label": "Homepage"
+  },
+  {
+   "fieldname": "homepage_col_1",
+   "fieldtype": "Column Break",
+   "idx": 26
+  },
+  {
+   "fieldname": "show_hero",
+   "fieldtype": "Check",
+   "idx": 27,
+   "label": "Show Hero",
+   "default": "1"
+  },
+  {
+   "fieldname": "hero_tagline",
+   "fieldtype": "Data",
+   "idx": 28,
+   "label": "Hero Tagline"
+  },
+  {
+   "fieldname": "cta_label",
+   "fieldtype": "Data",
+   "idx": 29,
+   "label": "CTA Button Label"
+  },
+  {
+   "fieldname": "cta_secondary_label",
+   "fieldtype": "Data",
+   "idx": 30,
+   "label": "Secondary CTA Label"
+  },
+  {
+   "fieldname": "cta_secondary_link",
+   "fieldtype": "Data",
+   "idx": 31,
+   "label": "Secondary CTA Link"
+  },
+  {
+   "fieldname": "staff_label",
+   "fieldtype": "Data",
+   "idx": 32,
+   "label": "Staff Label (barber / stylist / therapist)"
+  },
+  {
+   "fieldname": "homepage_col_2",
+   "fieldtype": "Column Break",
+   "idx": 33
+  },
+  {
+   "fieldname": "show_story",
+   "fieldtype": "Check",
+   "idx": 34,
+   "label": "Show Story Section",
+   "default": "1"
+  },
+  {
+   "fieldname": "story_heading",
+   "fieldtype": "Data",
+   "idx": 35,
+   "label": "Story Heading"
+  },
+  {
+   "fieldname": "story_text",
+   "fieldtype": "Text",
+   "idx": 36,
+   "label": "Story Text"
+  },
+  {
+   "fieldname": "story_image",
+   "fieldtype": "Attach Image",
+   "idx": 37,
+   "label": "Story Image"
+  },
+  {
+   "fieldname": "homepage_col_3",
+   "fieldtype": "Column Break",
+   "idx": 38
+  },
+  {
+   "fieldname": "show_services",
+   "fieldtype": "Check",
+   "idx": 39,
+   "label": "Show Services Section",
+   "default": "1"
+  },
+  {
+   "fieldname": "services_heading",
+   "fieldtype": "Data",
+   "idx": 40,
+   "label": "Services Heading"
+  },
+  {
+   "fieldname": "services_count",
+   "fieldtype": "Int",
+   "idx": 41,
+   "label": "Services to Show",
+   "default": "4"
+  },
+  {
+   "fieldname": "show_prices",
+   "fieldtype": "Check",
+   "idx": 42,
+   "label": "Show Prices",
+   "default": "1"
+  },
+  {
+   "fieldname": "how_section",
+   "fieldtype": "Section Break",
+   "idx": 43,
+   "label": "How It Works"
+  },
+  {
+   "fieldname": "how_col_1",
+   "fieldtype": "Column Break",
+   "idx": 44
+  },
+  {
+   "fieldname": "show_how_it_works",
+   "fieldtype": "Check",
+   "idx": 45,
+   "label": "Show How It Works",
+   "default": "1"
+  },
+  {
+   "fieldname": "how_heading",
+   "fieldtype": "Data",
+   "idx": 46,
+   "label": "How It Works Heading"
+  },
+  {
+   "fieldname": "how_step1_title",
+   "fieldtype": "Data",
+   "idx": 47,
+   "label": "Step 1 Title"
+  },
+  {
+   "fieldname": "how_step1_text",
+   "fieldtype": "Text",
+   "idx": 48,
+   "label": "Step 1 Text"
+  },
+  {
+   "fieldname": "how_col_2",
+   "fieldtype": "Column Break",
+   "idx": 49
+  },
+  {
+   "fieldname": "how_step2_title",
+   "fieldtype": "Data",
+   "idx": 50,
+   "label": "Step 2 Title"
+  },
+  {
+   "fieldname": "how_step2_text",
+   "fieldtype": "Text",
+   "idx": 51,
+   "label": "Step 2 Text"
+  },
+  {
+   "fieldname": "how_col_3",
+   "fieldtype": "Column Break",
+   "idx": 52
+  },
+  {
+   "fieldname": "how_step3_title",
+   "fieldtype": "Data",
+   "idx": 53,
+   "label": "Step 3 Title"
+  },
+  {
+   "fieldname": "how_step3_text",
+   "fieldtype": "Text",
+   "idx": 54,
+   "label": "Step 3 Text"
+  },
+  {
+   "fieldname": "social_section",
+   "fieldtype": "Section Break",
+   "idx": 55,
+   "label": "Gallery & Testimonials"
+  },
+  {
+   "fieldname": "social_col_1",
+   "fieldtype": "Column Break",
+   "idx": 56
+  },
+  {
+   "fieldname": "show_gallery",
+   "fieldtype": "Check",
+   "idx": 57,
+   "label": "Show Gallery (from Service images)",
+   "default": "1"
+  },
+  {
+   "fieldname": "show_testimonials",
+   "fieldtype": "Check",
+   "idx": 58,
+   "label": "Show Testimonials",
+   "default": "1"
+  },
+  {
+   "fieldname": "testimonial_1_text",
+   "fieldtype": "Text",
+   "idx": 59,
+   "label": "Testimonial 1"
+  },
+  {
+   "fieldname": "testimonial_1_author",
+   "fieldtype": "Data",
+   "idx": 60,
+   "label": "Testimonial 1 Author"
+  },
+  {
+   "fieldname": "social_col_2",
+   "fieldtype": "Column Break",
+   "idx": 61
+  },
+  {
+   "fieldname": "testimonial_2_text",
+   "fieldtype": "Text",
+   "idx": 62,
+   "label": "Testimonial 2"
+  },
+  {
+   "fieldname": "testimonial_2_author",
+   "fieldtype": "Data",
+   "idx": 63,
+   "label": "Testimonial 2 Author"
+  },
+  {
+   "fieldname": "social_col_3",
+   "fieldtype": "Column Break",
+   "idx": 64
+  },
+  {
+   "fieldname": "testimonial_3_text",
+   "fieldtype": "Text",
+   "idx": 65,
+   "label": "Testimonial 3"
+  },
+  {
+   "fieldname": "testimonial_3_author",
+   "fieldtype": "Data",
+   "idx": 66,
+   "label": "Testimonial 3 Author"
+  },
+  {
+   "fieldname": "visit_section",
+   "fieldtype": "Section Break",
+   "idx": 67,
+   "label": "Hours & Visit"
+  },
+  {
+   "fieldname": "visit_col_1",
+   "fieldtype": "Column Break",
+   "idx": 68
+  },
+  {
+   "fieldname": "show_visit",
+   "fieldtype": "Check",
+   "idx": 69,
+   "label": "Show Hours & Visit",
+   "default": "1"
+  },
+  {
+   "fieldname": "hours_text",
+   "fieldtype": "Data",
+   "idx": 70,
+   "label": "Opening Hours Text"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "idx": 71,
+   "label": "Address"
+  },
+  {
+   "fieldname": "maps_url",
+   "fieldtype": "Data",
+   "idx": 72,
+   "label": "Google Maps URL"
+  },
+  {
+   "fieldname": "visit_col_2",
+   "fieldtype": "Column Break",
+   "idx": 73
+  },
+  {
+   "fieldname": "show_cta_band",
+   "fieldtype": "Check",
+   "idx": 74,
+   "label": "Show Bottom CTA Band",
+   "default": "1"
+  },
+  {
+   "fieldname": "cta_band_heading",
+   "fieldtype": "Data",
+   "idx": 75,
+   "label": "CTA Band Heading"
+  },
+  {
+   "fieldname": "cta_band_text",
+   "fieldtype": "Text",
+   "idx": 76,
+   "label": "CTA Band Text"
+  },
+  {
+   "fieldname": "cta_band_label",
+   "fieldtype": "Data",
+   "idx": 77,
+   "label": "CTA Band Button Label"
   }
  ],
  "index_web_pages_for_search": 1,

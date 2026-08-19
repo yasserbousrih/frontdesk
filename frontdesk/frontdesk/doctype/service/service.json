@@ -12,6 +12,7 @@
   "duration_minutes",
   "price",
   "description",
+  "image",
   "active"
  ],
  "fields": [
@@ -47,6 +48,11 @@
    "fieldname": "description",
    "fieldtype": "Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
   },
   {
    "default": "1",

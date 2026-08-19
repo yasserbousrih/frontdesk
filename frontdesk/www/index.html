@@ -3,12 +3,13 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<meta name="theme-color" content="{{ business.primary_color or '#1a1a2e' }}" />
-	<title>{{ business.brand_name or "FrontDesk" }}</title>
+	<meta name="theme-color" content="{{ business.primary_color }}" />
+	<title>{{ business.brand_name }}</title>
+	{{ business.head_html }}
 	<style>
 		:root {
-			--primary: {{ business.primary_color or '#1a1a2e' }};
-			--accent: {{ business.accent_color or '#e94560' }};
+			--primary: {{ business.primary_color }};
+			--accent: {{ business.accent_color }};
 			--bg: #fafafa;
 			--surface: #ffffff;
 			--text: #1a1a1a;
@@ -25,10 +26,14 @@
 			-webkit-font-smoothing: antialiased;
 			line-height: 1.5;
 		}
+		img { max-width: 100%; }
+		a { color: var(--accent); }
+
+		/* ---------- Hero ---------- */
 		.hero {
 			position: relative;
 			width: 100%;
-			min-height: 220px;
+			min-height: 340px;
 			background: linear-gradient(135deg, var(--primary), var(--accent));
 			color: #fff;
 			display: flex;
@@ -36,149 +41,297 @@
 			justify-content: center;
 			overflow: hidden;
 		}
-		.hero img {
+		.hero img.cover {
 			position: absolute;
 			inset: 0;
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
-			opacity: 0.35;
+			opacity: 0.4;
+		}
+		.hero::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
 		}
 		.hero-content {
 			position: relative;
+			z-index: 1;
 			text-align: center;
-			padding: 32px 20px;
+			padding: 48px 20px;
+			max-width: 720px;
 		}
 		.brand-row {
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			gap: 12px;
-			margin-bottom: 8px;
+			margin-bottom: 10px;
 		}
 		.brand-row img {
-			position: static;
-			width: 48px;
-			height: 48px;
+			width: 64px;
+			height: 64px;
 			object-fit: cover;
 			border-radius: 50%;
-			opacity: 1;
 			background: #fff;
 			padding: 4px;
+			box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 		}
 		.hero h1 {
 			margin: 0;
-			font-size: 28px;
-			font-weight: 700;
+			font-size: 34px;
+			font-weight: 800;
 			letter-spacing: -0.02em;
+			text-shadow: 0 2px 12px rgba(0,0,0,0.3);
 		}
 		.hero .tagline {
-			margin: 8px 0 0;
+			margin: 10px 0 0;
+			font-size: 14px;
+			opacity: 0.95;
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+		}
+		.hero .hero-staff {
+			margin: 14px 0 0;
 			font-size: 14px;
 			opacity: 0.9;
-			text-transform: uppercase;
-			letter-spacing: 0.08em;
 		}
-		main {
-			max-width: 640px;
-			margin: 0 auto;
-			padding: 24px 16px 80px;
+		.hero-cta {
+			margin-top: 22px;
+			display: flex;
+			gap: 12px;
+			justify-content: center;
+			flex-wrap: wrap;
 		}
-		.cta-wrap {
-			margin: 24px 0 32px;
-			text-align: center;
-		}
-		.cta {
+		.btn {
 			display: inline-block;
 			background: var(--accent);
 			color: #fff;
 			text-decoration: none;
 			font-weight: 600;
-			font-size: 18px;
-			padding: 18px 36px;
+			font-size: 16px;
+			padding: 16px 34px;
 			border-radius: 999px;
-			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-			min-height: 56px;
-			min-width: 240px;
-			transition: transform 0.15s ease, box-shadow 0.15s ease;
+			border: none;
+			cursor: pointer;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+			transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 		}
-		.cta:active {
-			transform: translateY(1px);
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		.btn:active { transform: translateY(1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+		.btn-ghost {
+			background: rgba(255,255,255,0.12);
+			backdrop-filter: blur(4px);
+			-webkit-backdrop-filter: blur(4px);
+			border: 1px solid rgba(255,255,255,0.5);
 		}
-		.about {
-			background: var(--surface);
-			border: 1px solid var(--border);
-			border-radius: 16px;
-			padding: 20px;
-			margin-bottom: 24px;
-		}
-		.about h2 {
-			margin: 0 0 8px;
-			font-size: 18px;
-			color: var(--primary);
-		}
-		.about p {
-			margin: 0;
-			color: var(--muted);
-			font-size: 15px;
-			white-space: pre-line;
-		}
-		.contact {
-			background: var(--surface);
-			border: 1px solid var(--border);
-			border-radius: 16px;
-			padding: 20px;
-		}
-		.contact h2 {
-			margin: 0 0 12px;
-			font-size: 18px;
-			color: var(--primary);
-		}
-		.contact-list {
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-		}
-		.contact a {
-			display: flex;
-			align-items: center;
-			gap: 10px;
-			color: var(--text);
-			text-decoration: none;
-			padding: 12px 14px;
-			border-radius: 10px;
-			background: var(--bg);
-			font-size: 15px;
-			min-height: 48px;
-		}
-		.contact a:active {
-			background: var(--border);
-		}
-		.contact .label {
-			color: var(--muted);
+
+		/* ---------- Layout ---------- */
+		main { max-width: 920px; margin: 0 auto; padding: 32px 16px 24px; }
+		.section { margin-bottom: 40px; }
+		.eyebrow {
 			font-size: 12px;
 			text-transform: uppercase;
-			letter-spacing: 0.06em;
-			min-width: 70px;
+			letter-spacing: 0.1em;
+			color: var(--accent);
+			font-weight: 700;
+			margin: 0 0 6px;
 		}
+		.section h2 {
+			margin: 0 0 18px;
+			font-size: 24px;
+			letter-spacing: -0.01em;
+			color: var(--primary);
+		}
+
+		/* ---------- Story ---------- */
+		.story {
+			display: flex;
+			gap: 24px;
+			align-items: center;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 24px;
+		}
+		.story img {
+			width: 200px;
+			height: 200px;
+			object-fit: cover;
+			border-radius: 14px;
+			flex-shrink: 0;
+		}
+		.story p { margin: 0; color: var(--muted); font-size: 15px; white-space: pre-line; }
+
+		/* ---------- Services grid ---------- */
+		.services-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+			gap: 16px;
+		}
+		.service-card {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			transition: box-shadow 0.15s ease, transform 0.15s ease;
+		}
+		.service-card:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+		.service-card .svc-img {
+			height: 120px;
+			background: linear-gradient(135deg, var(--primary), var(--accent));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #fff;
+			font-size: 40px;
+			font-weight: 800;
+		}
+		.service-card .svc-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+		.service-card .svc-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+		.service-card .svc-cat {
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: var(--accent);
+			font-weight: 700;
+		}
+		.service-card .svc-name { font-size: 17px; font-weight: 700; }
+		.service-card .svc-desc { font-size: 13px; color: var(--muted); flex: 1; }
+		.service-card .svc-meta {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-top: 8px;
+		}
+		.service-card .svc-price { font-size: 16px; font-weight: 700; color: var(--primary); }
+		.service-card .svc-dur { font-size: 12px; color: var(--muted); }
+		.service-card .svc-book {
+			display: inline-block;
+			margin-top: 10px;
+			text-align: center;
+			background: var(--accent);
+			color: #fff;
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 14px;
+			padding: 10px 16px;
+			border-radius: 999px;
+		}
+
+		/* ---------- How it works ---------- */
+		.how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+		.how-card {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 20px;
+			text-align: center;
+		}
+		.how-card .how-num {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, var(--primary), var(--accent));
+			color: #fff;
+			font-weight: 800;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto 10px;
+		}
+		.how-card h3 { margin: 0 0 6px; font-size: 16px; }
+		.how-card p { margin: 0; font-size: 13px; color: var(--muted); }
+
+		/* ---------- Gallery ---------- */
+		.gallery-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+		.gallery-strip img {
+			width: 100%;
+			height: 110px;
+			object-fit: cover;
+			border-radius: 10px;
+		}
+
+		/* ---------- Testimonials ---------- */
+		.quote-band {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 28px 24px;
+			display: flex;
+			flex-direction: column;
+			gap: 22px;
+		}
+		.quote-band blockquote {
+			margin: 0;
+			font-size: 16px;
+			font-style: italic;
+			color: var(--text);
+		}
+		.quote-band cite {
+			display: block;
+			margin-top: 6px;
+			font-size: 13px;
+			font-style: normal;
+			color: var(--accent);
+			font-weight: 600;
+		}
+
+		/* ---------- Hours & visit ---------- */
+		.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+		.info-card {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			padding: 16px;
+		}
+		.info-card .info-label {
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: var(--muted);
+			font-weight: 700;
+			margin-bottom: 6px;
+		}
+		.info-card .info-value { font-size: 15px; }
+		.info-card .info-value a { text-decoration: none; font-weight: 600; }
+
+		/* ---------- CTA band ---------- */
+		.cta-band {
+			background: linear-gradient(135deg, var(--primary), var(--accent));
+			color: #fff;
+			border-radius: 20px;
+			padding: 36px 24px;
+			text-align: center;
+			margin-bottom: 40px;
+		}
+		.cta-band h2 { margin: 0 0 8px; font-size: 24px; color: #fff; }
+		.cta-band p { margin: 0 0 20px; opacity: 0.9; font-size: 15px; }
+		.cta-band .btn { background: #fff; color: var(--primary); }
+
 		footer {
 			text-align: center;
 			font-size: 12px;
 			color: var(--muted);
-			margin-top: 24px;
+			padding: 0 16px 32px;
 		}
+
 		@media (min-width: 600px) {
-			.hero { min-height: 300px; }
-			.hero h1 { font-size: 36px; }
-			main { padding: 32px 24px 80px; }
+			.hero { min-height: 420px; }
+			.hero h1 { font-size: 46px; }
+			main { padding: 40px 24px 24px; }
+			.gallery-strip img { height: 140px; }
 		}
 	</style>
 </head>
 <body>
+
+{% if business.show_hero %}
 	<header class="hero">
 		{% if business.brand_cover %}
-			<img src="{{ business.brand_cover }}" alt="" />
+			<img class="cover" src="{{ business.brand_cover }}" alt="" />
 		{% endif %}
 		<div class="hero-content">
 			<div class="brand-row">
@@ -186,63 +339,166 @@
 					<img src="{{ business.brand_logo }}" alt="{{ business.brand_name }} logo" />
 				{% endif %}
 			</div>
-			<h1>{{ business.brand_name or "FrontDesk" }}</h1>
-			{% if business.vertical %}
-				<p class="tagline">{{ business.vertical }}</p>
+			<h1>{{ business.brand_name }}</h1>
+			<p class="tagline">{{ business.hero_tagline }}</p>
+			{% if active_staff_count %}
+				<p class="hero-staff">{{ active_staff_count }} {{ business.staff_label_plural if active_staff_count != 1 else business.staff_label }} ready to serve you</p>
 			{% endif %}
+			<div class="hero-cta">
+				<a class="btn" href="/book">{{ business.cta_label }}</a>
+				{% if business.cta_secondary_label and business.cta_secondary_link %}
+					<a class="btn btn-ghost" href="{{ business.cta_secondary_link }}">{{ business.cta_secondary_label }}</a>
+				{% endif %}
+			</div>
 		</div>
 	</header>
+{% endif %}
 
-	<main>
-		<div class="cta-wrap">
-			<a class="cta" href="/book">Book Appointment</a>
-			{% if active_staff_count %}
-				<p style="margin: 12px 0 0; color: var(--muted); font-size: 14px;">
-					{{ active_staff_count }} barber{{ "" if active_staff_count == 1 else "s" }} ready to serve you
-				</p>
-			{% endif %}
-		</div>
+<main>
+	{% if business.show_story and business.story_text %}
+		<section class="section">
+			<p class="eyebrow">{{ business.vertical }}</p>
+			<h2>{{ business.story_heading }}</h2>
+			<div class="story">
+				{% if business.story_image %}
+					<img src="{{ business.story_image }}" alt="{{ business.brand_name }}" />
+				{% endif %}
+				<p>{{ business.story_text }}</p>
+			</div>
+		</section>
+	{% endif %}
 
-		{% if business.about_text %}
-			<section class="about">
-				<h2>About</h2>
-				<p>{{ business.about_text }}</p>
-			</section>
-		{% endif %}
+	{% if business.show_services and services %}
+		<section class="section">
+			<p class="eyebrow">What we do</p>
+			<h2>{{ business.services_heading }}</h2>
+			<div class="services-grid">
+				{% for s in services %}
+					<div class="service-card">
+						{% if s.image %}
+							<div class="svc-img"><img src="{{ s.image }}" alt="{{ s.name }}" loading="lazy" /></div>
+						{% else %}
+							<div class="svc-img">{{ s.name[0] }}</div>
+						{% endif %}
+						<div class="svc-body">
+							{% if s.category %}<div class="svc-cat">{{ s.category }}</div>{% endif %}
+							<div class="svc-name">{{ s.name }}</div>
+							{% if s.description %}<div class="svc-desc">{{ s.description }}</div>{% endif %}
+							<div class="svc-meta">
+								{% if business.show_prices %}<span class="svc-price">{{ "%.2f"|format(s.price) }} {{ business.currency }}</span>{% endif %}
+								<span class="svc-dur">{{ s.duration_minutes }} min</span>
+							</div>
+							<a class="svc-book" href="/book?service={{ s.name|urlencode }}">{{ business.cta_label }}</a>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</section>
+	{% endif %}
 
-		{% if business.contact_phone or business.contact_whatsapp or business.contact_email or business.instagram %}
-			<section class="contact">
-				<h2>Contact</h2>
-				<div class="contact-list">
-					{% if business.contact_phone %}
-						<a href="tel:{{ business.contact_phone }}">
-							<span class="label">Phone</span>
-							<span>{{ business.contact_phone }}</span>
-						</a>
-					{% endif %}
-					{% if business.contact_whatsapp %}
-						<a href="https://wa.me/{{ business.contact_whatsapp|ltrim('0+')|replace(' ', '') }}" target="_blank" rel="noopener">
-							<span class="label">WhatsApp</span>
-							<span>{{ business.contact_whatsapp }}</span>
-						</a>
-					{% endif %}
-					{% if business.contact_email %}
-						<a href="mailto:{{ business.contact_email }}">
-							<span class="label">Email</span>
-							<span>{{ business.contact_email }}</span>
-						</a>
-					{% endif %}
-					{% if business.instagram %}
-						<a href="https://instagram.com/{{ business.instagram|ltrim('@') }}" target="_blank" rel="noopener">
-							<span class="label">Instagram</span>
-							<span>@{{ business.instagram|ltrim('@') }}</span>
-						</a>
-					{% endif %}
-				</div>
-			</section>
-		{% endif %}
+	{% if business.show_how_it_works %}
+		<section class="section">
+			<p class="eyebrow">Simple steps</p>
+			<h2>{{ business.how_heading }}</h2>
+			<div class="how-grid">
+				{% for step in business.how_steps %}
+					<div class="how-card">
+						<div class="how-num">{{ loop.index }}</div>
+						<h3>{{ step.title }}</h3>
+						<p>{{ step.text }}</p>
+					</div>
+				{% endfor %}
+			</div>
+		</section>
+	{% endif %}
 
-		<footer>{{ business.copyright_text or "© " + business.brand_name }} &middot; <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">{{ business.footer_powered or "Basira" }}</a></footer>
-	</main>
+	{% if business.show_gallery and gallery|length > 1 %}
+		<section class="section">
+			<p class="eyebrow">Take a look</p>
+			<h2>Gallery</h2>
+			<div class="gallery-strip">
+				{% for img in gallery %}
+					<img src="{{ img }}" alt="" loading="lazy" />
+				{% endfor %}
+			</div>
+		</section>
+	{% endif %}
+
+	{% if business.show_testimonials and business.testimonials %}
+		<section class="section">
+			<p class="eyebrow">Kind words</p>
+			<h2>Testimonials</h2>
+			<div class="quote-band">
+				{% for t in business.testimonials %}
+					<div>
+						<blockquote>&ldquo;{{ t.text }}&rdquo;</blockquote>
+						<cite>— {{ t.author }}</cite>
+					</div>
+				{% endfor %}
+			</div>
+		</section>
+	{% endif %}
+
+	{% if business.show_visit and (business.hours_text or business.address or business.maps_url or business.contact_phone or business.contact_whatsapp or business.contact_email or business.instagram) %}
+		<section class="section">
+			<p class="eyebrow">Find us</p>
+			<h2>Hours &amp; Visit</h2>
+			<div class="info-grid">
+				{% if business.hours_text %}
+					<div class="info-card">
+						<div class="info-label">Opening Hours</div>
+						<div class="info-value">{{ business.hours_text }}</div>
+					</div>
+				{% endif %}
+				{% if business.address %}
+					<div class="info-card">
+						<div class="info-label">Address</div>
+						<div class="info-value">{{ business.address }}</div>
+					</div>
+				{% endif %}
+				{% if business.maps_url %}
+					<div class="info-card">
+						<div class="info-label">Location</div>
+						<div class="info-value"><a href="{{ business.maps_url }}" target="_blank" rel="noopener">Get directions →</a></div>
+					</div>
+				{% endif %}
+				{% if business.contact_phone %}
+					<div class="info-card">
+						<div class="info-label">Phone</div>
+						<div class="info-value"><a href="tel:{{ business.contact_phone }}">{{ business.contact_phone }}</a></div>
+					</div>
+				{% endif %}
+				{% if business.contact_whatsapp %}
+					<div class="info-card">
+						<div class="info-label">WhatsApp</div>
+						<div class="info-value"><a href="https://wa.me/{{ business.contact_whatsapp|ltrim('0+')|replace(' ', '') }}" target="_blank" rel="noopener">{{ business.contact_whatsapp }}</a></div>
+					</div>
+				{% endif %}
+				{% if business.contact_email %}
+					<div class="info-card">
+						<div class="info-label">Email</div>
+						<div class="info-value"><a href="mailto:{{ business.contact_email }}">{{ business.contact_email }}</a></div>
+					</div>
+				{% endif %}
+				{% if business.instagram %}
+					<div class="info-card">
+						<div class="info-label">Instagram</div>
+						<div class="info-value"><a href="https://instagram.com/{{ business.instagram|ltrim('@') }}" target="_blank" rel="noopener">@{{ business.instagram|ltrim('@') }}</a></div>
+					</div>
+				{% endif %}
+			</div>
+		</section>
+	{% endif %}
+
+	{% if business.show_cta_band %}
+		<section class="cta-band">
+			<h2>{{ business.cta_band_heading }}</h2>
+			<p>{{ business.cta_band_text }}</p>
+			<a class="btn" href="/book">{{ business.cta_band_label }}</a>
+		</section>
+	{% endif %}
+
+	<footer>{{ business.copyright_text }} &middot; <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">{{ business.footer_powered }}</a></footer>
+</main>
 </body>
 </html>
