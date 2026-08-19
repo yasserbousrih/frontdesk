@@ -129,6 +129,7 @@ def _build_items(service_name, service_price, staff_member, extra_items, tip):
         "qty": 1,
         "rate": service_price,
         "staff_member": staff_member,
+        "item_name_ar": frappe.db.get_value("Item", service_name, "item_name_ar") or "",
     })
 
     # 2. Extra items (add‑on products, additional services)

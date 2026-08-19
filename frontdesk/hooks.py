@@ -182,6 +182,22 @@ def _ensure_custom_fields():
         fieldtype="Check",
         default="1",
     )
+    _upsert_custom_field(
+        dt="Item",
+        fieldname="item_name_ar",
+        label="Item Name (Arabic)",
+        fieldtype="Data",
+    )
+
+    # Receipts print the Arabic name — the Sales Invoice Item row snapshots it
+    # so epson_middleware renders bilingual EN/AR rows without re-looking-up.
+    _upsert_custom_field(
+        dt="Sales Invoice Item",
+        fieldname="item_name_ar",
+        label="Item Name (Arabic)",
+        fieldtype="Data",
+        read_only=1,
+    )
 
 
 def _upsert_custom_field(dt, fieldname, **kwargs):
