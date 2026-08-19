@@ -42,6 +42,12 @@ _HOME_SEED = {
     "testimonial_2_author": "Lina M.",
 }
 
+_HOME_TOGGLES = (
+    "show_hero", "show_story", "show_services", "show_prices",
+    "show_how_it_works", "show_gallery", "show_testimonials",
+    "show_visit", "show_cta_band",
+)
+
 _SAMPLE_SERVICES = [
     ("Haircut", "Cut & Style", 45, 60, "Classic cut, washed and styled to your shape."),
     ("Beard Trim", "Grooming", 20, 30, "Sharp lines and a shape-up that lasts."),
@@ -59,6 +65,18 @@ def _seed_homepage_defaults():
     try:
         bs = frappe.get_single("Business Settings")
         changed = False
+        # business_name is mandatory on the doctype — a fresh site's row
+        # fails validation on save without it.
+        if not bs.get("business_name"):
+            bs.set("business_name", "My Business")
+            changed = True
+        # Section toggles default ON on a fresh site. A full save() of the
+        # single row writes every Check column as 0, so we must set them
+        # explicitly BEFORE the first save or every section hides itself.
+        for toggle in _HOME_TOGGLES:
+            if bs.get(toggle) is None:
+                bs.set(toggle, 1)
+                changed = True
         for field, value in _HOME_SEED.items():
             if not bs.get(field) and value:
                 bs.set(field, value)

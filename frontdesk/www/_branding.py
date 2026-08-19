@@ -38,7 +38,7 @@ def get_branding() -> dict:
     ws = _safe_single("Website Settings") or {}
     bs = _safe_single("Business Settings") or {}
 
-    business_name = ws.get("app_name") or bs.get("business_name") or "FrontDesk"
+    business_name = bs.get("business_name") or ws.get("app_name") or "FrontDesk"
     vertical = bs.get("vertical") or "Barbershop"
     vd = VERTICAL_DEFAULTS.get(vertical, VERTICAL_DEFAULTS["Other"])
 
