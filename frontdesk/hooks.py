@@ -9,10 +9,23 @@ app_description = "Booking, POS, and AI-powered front desk for service businesse
 app_email = "yasser@basira.tech"
 app_license = "MIT"
 
+# Hook registrations (dotted-path strings — bare functions in hooks.py are
+# NOT picked up by frappe's hook loader, which filters out FunctionType).
+# Implementation functions are named setup_* to avoid shadowing these strings.
+after_install = "frontdesk.hooks.setup_after_install"
+after_migrate = "frontdesk.hooks.setup_after_migrate"
+
+def setup_after_migrate():
+    """Re-ensure custom fields on every migrate — after_install only fires on
+    fresh installs, so existing sites that pull this app would never get the
+    Item custom fields without this."""
+    _ensure_custom_fields()
+
+
 # -------------------
 # Install hook — ensure custom roles + loyalty program exist
 # -------------------
-def after_install():
+def setup_after_install():
     """Create custom roles on first install so the DocType permissions
     referencing them don't fail the install. Also seed the default
     FrontDesk Rewards loyalty program if ERPNext is installed."""
