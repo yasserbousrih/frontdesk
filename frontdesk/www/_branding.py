@@ -24,6 +24,18 @@ VERTICAL_DEFAULTS = {
     "Other": {"tagline": "Book your appointment", "cta": "Book Appointment", "staff_label": "professional"},
 }
 
+# Per-vertical default LOOK — each industry gets a completely different
+# theme preset, Arabic font and layout out of the box (all still
+# overridable from Business Settings appearance fields).
+VERTICAL_LOOKS = {
+    "Barbershop": {"preset": "Brass", "ar_font": "Tajawal", "layout": "Modern (Card & Booking)"},
+    "Salon": {"preset": "Rose", "ar_font": "Amiri", "layout": "Modern (Card & Booking)"},
+    "Clinic": {"preset": "Navy", "ar_font": "Noto Kufi Arabic", "layout": "Minimal (Editorial)"},
+    "Spa": {"preset": "Forest", "ar_font": "Noto Sans Arabic", "layout": "Minimal (Editorial)"},
+    "Nail Studio": {"preset": "Burgundy", "ar_font": "Cairo", "layout": "Vibrant (Bold)"},
+    "Other": {"preset": "Slate", "ar_font": "Noto Naskh Arabic", "layout": "Modern (Card & Booking)"},
+}
+
 HOW_DEFAULTS = [
     ("Pick Your Service", "Browse our services and pick the one that suits you."),
     ("Choose a Time", "See real-time availability and lock in your slot in seconds."),
@@ -57,6 +69,15 @@ def get_branding() -> dict:
     business_name = bs.get("business_name") or ws.get("app_name") or "FrontDesk"
     vertical = bs.get("vertical") or "Barbershop"
     vd = VERTICAL_DEFAULTS.get(vertical, VERTICAL_DEFAULTS["Other"])
+    vl = VERTICAL_LOOKS.get(vertical, VERTICAL_LOOKS["Other"])
+
+    # Industry default look: each vertical has its own theme preset, Arabic
+    # font and layout — Business Settings appearance fields override.
+    if not bs.get("preset_theme"):
+        bs["preset_theme"] = vl["preset"]
+    ar_font = vl["ar_font"]
+    if not bs.get("site_layout"):
+        bs["site_layout"] = vl["layout"]
 
     theme = resolve_theme(bs)
 
@@ -67,6 +88,8 @@ def get_branding() -> dict:
     font_urls = []
     if FONT_URLS.get(font_family):
         font_urls.append(FONT_URLS[font_family])
+    if FONT_URLS.get(ar_font) and ar_font != font_family:
+        font_urls.append(FONT_URLS[ar_font])
     if heading_font.startswith("Serif (Playfair") and font_family != "Playfair Display":
         font_urls.append("family=Playfair+Display:wght@600;700;800")
     elif heading_font.startswith("Serif (Cormorant") and font_family != "Cormorant Garamond":
@@ -118,6 +141,7 @@ def get_branding() -> dict:
         "font_family": font_family,
         "font_urls": font_urls,
         "font_display": font_display,
+        "ar_font": ar_font,
         "font_size": "14px" if font_size_base.startswith("Small") else "18px" if font_size_base.startswith("Large") else "16px",
         "radius": radius_map.get(bs.get("border_radius")) or "16px",
         "shadow": shadow_map.get(bs.get("card_shadow")) or "0 2px 10px rgba(0,0,0,0.08)",

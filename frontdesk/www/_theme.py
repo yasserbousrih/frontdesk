@@ -22,6 +22,7 @@ FONT_URLS = {
     "Cairo": "family=Cairo:wght@400;600;700;800",
     "Noto Sans Arabic": "family=Noto+Sans+Arabic:wght@400;500;600;700;800",
     "Noto Kufi Arabic": "family=Noto+Kufi+Arabic:wght@400;500;600;700;800",
+    "Noto Naskh Arabic": "family=Noto+Naskh+Arabic:wght@400;500;600;700",
     "Amiri": "family=Amiri:wght@400;700",
 }
 
