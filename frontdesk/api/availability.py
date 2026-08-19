@@ -8,7 +8,7 @@ first, so the same correctness guarantees apply to all of them. Guest-allowed
 because the public website calls it before the customer has logged in.
 """
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 import frappe
 from frappe import _
@@ -102,8 +102,12 @@ def get_available_slots(staff: str, service: str, date: str) -> list:
 # ---------- internal helpers ----------
 
 def _time_to_minutes(t) -> int:
-    """Frappe `Time` value comes in as a `datetime.time` or string 'HH:MM:SS'."""
+    """Frappe `Time` value comes in as a `datetime.time`, `datetime.timedelta`
+    (hours since midnight, as newer frappe returns for Time columns), or a
+    string 'HH:MM:SS'. Normalize all three to minutes since midnight."""
     if isinstance(t, str):
         parts = t.split(":")
         return int(parts[0]) * 60 + int(parts[1])
+    if isinstance(t, timedelta):
+        return int(t.total_seconds() // 60)
     return t.hour * 60 + t.minute

@@ -14,9 +14,16 @@ CANCELLED_STATES = frozenset({"Cancelled", "No-Show"})
 
 
 def to_minutes(t) -> int:
-    """Convert a `datetime.time` (or hour*60+min scalar from tests) to minutes since midnight."""
+    """Convert a `datetime.time`, `datetime.timedelta` (hours since midnight,
+    as newer frappe returns for Time columns), 'HH:MM[:SS]' string, or
+    hour*60+min scalar to minutes since midnight."""
     if isinstance(t, (int, float)):
         return int(t)
+    if isinstance(t, str):
+        parts = t.split(":")
+        return int(parts[0]) * 60 + int(parts[1])
+    if isinstance(t, timedelta):
+        return int(t.total_seconds() // 60)
     return t.hour * 60 + t.minute + (1 if t.second >= 30 else 0)
 
 
