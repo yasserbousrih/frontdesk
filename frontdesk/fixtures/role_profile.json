@@ -1,0 +1,29 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2026-08-19 15:14:20.021749",
+  "name": "Frontdesk Manager",
+  "role_profile": "Frontdesk Manager",
+  "roles": [
+   {
+    "role": "Frontdesk Manager"
+   },
+   {
+    "role": "Frontdesk User"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2026-08-19 15:14:20.081805",
+  "name": "Frontdesk User",
+  "role_profile": "Frontdesk User",
+  "roles": [
+   {
+    "role": "Frontdesk User"
+   }
+  ]
+ }
+]

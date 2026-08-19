@@ -184,9 +184,16 @@ def _upsert_custom_field(dt, fieldname, **kwargs):
 
 
 # -------------------
-# Fixtures (none for now — vertical templates come in Phase 4)
+# Fixtures — Role Profiles ship with the app so they survive a clone /
+# fresh install: export_fixtures dumps them to fixtures/role_profile.json
+# and import_fixtures re-imports on every migrate.
 # -------------------
-# fixtures = []
+fixtures = [
+    {
+        "dt": "Role Profile",
+        "filters": [["role_profile", "in", ["Frontdesk Manager", "Frontdesk User"]]],
+    },
+]
 
 # -------------------
 # Document events
