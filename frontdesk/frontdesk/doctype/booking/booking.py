@@ -74,15 +74,27 @@ class Booking(Document):
             (self.staff,),
         )
 
-        existing = frappe.get_all(
-            "Booking",
-            filters={
+        # LOCKING READ: under MariaDB REPEATABLE READ a plain SELECT would
+        # read the transaction's EARLIER snapshot — set at session/auth time
+        # BEFORE the lock was taken — and miss a booking committed by another
+        # request while we waited on the lock. FOR UPDATE reads the LATEST
+        # committed row versions, so overlap detection is race-free.
+        existing = frappe.db.sql(
+            """
+            SELECT name, start_time, end_time, status
+            FROM `tabBooking`
+            WHERE staff = %(staff)s
+              AND booking_date = %(date)s
+              AND status NOT IN ('Cancelled', 'No-Show')
+              AND name != %(self_name)s
+            FOR UPDATE
+            """,
+            {
                 "staff": self.staff,
-                "booking_date": self.booking_date,
-                "status": ["not in", list(CANCELLED_STATES)],
-                "name": ["!=", self.name or ""],
+                "date": self.booking_date,
+                "self_name": self.name or "",
             },
-            fields=["name", "start_time", "end_time", "status"],
+            as_dict=True,
         )
 
         for b in existing:
