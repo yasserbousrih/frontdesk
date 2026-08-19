@@ -7,7 +7,7 @@ from ._branding import get_branding
 def get_context(context):
     # Require login — redirect if not authenticated
     if frappe.session.user == "Guest":
-        frappe.local.login_manager.require_login = True
+        frappe.local.flags.redirect_location = "/login"
         raise frappe.Redirect
 
     # Find Staff Member linked to this user
