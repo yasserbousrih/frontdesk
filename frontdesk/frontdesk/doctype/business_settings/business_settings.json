@@ -6,125 +6,121 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "section_business_info",
   "business_name",
-  "vertical",
-  "branding_section",
   "logo",
-  "cover_image",
   "favicon",
+  "cover_image",
   "about_text",
-  "contact_section",
+  "section_contact",
   "contact_phone",
   "contact_whatsapp",
   "contact_email",
   "instagram",
-  "booking_rules_section",
-  "slot_buffer_minutes",
-  "currency",
-  "hours_section",
+  "address",
+  "maps_url",
+  "contact_col",
+  "web_appearance",
+  "preset_theme",
+  "webapp_col1",
+  "theme_mode",
+  "primary_color",
+  "webapp_col2",
+  "secondary_color",
+  "accent_color",
+  "webapp_col3",
+  "background_color",
+  "text_color",
+  "font_family",
+  "webapp_col4",
+  "heading_font",
+  "font_size_base",
+  "border_radius",
+  "webapp_col5",
+  "card_shadow",
+  "site_layout",
+  "business_hours",
   "operating_hours",
   "enforce_hours",
-  "omnichat_section",
-  "omnichat_api_url",
-  "omnichat_api_token",
-  "omnichat_sender_id",
-  "google_review_url",
-  "basira_crm_section",
-  "basira_crm_api_url",
-  "basira_crm_secret",
-  "homepage_section",
-  "homepage_col_1",
+  "hours_text",
+  "show_visit",
+  "channels_booking",
+  "slot_buffer_minutes",
+  "currency",
+  "content_homepage",
   "show_hero",
+  "chp_c1",
   "hero_tagline",
   "cta_label",
   "cta_secondary_label",
   "cta_secondary_link",
   "staff_label",
-  "homepage_col_2",
   "show_story",
+  "chp_c2",
   "story_heading",
   "story_text",
   "story_image",
-  "homepage_col_3",
   "show_services",
+  "chp_c3",
   "services_heading",
   "services_count",
   "show_prices",
-  "how_section",
-  "how_col_1",
+  "content_how",
   "show_how_it_works",
   "how_heading",
+  "how_c1",
   "how_step1_title",
   "how_step1_text",
-  "how_col_2",
   "how_step2_title",
+  "how_c2",
   "how_step2_text",
-  "how_col_3",
   "how_step3_title",
+  "how_c3",
   "how_step3_text",
-  "social_section",
-  "social_col_1",
+  "content_gallery",
   "show_gallery",
   "show_testimonials",
+  "gal_c1",
   "testimonial_1_text",
   "testimonial_1_author",
-  "social_col_2",
   "testimonial_2_text",
+  "gal_c2",
   "testimonial_2_author",
-  "social_col_3",
   "testimonial_3_text",
+  "gal_c3",
   "testimonial_3_author",
-  "visit_section",
-  "visit_col_1",
-  "show_visit",
-  "hours_text",
-  "address",
-  "maps_url",
-  "visit_col_2",
-  "payment_section",
+  "payments",
   "payment_gateway",
   "payment_api_key",
   "payment_secret",
   "payment_mode",
-  "notification_section",
+  "notifications",
   "sms_enabled",
   "sms_provider",
   "whatsapp_notify",
   "notify_on_booking_placed",
   "notify_on_booking_ready",
+  "integrations_omnichat",
+  "omnichat_api_url",
+  "omnichat_api_token",
+  "omnichat_sender_id",
+  "google_review_url",
+  "integrations_crm",
+  "basira_crm_api_url",
+  "basira_crm_secret",
+  "content_cta",
   "show_cta_band",
   "cta_band_heading",
   "cta_band_text",
   "cta_band_label",
-  "appearance_tab",
-  "colors_section",
-  "preset_theme",
-  "cb_color1",
-  "theme_mode",
-  "colors2_section",
-  "primary_color",
-  "cb_color2",
-  "secondary_color",
-  "colors3_section",
-  "accent_color",
-  "cb_color3",
-  "background_color",
-  "colors4_section",
-  "text_color",
-  "typography_section",
-  "font_family",
-  "cb_typo",
-  "heading_font",
-  "font_size_base",
-  "layout_section",
-  "border_radius",
-  "cb_layout",
-  "card_shadow",
-  "site_layout",
-  "preview_section",
-  "live_preview"
+  "vertical"
  ],
  "fields": [
+  {
+   "fieldname": "section_business_info",
+   "fieldtype": "Section Break",
+   "label": "Business Info"
+  },
   {
    "fieldname": "business_name",
    "fieldtype": "Data",
@@ -133,25 +129,15 @@
    "idx": 1
   },
   {
-   "default": "Barbershop",
-   "fieldname": "vertical",
-   "fieldtype": "Select",
-   "label": "Vertical",
-   "options": "Barbershop\nSalon\nClinic\nSpa\nNail Studio\nOther",
-   "reqd": 1,
-   "idx": 2
-  },
-  {
-   "fieldname": "branding_section",
-   "fieldtype": "Section Break",
-   "label": "Branding",
-   "idx": 3
-  },
-  {
    "fieldname": "logo",
    "fieldtype": "Attach Image",
    "label": "Logo",
    "idx": 4
+  },
+  {
+   "fieldname": "favicon",
+   "fieldtype": "Attach Image",
+   "label": "Favicon"
   },
   {
    "fieldname": "cover_image",
@@ -160,21 +146,15 @@
    "idx": 5
   },
   {
-   "fieldname": "favicon",
-   "fieldtype": "Attach Image",
-   "label": "Favicon"
-  },
-  {
    "fieldname": "about_text",
    "fieldtype": "Text",
    "label": "About",
    "idx": 6
   },
   {
-   "fieldname": "contact_section",
+   "fieldname": "section_contact",
    "fieldtype": "Section Break",
-   "label": "Contact",
-   "idx": 7
+   "label": "Business Info · Contact"
   },
   {
    "fieldname": "contact_phone",
@@ -201,10 +181,147 @@
    "idx": 11
   },
   {
-   "fieldname": "booking_rules_section",
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "idx": 69,
+   "label": "Address"
+  },
+  {
+   "fieldname": "maps_url",
+   "fieldtype": "Data",
+   "idx": 70,
+   "label": "Google Maps URL"
+  },
+  {
+   "fieldname": "contact_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "web_appearance",
    "fieldtype": "Section Break",
-   "label": "Booking Rules",
-   "idx": 12
+   "label": "Web Appearance"
+  },
+  {
+   "fieldname": "preset_theme",
+   "fieldtype": "Select",
+   "label": "Preset Theme",
+   "options": "Custom\nBrass\nTeal\nTerracotta\nForest\nNavy\nBurgundy\nMidnight\nDesert\nOcean\nSlate\nRose\nOlive"
+  },
+  {
+   "fieldname": "webapp_col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "theme_mode",
+   "fieldtype": "Select",
+   "label": "Theme Mode",
+   "options": "Light\nDark\nAuto"
+  },
+  {
+   "fieldname": "primary_color",
+   "fieldtype": "Color",
+   "label": "Primary Color"
+  },
+  {
+   "fieldname": "webapp_col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "secondary_color",
+   "fieldtype": "Color",
+   "label": "Secondary Color"
+  },
+  {
+   "fieldname": "accent_color",
+   "fieldtype": "Color",
+   "label": "Accent Color"
+  },
+  {
+   "fieldname": "webapp_col3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "background_color",
+   "fieldtype": "Color",
+   "label": "Background Color"
+  },
+  {
+   "fieldname": "text_color",
+   "fieldtype": "Color",
+   "label": "Text Color"
+  },
+  {
+   "fieldname": "font_family",
+   "fieldtype": "Select",
+   "label": "Font Family"
+  },
+  {
+   "fieldname": "webapp_col4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "heading_font",
+   "fieldtype": "Select",
+   "label": "Heading Font"
+  },
+  {
+   "fieldname": "font_size_base",
+   "fieldtype": "Select",
+   "label": "Font Size Base"
+  },
+  {
+   "fieldname": "border_radius",
+   "fieldtype": "Select",
+   "label": "Border Radius"
+  },
+  {
+   "fieldname": "webapp_col5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "card_shadow",
+   "fieldtype": "Select",
+   "label": "Card Shadow"
+  },
+  {
+   "fieldname": "site_layout",
+   "fieldtype": "Select",
+   "label": "Site Layout"
+  },
+  {
+   "fieldname": "business_hours",
+   "fieldtype": "Section Break",
+   "label": "Business Hours"
+  },
+  {
+   "fieldname": "operating_hours",
+   "fieldtype": "Table",
+   "options": "Operating Hours",
+   "label": "Operating Hours"
+  },
+  {
+   "fieldname": "enforce_hours",
+   "fieldtype": "Check",
+   "label": "Enforce Business Hours",
+   "description": "Block bookings outside business hours"
+  },
+  {
+   "fieldname": "hours_text",
+   "fieldtype": "Data",
+   "idx": 68,
+   "label": "Opening Hours Text"
+  },
+  {
+   "fieldname": "show_visit",
+   "fieldtype": "Check",
+   "idx": 67,
+   "label": "Show Hours & Visit",
+   "default": "1"
+  },
+  {
+   "fieldname": "channels_booking",
+   "fieldtype": "Section Break",
+   "label": "Channels & Booking"
   },
   {
    "default": "0",
@@ -223,80 +340,9 @@
    "idx": 14
   },
   {
+   "fieldname": "content_homepage",
    "fieldtype": "Section Break",
-   "label": "Business Hours",
-   "fieldname": "hours_section"
-  },
-  {
-   "fieldname": "operating_hours",
-   "fieldtype": "Table",
-   "options": "Operating Hours",
-   "label": "Operating Hours"
-  },
-  {
-   "fieldname": "enforce_hours",
-   "fieldtype": "Check",
-   "label": "Enforce Business Hours",
-   "description": "Block bookings outside business hours"
-  },
-  {
-   "fieldname": "omnichat_section",
-   "fieldtype": "Section Break",
-   "label": "Omnichat / WhatsApp",
-   "idx": 15
-  },
-  {
-   "fieldname": "omnichat_api_url",
-   "fieldtype": "Data",
-   "label": "Omnichat API URL",
-   "idx": 16
-  },
-  {
-   "fieldname": "omnichat_api_token",
-   "fieldtype": "Password",
-   "label": "Omnichat API Token",
-   "idx": 17
-  },
-  {
-   "fieldname": "omnichat_sender_id",
-   "fieldtype": "Data",
-   "label": "Omnichat Sender ID",
-   "idx": 18
-  },
-  {
-   "fieldname": "google_review_url",
-   "fieldtype": "Data",
-   "label": "Google Review URL",
-   "idx": 19
-  },
-  {
-   "fieldname": "basira_crm_section",
-   "fieldtype": "Section Break",
-   "label": "Basira CRM",
-   "idx": 20
-  },
-  {
-   "fieldname": "basira_crm_api_url",
-   "fieldtype": "Data",
-   "label": "Basira CRM API URL",
-   "idx": 21
-  },
-  {
-   "fieldname": "basira_crm_secret",
-   "fieldtype": "Password",
-   "label": "Basira CRM Secret",
-   "idx": 22
-  },
-  {
-   "fieldname": "homepage_section",
-   "fieldtype": "Section Break",
-   "idx": 23,
-   "label": "Homepage"
-  },
-  {
-   "fieldname": "homepage_col_1",
-   "fieldtype": "Column Break",
-   "idx": 24
+   "label": "Content · Homepage"
   },
   {
    "fieldname": "show_hero",
@@ -304,6 +350,10 @@
    "idx": 25,
    "label": "Show Hero",
    "default": "1"
+  },
+  {
+   "fieldname": "chp_c1",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "hero_tagline",
@@ -336,16 +386,15 @@
    "label": "Staff Label (barber / stylist / therapist)"
   },
   {
-   "fieldname": "homepage_col_2",
-   "fieldtype": "Column Break",
-   "idx": 31
-  },
-  {
    "fieldname": "show_story",
    "fieldtype": "Check",
    "idx": 32,
    "label": "Show Story Section",
    "default": "1"
+  },
+  {
+   "fieldname": "chp_c2",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "story_heading",
@@ -366,16 +415,15 @@
    "label": "Story Image"
   },
   {
-   "fieldname": "homepage_col_3",
-   "fieldtype": "Column Break",
-   "idx": 36
-  },
-  {
    "fieldname": "show_services",
    "fieldtype": "Check",
    "idx": 37,
    "label": "Show Services Section",
    "default": "1"
+  },
+  {
+   "fieldname": "chp_c3",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "services_heading",
@@ -398,15 +446,9 @@
    "default": "1"
   },
   {
-   "fieldname": "how_section",
+   "fieldname": "content_how",
    "fieldtype": "Section Break",
-   "idx": 41,
-   "label": "How It Works"
-  },
-  {
-   "fieldname": "how_col_1",
-   "fieldtype": "Column Break",
-   "idx": 42
+   "label": "Content · How It Works"
   },
   {
    "fieldname": "show_how_it_works",
@@ -422,6 +464,10 @@
    "label": "How It Works Heading"
   },
   {
+   "fieldname": "how_c1",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "how_step1_title",
    "fieldtype": "Data",
    "idx": 45,
@@ -434,15 +480,14 @@
    "label": "Step 1 Text"
   },
   {
-   "fieldname": "how_col_2",
-   "fieldtype": "Column Break",
-   "idx": 47
-  },
-  {
    "fieldname": "how_step2_title",
    "fieldtype": "Data",
    "idx": 48,
    "label": "Step 2 Title"
+  },
+  {
+   "fieldname": "how_c2",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "how_step2_text",
@@ -451,15 +496,14 @@
    "label": "Step 2 Text"
   },
   {
-   "fieldname": "how_col_3",
-   "fieldtype": "Column Break",
-   "idx": 50
-  },
-  {
    "fieldname": "how_step3_title",
    "fieldtype": "Data",
    "idx": 51,
    "label": "Step 3 Title"
+  },
+  {
+   "fieldname": "how_c3",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "how_step3_text",
@@ -468,15 +512,9 @@
    "label": "Step 3 Text"
   },
   {
-   "fieldname": "social_section",
+   "fieldname": "content_gallery",
    "fieldtype": "Section Break",
-   "idx": 53,
-   "label": "Gallery & Testimonials"
-  },
-  {
-   "fieldname": "social_col_1",
-   "fieldtype": "Column Break",
-   "idx": 54
+   "label": "Content · Gallery & Testimonials"
   },
   {
    "fieldname": "show_gallery",
@@ -493,6 +531,10 @@
    "default": "1"
   },
   {
+   "fieldname": "gal_c1",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "testimonial_1_text",
    "fieldtype": "Text",
    "idx": 57,
@@ -505,15 +547,14 @@
    "label": "Testimonial 1 Author"
   },
   {
-   "fieldname": "social_col_2",
-   "fieldtype": "Column Break",
-   "idx": 59
-  },
-  {
    "fieldname": "testimonial_2_text",
    "fieldtype": "Text",
    "idx": 60,
    "label": "Testimonial 2"
+  },
+  {
+   "fieldname": "gal_c2",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "testimonial_2_author",
@@ -522,15 +563,14 @@
    "label": "Testimonial 2 Author"
   },
   {
-   "fieldname": "social_col_3",
-   "fieldtype": "Column Break",
-   "idx": 62
-  },
-  {
    "fieldname": "testimonial_3_text",
    "fieldtype": "Text",
    "idx": 63,
    "label": "Testimonial 3"
+  },
+  {
+   "fieldname": "gal_c3",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "testimonial_3_author",
@@ -539,50 +579,9 @@
    "label": "Testimonial 3 Author"
   },
   {
-   "fieldname": "visit_section",
+   "fieldname": "payments",
    "fieldtype": "Section Break",
-   "idx": 65,
-   "label": "Hours & Visit"
-  },
-  {
-   "fieldname": "visit_col_1",
-   "fieldtype": "Column Break",
-   "idx": 66
-  },
-  {
-   "fieldname": "show_visit",
-   "fieldtype": "Check",
-   "idx": 67,
-   "label": "Show Hours & Visit",
-   "default": "1"
-  },
-  {
-   "fieldname": "hours_text",
-   "fieldtype": "Data",
-   "idx": 68,
-   "label": "Opening Hours Text"
-  },
-  {
-   "fieldname": "address",
-   "fieldtype": "Small Text",
-   "idx": 69,
-   "label": "Address"
-  },
-  {
-   "fieldname": "maps_url",
-   "fieldtype": "Data",
-   "idx": 70,
-   "label": "Google Maps URL"
-  },
-  {
-   "fieldname": "visit_col_2",
-   "fieldtype": "Column Break",
-   "idx": 71
-  },
-  {
-   "fieldtype": "Section Break",
-   "label": "Payment Gateway",
-   "fieldname": "payment_section"
+   "label": "Payments"
   },
   {
    "fieldname": "payment_gateway",
@@ -607,9 +606,9 @@
    "options": "\nOnline Now\nPay On Service"
   },
   {
+   "fieldname": "notifications",
    "fieldtype": "Section Break",
-   "label": "Notifications",
-   "fieldname": "notification_section"
+   "label": "Notifications"
   },
   {
    "fieldname": "sms_enabled",
@@ -638,6 +637,57 @@
    "label": "Notify on Booking Ready"
   },
   {
+   "fieldname": "integrations_omnichat",
+   "fieldtype": "Section Break",
+   "label": "Integrations · Omnichat"
+  },
+  {
+   "fieldname": "omnichat_api_url",
+   "fieldtype": "Data",
+   "label": "Omnichat API URL",
+   "idx": 16
+  },
+  {
+   "fieldname": "omnichat_api_token",
+   "fieldtype": "Password",
+   "label": "Omnichat API Token",
+   "idx": 17
+  },
+  {
+   "fieldname": "omnichat_sender_id",
+   "fieldtype": "Data",
+   "label": "Omnichat Sender ID",
+   "idx": 18
+  },
+  {
+   "fieldname": "google_review_url",
+   "fieldtype": "Data",
+   "label": "Google Review URL",
+   "idx": 19
+  },
+  {
+   "fieldname": "integrations_crm",
+   "fieldtype": "Section Break",
+   "label": "Integrations · CRM"
+  },
+  {
+   "fieldname": "basira_crm_api_url",
+   "fieldtype": "Data",
+   "label": "Basira CRM API URL",
+   "idx": 21
+  },
+  {
+   "fieldname": "basira_crm_secret",
+   "fieldtype": "Password",
+   "label": "Basira CRM Secret",
+   "idx": 22
+  },
+  {
+   "fieldname": "content_cta",
+   "fieldtype": "Section Break",
+   "label": "Content · CTA Band"
+  },
+  {
    "fieldname": "show_cta_band",
    "fieldtype": "Check",
    "idx": 72,
@@ -663,182 +713,13 @@
    "label": "CTA Band Button Label"
   },
   {
-   "fieldname": "appearance_tab",
-   "fieldtype": "Tab Break",
-   "label": "Appearance",
-   "idx": 76
-  },
-  {
-   "fieldname": "colors_section",
-   "fieldtype": "Section Break",
-   "label": "Colors & Theme",
-   "idx": 77
-  },
-  {
-   "fieldname": "preset_theme",
+   "default": "Barbershop",
+   "fieldname": "vertical",
    "fieldtype": "Select",
-   "label": "Preset Theme",
-   "options": "Custom\nBrass\nTeal\nTerracotta\nForest\nNavy\nBurgundy\nMidnight\nDesert\nOcean\nSlate\nRose\nOlive",
-   "default": "Custom",
-   "description": "Pick a ready-made color palette (each includes its own light and dark colors). Choose Custom to set colors manually below.",
-   "idx": 78
-  },
-  {
-   "fieldname": "cb_color1",
-   "fieldtype": "Column Break",
-   "idx": 79
-  },
-  {
-   "fieldname": "theme_mode",
-   "fieldtype": "Select",
-   "label": "Theme Mode",
-   "options": "Light\nDark\nAuto",
-   "default": "Light",
-   "description": "Auto follows the visitor's device setting; visitors can also toggle dark mode on the site itself.",
-   "idx": 80
-  },
-  {
-   "fieldname": "colors2_section",
-   "fieldtype": "Section Break",
-   "idx": 81
-  },
-  {
-   "fieldname": "primary_color",
-   "fieldtype": "Color",
-   "label": "Primary Color",
-   "idx": 82
-  },
-  {
-   "fieldname": "cb_color2",
-   "fieldtype": "Column Break",
-   "idx": 83
-  },
-  {
-   "fieldname": "secondary_color",
-   "fieldtype": "Color",
-   "label": "Secondary Color",
-   "default": "#2b2b4a",
-   "idx": 84
-  },
-  {
-   "fieldname": "colors3_section",
-   "fieldtype": "Section Break",
-   "idx": 85
-  },
-  {
-   "fieldname": "accent_color",
-   "fieldtype": "Color",
-   "label": "Accent Color",
-   "idx": 86
-  },
-  {
-   "fieldname": "cb_color3",
-   "fieldtype": "Column Break",
-   "idx": 87
-  },
-  {
-   "fieldname": "background_color",
-   "fieldtype": "Color",
-   "label": "Background Color",
-   "default": "#fafafa",
-   "idx": 88
-  },
-  {
-   "fieldname": "colors4_section",
-   "fieldtype": "Section Break",
-   "idx": 89
-  },
-  {
-   "fieldname": "text_color",
-   "fieldtype": "Color",
-   "label": "Text Color",
-   "default": "#1a1a1a",
-   "idx": 90
-  },
-  {
-   "fieldname": "typography_section",
-   "fieldtype": "Section Break",
-   "label": "Typography",
-   "description": "Fonts load from Google Fonts automatically.",
-   "idx": 91
-  },
-  {
-   "fieldname": "font_family",
-   "fieldtype": "Select",
-   "label": "Font Family",
-   "options": "Inter\nPoppins\nPlus Jakarta Sans\nDM Sans\nNunito Sans\nMontserrat\nLora\nMerriweather\nPlayfair Display\nCormorant Garamond\nTajawal\nCairo\nNoto Sans Arabic\nNoto Kufi Arabic\nAmiri",
-   "default": "Inter",
-   "idx": 92
-  },
-  {
-   "fieldname": "cb_typo",
-   "fieldtype": "Column Break",
-   "idx": 93
-  },
-  {
-   "fieldname": "heading_font",
-   "fieldtype": "Select",
-   "label": "Heading Font",
-   "options": "Same as Body\nSerif (Playfair Display)\nSerif (Cormorant Garamond)",
-   "default": "Same as Body",
-   "description": "Font used for the business name and section headings.",
-   "idx": 94
-  },
-  {
-   "fieldname": "font_size_base",
-   "fieldtype": "Select",
-   "label": "Font Size Base",
-   "options": "Small (14px)\nNormal (16px)\nLarge (18px)",
-   "default": "Normal (16px)",
-   "idx": 95
-  },
-  {
-   "fieldname": "layout_section",
-   "fieldtype": "Section Break",
-   "label": "Layout & Style",
-   "idx": 96
-  },
-  {
-   "fieldname": "border_radius",
-   "fieldtype": "Select",
-   "label": "Border Radius",
-   "options": "Sharp (0px)\nSoft (8px)\nRounded (16px)\nPill (999px)",
-   "default": "Rounded (16px)",
-   "idx": 97
-  },
-  {
-   "fieldname": "cb_layout",
-   "fieldtype": "Column Break",
-   "idx": 98
-  },
-  {
-   "fieldname": "card_shadow",
-   "fieldtype": "Select",
-   "label": "Card Shadow",
-   "options": "None\nSubtle\nMedium\nStrong",
-   "default": "Subtle",
-   "idx": 99
-  },
-  {
-   "fieldname": "site_layout",
-   "fieldtype": "Select",
-   "label": "Site Layout",
-   "options": "Modern (Card & Booking)\nMinimal (Editorial)\nVibrant (Bold)",
-   "default": "Modern (Card & Booking)",
-   "description": "Modern keeps the card-based booking look. Minimal is a clean editorial style. Vibrant goes bolder with stronger gradients and shadows.",
-   "idx": 100
-  },
-  {
-   "fieldname": "preview_section",
-   "fieldtype": "Section Break",
-   "label": "Live Preview",
-   "idx": 101
-  },
-  {
-   "fieldname": "live_preview",
-   "fieldtype": "HTML",
-   "label": "Live Preview",
-   "idx": 102
+   "label": "Vertical",
+   "options": "Barbershop\nSalon\nClinic\nSpa\nNail Studio\nOther",
+   "reqd": 1,
+   "idx": 2
   }
  ],
  "index_web_pages_for_search": 1,
