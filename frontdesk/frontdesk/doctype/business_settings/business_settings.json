@@ -6,37 +6,38 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "section_business_info",
+  "sec_business_info",
   "business_name",
   "logo",
   "favicon",
   "cover_image",
   "about_text",
-  "section_contact",
+  "sec_contact",
   "contact_phone",
   "contact_whatsapp",
   "contact_email",
   "instagram",
   "address",
   "maps_url",
-  "contact_col",
+  "c1",
   "web_appearance",
   "preset_theme",
-  "webapp_col1",
+  "wa1",
   "theme_mode",
+  "vertical",
   "primary_color",
-  "webapp_col2",
+  "wa2",
   "secondary_color",
   "accent_color",
-  "webapp_col3",
+  "wa3",
   "background_color",
   "text_color",
   "font_family",
-  "webapp_col4",
+  "wa4",
   "heading_font",
   "font_size_base",
   "border_radius",
-  "webapp_col5",
+  "wa5",
   "card_shadow",
   "site_layout",
   "business_hours",
@@ -47,48 +48,6 @@
   "channels_booking",
   "slot_buffer_minutes",
   "currency",
-  "content_homepage",
-  "show_hero",
-  "chp_c1",
-  "hero_tagline",
-  "cta_label",
-  "cta_secondary_label",
-  "cta_secondary_link",
-  "staff_label",
-  "show_story",
-  "chp_c2",
-  "story_heading",
-  "story_text",
-  "story_image",
-  "show_services",
-  "chp_c3",
-  "services_heading",
-  "services_count",
-  "show_prices",
-  "content_how",
-  "show_how_it_works",
-  "how_heading",
-  "how_c1",
-  "how_step1_title",
-  "how_step1_text",
-  "how_step2_title",
-  "how_c2",
-  "how_step2_text",
-  "how_step3_title",
-  "how_c3",
-  "how_step3_text",
-  "content_gallery",
-  "show_gallery",
-  "show_testimonials",
-  "gal_c1",
-  "testimonial_1_text",
-  "testimonial_1_author",
-  "testimonial_2_text",
-  "gal_c2",
-  "testimonial_2_author",
-  "testimonial_3_text",
-  "gal_c3",
-  "testimonial_3_author",
   "payments",
   "payment_gateway",
   "payment_api_key",
@@ -108,16 +67,64 @@
   "integrations_crm",
   "basira_crm_api_url",
   "basira_crm_secret",
+  "content_homepage",
+  "show_hero",
+  "ch1",
+  "hero_tagline",
+  "cta_label",
+  "cta_secondary_label",
+  "cta_secondary_link",
+  "staff_label",
+  "show_story",
+  "ch2",
+  "story_heading",
+  "story_text",
+  "story_image",
+  "show_services",
+  "ch3",
+  "services_heading",
+  "services_count",
+  "show_prices",
+  "content_how",
+  "show_how_it_works",
+  "how_heading",
+  "how1",
+  "how_step1_title",
+  "how_step1_text",
+  "how_step2_title",
+  "how2",
+  "how_step2_text",
+  "how_step3_title",
+  "how3",
+  "how_step3_text",
+  "content_gallery",
+  "show_gallery",
+  "show_testimonials",
+  "gal1",
+  "testimonial_1_text",
+  "testimonial_1_author",
+  "testimonial_2_text",
+  "gal2",
+  "testimonial_2_author",
+  "testimonial_3_text",
+  "gal3",
+  "testimonial_3_author",
   "content_cta",
   "show_cta_band",
   "cta_band_heading",
   "cta_band_text",
   "cta_band_label",
-  "vertical"
+  "preview_section",
+  "live_preview"
  ],
  "fields": [
   {
-   "fieldname": "section_business_info",
+   "fieldname": "tab_general",
+   "fieldtype": "Tab Break",
+   "label": "General"
+  },
+  {
+   "fieldname": "sec_business_info",
    "fieldtype": "Section Break",
    "label": "Business Info"
   },
@@ -152,7 +159,7 @@
    "idx": 6
   },
   {
-   "fieldname": "section_contact",
+   "fieldname": "sec_contact",
    "fieldtype": "Section Break",
    "label": "Business Info · Contact"
   },
@@ -193,8 +200,13 @@
    "label": "Google Maps URL"
   },
   {
-   "fieldname": "contact_col",
+   "fieldname": "c1",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tab_appearance",
+   "fieldtype": "Tab Break",
+   "label": "Appearance"
   },
   {
    "fieldname": "web_appearance",
@@ -208,7 +220,7 @@
    "options": "Custom\nBrass\nTeal\nTerracotta\nForest\nNavy\nBurgundy\nMidnight\nDesert\nOcean\nSlate\nRose\nOlive"
   },
   {
-   "fieldname": "webapp_col1",
+   "fieldname": "wa1",
    "fieldtype": "Column Break"
   },
   {
@@ -218,12 +230,21 @@
    "options": "Light\nDark\nAuto"
   },
   {
+   "default": "Barbershop",
+   "fieldname": "vertical",
+   "fieldtype": "Select",
+   "label": "Vertical",
+   "options": "Barbershop\nSalon\nClinic\nSpa\nNail Studio\nOther",
+   "reqd": 1,
+   "idx": 2
+  },
+  {
    "fieldname": "primary_color",
    "fieldtype": "Color",
    "label": "Primary Color"
   },
   {
-   "fieldname": "webapp_col2",
+   "fieldname": "wa2",
    "fieldtype": "Column Break"
   },
   {
@@ -237,7 +258,7 @@
    "label": "Accent Color"
   },
   {
-   "fieldname": "webapp_col3",
+   "fieldname": "wa3",
    "fieldtype": "Column Break"
   },
   {
@@ -256,7 +277,7 @@
    "label": "Font Family"
   },
   {
-   "fieldname": "webapp_col4",
+   "fieldname": "wa4",
    "fieldtype": "Column Break"
   },
   {
@@ -275,7 +296,7 @@
    "label": "Border Radius"
   },
   {
-   "fieldname": "webapp_col5",
+   "fieldname": "wa5",
    "fieldtype": "Column Break"
   },
   {
@@ -287,6 +308,11 @@
    "fieldname": "site_layout",
    "fieldtype": "Select",
    "label": "Site Layout"
+  },
+  {
+   "fieldname": "tab_business_hours",
+   "fieldtype": "Tab Break",
+   "label": "Business Hours"
   },
   {
    "fieldname": "business_hours",
@@ -319,6 +345,11 @@
    "default": "1"
   },
   {
+   "fieldname": "tab_channels",
+   "fieldtype": "Tab Break",
+   "label": "Channels & Booking"
+  },
+  {
    "fieldname": "channels_booking",
    "fieldtype": "Section Break",
    "label": "Channels & Booking"
@@ -340,243 +371,9 @@
    "idx": 14
   },
   {
-   "fieldname": "content_homepage",
-   "fieldtype": "Section Break",
-   "label": "Content · Homepage"
-  },
-  {
-   "fieldname": "show_hero",
-   "fieldtype": "Check",
-   "idx": 25,
-   "label": "Show Hero",
-   "default": "1"
-  },
-  {
-   "fieldname": "chp_c1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "hero_tagline",
-   "fieldtype": "Data",
-   "idx": 26,
-   "label": "Hero Tagline"
-  },
-  {
-   "fieldname": "cta_label",
-   "fieldtype": "Data",
-   "idx": 27,
-   "label": "CTA Button Label"
-  },
-  {
-   "fieldname": "cta_secondary_label",
-   "fieldtype": "Data",
-   "idx": 28,
-   "label": "Secondary CTA Label"
-  },
-  {
-   "fieldname": "cta_secondary_link",
-   "fieldtype": "Data",
-   "idx": 29,
-   "label": "Secondary CTA Link"
-  },
-  {
-   "fieldname": "staff_label",
-   "fieldtype": "Data",
-   "idx": 30,
-   "label": "Staff Label (barber / stylist / therapist)"
-  },
-  {
-   "fieldname": "show_story",
-   "fieldtype": "Check",
-   "idx": 32,
-   "label": "Show Story Section",
-   "default": "1"
-  },
-  {
-   "fieldname": "chp_c2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "story_heading",
-   "fieldtype": "Data",
-   "idx": 33,
-   "label": "Story Heading"
-  },
-  {
-   "fieldname": "story_text",
-   "fieldtype": "Text",
-   "idx": 34,
-   "label": "Story Text"
-  },
-  {
-   "fieldname": "story_image",
-   "fieldtype": "Attach Image",
-   "idx": 35,
-   "label": "Story Image"
-  },
-  {
-   "fieldname": "show_services",
-   "fieldtype": "Check",
-   "idx": 37,
-   "label": "Show Services Section",
-   "default": "1"
-  },
-  {
-   "fieldname": "chp_c3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "services_heading",
-   "fieldtype": "Data",
-   "idx": 38,
-   "label": "Services Heading"
-  },
-  {
-   "fieldname": "services_count",
-   "fieldtype": "Int",
-   "idx": 39,
-   "label": "Services to Show",
-   "default": "4"
-  },
-  {
-   "fieldname": "show_prices",
-   "fieldtype": "Check",
-   "idx": 40,
-   "label": "Show Prices",
-   "default": "1"
-  },
-  {
-   "fieldname": "content_how",
-   "fieldtype": "Section Break",
-   "label": "Content · How It Works"
-  },
-  {
-   "fieldname": "show_how_it_works",
-   "fieldtype": "Check",
-   "idx": 43,
-   "label": "Show How It Works",
-   "default": "1"
-  },
-  {
-   "fieldname": "how_heading",
-   "fieldtype": "Data",
-   "idx": 44,
-   "label": "How It Works Heading"
-  },
-  {
-   "fieldname": "how_c1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "how_step1_title",
-   "fieldtype": "Data",
-   "idx": 45,
-   "label": "Step 1 Title"
-  },
-  {
-   "fieldname": "how_step1_text",
-   "fieldtype": "Text",
-   "idx": 46,
-   "label": "Step 1 Text"
-  },
-  {
-   "fieldname": "how_step2_title",
-   "fieldtype": "Data",
-   "idx": 48,
-   "label": "Step 2 Title"
-  },
-  {
-   "fieldname": "how_c2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "how_step2_text",
-   "fieldtype": "Text",
-   "idx": 49,
-   "label": "Step 2 Text"
-  },
-  {
-   "fieldname": "how_step3_title",
-   "fieldtype": "Data",
-   "idx": 51,
-   "label": "Step 3 Title"
-  },
-  {
-   "fieldname": "how_c3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "how_step3_text",
-   "fieldtype": "Text",
-   "idx": 52,
-   "label": "Step 3 Text"
-  },
-  {
-   "fieldname": "content_gallery",
-   "fieldtype": "Section Break",
-   "label": "Content · Gallery & Testimonials"
-  },
-  {
-   "fieldname": "show_gallery",
-   "fieldtype": "Check",
-   "idx": 55,
-   "label": "Show Gallery (from Service images)",
-   "default": "1"
-  },
-  {
-   "fieldname": "show_testimonials",
-   "fieldtype": "Check",
-   "idx": 56,
-   "label": "Show Testimonials",
-   "default": "1"
-  },
-  {
-   "fieldname": "gal_c1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "testimonial_1_text",
-   "fieldtype": "Text",
-   "idx": 57,
-   "label": "Testimonial 1"
-  },
-  {
-   "fieldname": "testimonial_1_author",
-   "fieldtype": "Data",
-   "idx": 58,
-   "label": "Testimonial 1 Author"
-  },
-  {
-   "fieldname": "testimonial_2_text",
-   "fieldtype": "Text",
-   "idx": 60,
-   "label": "Testimonial 2"
-  },
-  {
-   "fieldname": "gal_c2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "testimonial_2_author",
-   "fieldtype": "Data",
-   "idx": 61,
-   "label": "Testimonial 2 Author"
-  },
-  {
-   "fieldname": "testimonial_3_text",
-   "fieldtype": "Text",
-   "idx": 63,
-   "label": "Testimonial 3"
-  },
-  {
-   "fieldname": "gal_c3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "testimonial_3_author",
-   "fieldtype": "Data",
-   "idx": 64,
-   "label": "Testimonial 3 Author"
+   "fieldname": "tab_payments",
+   "fieldtype": "Tab Break",
+   "label": "Payments"
   },
   {
    "fieldname": "payments",
@@ -604,6 +401,11 @@
    "fieldtype": "Select",
    "label": "Payment Mode",
    "options": "\nOnline Now\nPay On Service"
+  },
+  {
+   "fieldname": "tab_notifications",
+   "fieldtype": "Tab Break",
+   "label": "Notifications"
   },
   {
    "fieldname": "notifications",
@@ -635,6 +437,11 @@
    "fieldname": "notify_on_booking_ready",
    "fieldtype": "Check",
    "label": "Notify on Booking Ready"
+  },
+  {
+   "fieldname": "tab_integrations",
+   "fieldtype": "Tab Break",
+   "label": "Integrations"
   },
   {
    "fieldname": "integrations_omnichat",
@@ -683,6 +490,250 @@
    "idx": 22
   },
   {
+   "fieldname": "tab_content",
+   "fieldtype": "Tab Break",
+   "label": "Content"
+  },
+  {
+   "fieldname": "content_homepage",
+   "fieldtype": "Section Break",
+   "label": "Content · Homepage"
+  },
+  {
+   "fieldname": "show_hero",
+   "fieldtype": "Check",
+   "idx": 25,
+   "label": "Show Hero",
+   "default": "1"
+  },
+  {
+   "fieldname": "ch1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hero_tagline",
+   "fieldtype": "Data",
+   "idx": 26,
+   "label": "Hero Tagline"
+  },
+  {
+   "fieldname": "cta_label",
+   "fieldtype": "Data",
+   "idx": 27,
+   "label": "CTA Button Label"
+  },
+  {
+   "fieldname": "cta_secondary_label",
+   "fieldtype": "Data",
+   "idx": 28,
+   "label": "Secondary CTA Label"
+  },
+  {
+   "fieldname": "cta_secondary_link",
+   "fieldtype": "Data",
+   "idx": 29,
+   "label": "Secondary CTA Link"
+  },
+  {
+   "fieldname": "staff_label",
+   "fieldtype": "Data",
+   "idx": 30,
+   "label": "Staff Label (barber / stylist / therapist)"
+  },
+  {
+   "fieldname": "show_story",
+   "fieldtype": "Check",
+   "idx": 32,
+   "label": "Show Story Section",
+   "default": "1"
+  },
+  {
+   "fieldname": "ch2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "story_heading",
+   "fieldtype": "Data",
+   "idx": 33,
+   "label": "Story Heading"
+  },
+  {
+   "fieldname": "story_text",
+   "fieldtype": "Text",
+   "idx": 34,
+   "label": "Story Text"
+  },
+  {
+   "fieldname": "story_image",
+   "fieldtype": "Attach Image",
+   "idx": 35,
+   "label": "Story Image"
+  },
+  {
+   "fieldname": "show_services",
+   "fieldtype": "Check",
+   "idx": 37,
+   "label": "Show Services Section",
+   "default": "1"
+  },
+  {
+   "fieldname": "ch3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "services_heading",
+   "fieldtype": "Data",
+   "idx": 38,
+   "label": "Services Heading"
+  },
+  {
+   "fieldname": "services_count",
+   "fieldtype": "Int",
+   "idx": 39,
+   "label": "Services to Show",
+   "default": "4"
+  },
+  {
+   "fieldname": "show_prices",
+   "fieldtype": "Check",
+   "idx": 40,
+   "label": "Show Prices",
+   "default": "1"
+  },
+  {
+   "fieldname": "content_how",
+   "fieldtype": "Section Break",
+   "label": "Content · How It Works"
+  },
+  {
+   "fieldname": "show_how_it_works",
+   "fieldtype": "Check",
+   "idx": 43,
+   "label": "Show How It Works",
+   "default": "1"
+  },
+  {
+   "fieldname": "how_heading",
+   "fieldtype": "Data",
+   "idx": 44,
+   "label": "How It Works Heading"
+  },
+  {
+   "fieldname": "how1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "how_step1_title",
+   "fieldtype": "Data",
+   "idx": 45,
+   "label": "Step 1 Title"
+  },
+  {
+   "fieldname": "how_step1_text",
+   "fieldtype": "Text",
+   "idx": 46,
+   "label": "Step 1 Text"
+  },
+  {
+   "fieldname": "how_step2_title",
+   "fieldtype": "Data",
+   "idx": 48,
+   "label": "Step 2 Title"
+  },
+  {
+   "fieldname": "how2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "how_step2_text",
+   "fieldtype": "Text",
+   "idx": 49,
+   "label": "Step 2 Text"
+  },
+  {
+   "fieldname": "how_step3_title",
+   "fieldtype": "Data",
+   "idx": 51,
+   "label": "Step 3 Title"
+  },
+  {
+   "fieldname": "how3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "how_step3_text",
+   "fieldtype": "Text",
+   "idx": 52,
+   "label": "Step 3 Text"
+  },
+  {
+   "fieldname": "content_gallery",
+   "fieldtype": "Section Break",
+   "label": "Content · Gallery & Testimonials"
+  },
+  {
+   "fieldname": "show_gallery",
+   "fieldtype": "Check",
+   "idx": 55,
+   "label": "Show Gallery (from Service images)",
+   "default": "1"
+  },
+  {
+   "fieldname": "show_testimonials",
+   "fieldtype": "Check",
+   "idx": 56,
+   "label": "Show Testimonials",
+   "default": "1"
+  },
+  {
+   "fieldname": "gal1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "testimonial_1_text",
+   "fieldtype": "Text",
+   "idx": 57,
+   "label": "Testimonial 1"
+  },
+  {
+   "fieldname": "testimonial_1_author",
+   "fieldtype": "Data",
+   "idx": 58,
+   "label": "Testimonial 1 Author"
+  },
+  {
+   "fieldname": "testimonial_2_text",
+   "fieldtype": "Text",
+   "idx": 60,
+   "label": "Testimonial 2"
+  },
+  {
+   "fieldname": "gal2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "testimonial_2_author",
+   "fieldtype": "Data",
+   "idx": 61,
+   "label": "Testimonial 2 Author"
+  },
+  {
+   "fieldname": "testimonial_3_text",
+   "fieldtype": "Text",
+   "idx": 63,
+   "label": "Testimonial 3"
+  },
+  {
+   "fieldname": "gal3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "testimonial_3_author",
+   "fieldtype": "Data",
+   "idx": 64,
+   "label": "Testimonial 3 Author"
+  },
+  {
    "fieldname": "content_cta",
    "fieldtype": "Section Break",
    "label": "Content · CTA Band"
@@ -713,13 +764,14 @@
    "label": "CTA Band Button Label"
   },
   {
-   "default": "Barbershop",
-   "fieldname": "vertical",
-   "fieldtype": "Select",
-   "label": "Vertical",
-   "options": "Barbershop\nSalon\nClinic\nSpa\nNail Studio\nOther",
-   "reqd": 1,
-   "idx": 2
+   "fieldname": "preview_section",
+   "fieldtype": "Section Break",
+   "label": "Live Preview"
+  },
+  {
+   "fieldname": "live_preview",
+   "fieldtype": "HTML",
+   "label": "Live Preview"
   }
  ],
  "index_web_pages_for_search": 1,
