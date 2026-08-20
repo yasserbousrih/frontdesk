@@ -11,34 +11,8 @@
   "branding_section",
   "logo",
   "cover_image",
+  "favicon",
   "about_text",
-  "appearance_tab",
-  "colors_section",
-  "preset_theme",
-  "cb_color1",
-  "theme_mode",
-  "colors2_section",
-  "primary_color",
-  "cb_color2",
-  "secondary_color",
-  "colors3_section",
-  "accent_color",
-  "cb_color3",
-  "background_color",
-  "colors4_section",
-  "text_color",
-  "typography_section",
-  "font_family",
-  "cb_typo",
-  "heading_font",
-  "font_size_base",
-  "layout_section",
-  "border_radius",
-  "cb_layout",
-  "card_shadow",
-  "site_layout",
-  "preview_section",
-  "live_preview",
   "contact_section",
   "contact_phone",
   "contact_whatsapp",
@@ -47,6 +21,9 @@
   "booking_rules_section",
   "slot_buffer_minutes",
   "currency",
+  "hours_section",
+  "operating_hours",
+  "enforce_hours",
   "omnichat_section",
   "omnichat_api_url",
   "omnichat_api_token",
@@ -104,10 +81,48 @@
   "address",
   "maps_url",
   "visit_col_2",
+  "payment_section",
+  "payment_gateway",
+  "payment_api_key",
+  "payment_secret",
+  "payment_mode",
+  "notification_section",
+  "sms_enabled",
+  "sms_provider",
+  "whatsapp_notify",
+  "notify_on_booking_placed",
+  "notify_on_booking_ready",
   "show_cta_band",
   "cta_band_heading",
   "cta_band_text",
-  "cta_band_label"
+  "cta_band_label",
+  "appearance_tab",
+  "colors_section",
+  "preset_theme",
+  "cb_color1",
+  "theme_mode",
+  "colors2_section",
+  "primary_color",
+  "cb_color2",
+  "secondary_color",
+  "colors3_section",
+  "accent_color",
+  "cb_color3",
+  "background_color",
+  "colors4_section",
+  "text_color",
+  "typography_section",
+  "font_family",
+  "cb_typo",
+  "heading_font",
+  "font_size_base",
+  "layout_section",
+  "border_radius",
+  "cb_layout",
+  "card_shadow",
+  "site_layout",
+  "preview_section",
+  "live_preview"
  ],
  "fields": [
   {
@@ -143,6 +158,11 @@
    "fieldtype": "Attach Image",
    "label": "Cover Image",
    "idx": 5
+  },
+  {
+   "fieldname": "favicon",
+   "fieldtype": "Attach Image",
+   "label": "Favicon"
   },
   {
    "fieldname": "about_text",
@@ -201,6 +221,23 @@
    "label": "Currency",
    "options": "Currency",
    "idx": 14
+  },
+  {
+   "fieldtype": "Section Break",
+   "label": "Business Hours",
+   "fieldname": "hours_section"
+  },
+  {
+   "fieldname": "operating_hours",
+   "fieldtype": "Table",
+   "options": "Operating Hours",
+   "label": "Operating Hours"
+  },
+  {
+   "fieldname": "enforce_hours",
+   "fieldtype": "Check",
+   "label": "Enforce Business Hours",
+   "description": "Block bookings outside business hours"
   },
   {
    "fieldname": "omnichat_section",
@@ -541,6 +578,64 @@
    "fieldname": "visit_col_2",
    "fieldtype": "Column Break",
    "idx": 71
+  },
+  {
+   "fieldtype": "Section Break",
+   "label": "Payment Gateway",
+   "fieldname": "payment_section"
+  },
+  {
+   "fieldname": "payment_gateway",
+   "fieldtype": "Select",
+   "label": "Website Payment Gateway",
+   "options": "\nPaymob\nCash On Service"
+  },
+  {
+   "fieldname": "payment_api_key",
+   "fieldtype": "Password",
+   "label": "API Key"
+  },
+  {
+   "fieldname": "payment_secret",
+   "fieldtype": "Password",
+   "label": "Secret Key"
+  },
+  {
+   "fieldname": "payment_mode",
+   "fieldtype": "Select",
+   "label": "Payment Mode",
+   "options": "\nOnline Now\nPay On Service"
+  },
+  {
+   "fieldtype": "Section Break",
+   "label": "Notifications",
+   "fieldname": "notification_section"
+  },
+  {
+   "fieldname": "sms_enabled",
+   "fieldtype": "Check",
+   "label": "SMS Enabled"
+  },
+  {
+   "fieldname": "sms_provider",
+   "fieldtype": "Select",
+   "label": "SMS Provider",
+   "options": "\nTwilio\nCustom"
+  },
+  {
+   "fieldname": "whatsapp_notify",
+   "fieldtype": "Check",
+   "label": "WhatsApp Notifications"
+  },
+  {
+   "fieldname": "notify_on_booking_placed",
+   "fieldtype": "Check",
+   "label": "Notify on Booking Placed"
+  },
+  {
+   "fieldname": "notify_on_booking_ready",
+   "fieldtype": "Check",
+   "label": "Notify on Booking Ready"
   },
   {
    "fieldname": "show_cta_band",

@@ -1,0 +1,26 @@
+{
+ "actions": [],
+ "creation": "2026-08-20 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": ["day", "is_open", "open_time", "close_time"],
+ "fields": [
+  {"default": "Sunday", "fieldname": "day", "fieldtype": "Select", "in_list_view": 1, "label": "Day", "options": "Sunday\nMonday\nTuesday\nWednesday\nThursday\nFriday\nSaturday", "reqd": 1},
+  {"default": "1", "fieldname": "is_open", "fieldtype": "Check", "in_list_view": 1, "label": "Open"},
+  {"default": "09:00:00", "fieldname": "open_time", "fieldtype": "Time", "in_list_view": 1, "label": "Open Time"},
+  {"default": "23:00:00", "fieldname": "close_time", "fieldtype": "Time", "in_list_view": 1, "label": "Close Time"}
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-20 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Frontdesk",
+ "name": "Operating Hours",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
