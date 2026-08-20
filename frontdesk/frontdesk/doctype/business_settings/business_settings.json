@@ -777,7 +777,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-07-07 10:00:00.000000",
+ "modified": "2026-08-20 11:37:32",
  "module": "Frontdesk",
  "name": "Business Settings",
  "owner": "Administrator",
@@ -805,5 +805,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "description": "Business Settings — business info, web appearance, business hours, channels, payments, notifications."
 }
