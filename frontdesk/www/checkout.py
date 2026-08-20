@@ -18,6 +18,7 @@ def get_context(context):
     """Populate ``context`` for ``www/checkout.html``."""
     b = get_branding()
 
+    context.business = b
     context.business_name = b["brand_name"]
     context.primary_color = b["primary_color"]
     context.accent_color = b["accent_color"]
