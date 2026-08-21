@@ -19,17 +19,25 @@ def setup_after_migrate():
     """Re-ensure custom fields on every migrate — after_install only fires on
     fresh installs, so existing sites that pull this app would never get the
     Item custom fields without this.
-    Also force-reload Business Settings so its Tab Break fields always land in
-    tabDocField correctly (bench migrate skips rows that look unchanged but
-    won't flush Redis meta — reload_doc guarantees the DB + cache are in sync
-    with the JSON on every migrate and fresh clone/install)."""
+
+    MIGRATION-SAFETY RULE: we use force=False (the default) so Frappe only
+    adds/modifies fields defined in the JSON; it does NOT delete extra fields
+    the site owner added via Desk → Customize Form. This means:
+      • New fields added to business_settings.json land on every migrate.
+      • Fields the owner customised / added via Desk survive every migrate.
+      • Defaults only fill blank fields — never overwrite owner-set values.
+    """
     _ensure_custom_fields()
-    # Force-sync Business Settings schema from JSON → DB + Redis
+    # Sync Business Settings schema from JSON → DB + Redis.
+    # force=False: adds/updates JSON-defined fields, preserves Desk additions.
     try:
-        frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=True)
+        frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "homepage_section", force=False)
         frappe.db.commit()
     except Exception:
         pass
+    # Fill any blank defaults (never overwrites owner-set values)
+    _seed_homepage_defaults()
 
 
 # -------------------
@@ -48,7 +56,8 @@ def setup_after_install():
     _ensure_custom_fields()
     _seed_homepage_defaults()
     try:
-        frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=True)
+        frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "homepage_section", force=False)
         frappe.db.commit()
     except Exception:
         pass

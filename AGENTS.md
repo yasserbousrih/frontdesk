@@ -109,3 +109,47 @@ The full accumulated expertise is in these Hermes skills under
 - **Bench migrate**: `bash /root/run-bench.sh --site frontdesk.local migrate`
 - **Bench restart**: `bash /root/run-bench.sh restart`
 - **Live web curl**: `curl -s -H "Host: frontdesk.local" http://127.0.0.1:8000/`
+
+## Clone / Fresh-Install Playbook
+Complete recipe to go from a blank server to a working FrontDesk site.
+
+### 1. Install bench + apps
+```bash
+cd /home/frappe/frappe-bench
+bench get-app frontdesk git@github.com:basira/frontdesk.git --branch master
+bench --site <site_name> install-app frontdesk
+```
+`after_install` fires and:
+- Creates `Frontdesk Manager` and `Frontdesk User` roles (if absent)
+- Creates `FrontDesk Rewards` loyalty program (if ERPNext is installed)
+- Runs `_ensure_custom_fields` — creates all Item / Sales Invoice Item custom fields
+- Seeds `Business Settings` defaults (only blank fields — `_seed_homepage_defaults`)
+- Creates 4 sample service Items (if Item table is empty under "Services")
+- Imports `fixtures/role_profile.json` → `Frontdesk Manager` + `Frontdesk User` role profiles
+- Reloads `Business Settings` and `Homepage Section` DocTypes with `force=False`
+
+### 2. After every `git pull`
+```bash
+git -C /home/frappe/frappe-bench/apps/frontdesk pull origin master
+bash /root/run-bench.sh --site <site_name> migrate
+```
+`after_migrate` fires and:
+- Re-runs `_ensure_custom_fields` (idempotent — only creates missing ones)
+- Reloads `Business Settings` + `Homepage Section` with `force=False`
+- Calls `_seed_homepage_defaults` which fills only empty fields
+
+### 3. MIGRATION SAFETY RULES
+- **`force=False`**: NEVER use `force=True` on `reload_doc`. It nukes and rebuilds the DocType from JSON, wiping Desk-made customizations. `force=False` adds new JSON fields without removing existing ones.
+- **Seed guards**: `_seed_homepage_defaults` uses `if not bs.get(field)` before writing — removing this guard is a bug that would overwrite owner data on every migrate.
+- **Custom fields via `_upsert_custom_field`**: uses `if frappe.db.exists("Custom Field", ...)` guard — idempotent. Never use raw DDL.
+- **`field_order` must include ALL fields**: Frappe v16 uses `field_order` in the DocType JSON as the source of truth for ordering AND completeness. If a field is in `fields[]` but not in `field_order`, it gets ignored by `bench migrate`. Always keep `field_order` in sync with `fields` — the array must have the same length. (Bug found + fixed Aug 2026 for Tab Break fields.)
+
+### 4. What survives a migrate
+- All `tabSingles` data (Business Settings values) — always safe
+- `tabHomepage Section` rows — child table data, never touched by migrate
+- Custom Fields in `tabCustom Field` — survive with `force=False`
+- Role Profiles from fixtures — re-imported each migrate (idempotent)
+
+### 5. What does NOT survive a DB wipe
+- All settings the owner configured — `after_install` seeds defaults
+- Sample services created on first install
