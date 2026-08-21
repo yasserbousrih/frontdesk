@@ -10,7 +10,6 @@
  "field_order": [
   "section_type",
   "enabled",
-  "col1",
   "heading",
   "subheading",
   "col2",
@@ -20,17 +19,14 @@
   "image_position",
   "col4",
   "button_label",
-  "button_link",
-  "col5",
-  "layout_variant",
-  "background_color"
+  "button_link"
  ],
  "fields": [
   {
    "fieldname": "section_type",
    "label": "Section Type",
    "fieldtype": "Select",
-   "options": "hero\nstory\nservices\nhow_it_works\ngallery\ntestimonials\nvisit\ncta_band\ncustom",
+   "options": "hero\nstory\nservices\nhow_it_works\ngallery\ntestimonials\nvisit\ncta_band",
    "reqd": 1,
    "in_list_view": 1,
    "columns": 2
@@ -42,10 +38,6 @@
    "default": "1",
    "in_list_view": 1,
    "columns": 1
-  },
-  {
-   "fieldname": "col1",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "heading",
@@ -97,22 +89,6 @@
    "fieldname": "button_link",
    "label": "Button Link",
    "fieldtype": "Data"
-  },
-  {
-   "fieldname": "col5",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "layout_variant",
-   "label": "Layout Variant",
-   "fieldtype": "Select",
-   "options": "default\nfull-width\nsplit\ncard-grid\ncentered",
-   "default": "default"
-  },
-  {
-   "fieldname": "background_color",
-   "label": "Background Color",
-   "fieldtype": "Color"
   }
  ],
  "permissions": [

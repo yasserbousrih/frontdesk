@@ -56,8 +56,7 @@ def get_context(context):
             filters={"parent": "Business Settings", "parenttype": "Business Settings"},
             fields=["section_type", "enabled", "heading", "subheading",
                     "body_text", "image", "image_position",
-                    "button_label", "button_link",
-                    "layout_variant", "background_color", "idx"],
+                    "button_label", "button_link", "idx"],
             order_by="idx asc",
         )
         sections = [r for r in rows]
@@ -80,8 +79,7 @@ def get_context(context):
             frappe._dict(section_type=t, enabled=bool(e),
                          heading=None, subheading=None, body_text=None,
                          image=None, image_position="right",
-                         button_label=None, button_link=None,
-                         layout_variant="default", background_color=None)
+                         button_label=None, button_link=None)
             for t, e in _defaults
         ]
 

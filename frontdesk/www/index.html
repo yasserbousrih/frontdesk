@@ -427,45 +427,6 @@
 			main { padding: 40px 24px 24px; }
 			.gallery-strip img { height: 140px; }
 		}
-		/* ── Custom / freeform section ─────────────────────────── */
-		.section--custom { }
-		.custom-block {
-			display: grid;
-			gap: 2rem;
-			align-items: center;
-		}
-		.custom-block--img-right  { grid-template-columns: 1fr auto; }
-		.custom-block--img-left   { grid-template-columns: auto 1fr; }
-		.custom-block--img-left .custom-img { order: -1; }
-		.custom-block--img-background { position: relative; }
-		.custom-block--img-top    { grid-template-columns: 1fr; }
-		.custom-img img {
-			max-width: 420px;
-			width: 100%;
-			border-radius: var(--radius);
-			object-fit: cover;
-		}
-		.custom-body { line-height: 1.7; color: var(--text); }
-		.custom-body p { margin: 0 0 1em; }
-
-		/* ── Layout variants ────────────────────────────────────── */
-		.section--full-width { max-width: none; padding-left: 0; padding-right: 0; }
-		.section--centered { text-align: center; }
-		.section--centered .custom-block { justify-items: center; }
-		.section--split .custom-block { grid-template-columns: 1fr 1fr; }
-
-		/* ── Hero overrides when used as a section row ──────────── */
-		.section--hero .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
-		.section--hero .hero-img img { max-width: 100%; border-radius: var(--radius); }
-
-		.section-sub { color: var(--muted); margin: -.5rem 0 1.5rem; }
-
-		@media (max-width: 600px) {
-			.custom-block--img-right,
-			.custom-block--img-left,
-			.section--split .custom-block { grid-template-columns: 1fr; }
-			.custom-img img { max-width: 100%; }
-		}
 	</style>
 </head>
 <body class="layout-{{ business.site_layout }}">
@@ -505,11 +466,10 @@
 	{%- if sec.enabled %}
 
 	{%- if sec.section_type == 'hero' %}
-		<section class="section section--hero{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="section section--hero">
 			<p class="eyebrow">{{ business.vertical }}</p>
 			<h2>{{ sec.heading or business.hero_tagline }}</h2>
-			{% if sec.subheading %}<p class="hero-sub">{{ sec.subheading }}</p>{% endif %}
-			{% if sec.body_text %}<div class="hero-body">{{ sec.body_text }}</div>{% endif %}
+			{% if sec.subheading %}<p class="section-sub">{{ sec.subheading }}</p>{% endif %}
 			<div class="hero-ctas">
 				<a class="btn" href="{{ sec.button_link or '/book' }}">{{ sec.button_label or business.cta_label }}</a>
 				{% if business.cta_secondary_label %}<a class="btn btn--outline" href="{{ business.cta_secondary_link or '/menu' }}">{{ business.cta_secondary_label }}</a>{% endif %}
@@ -518,19 +478,19 @@
 		</section>
 
 	{%- elif sec.section_type == 'story' %}
-		<section class="section section--story{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="section section--story">
 			<p class="eyebrow">{{ business.vertical }}</p>
 			<h2>{{ sec.heading or business.story_heading }}</h2>
-			<div class="story story--{{ sec.image_position or 'right' }}">
+			<div class="story">
 				{% set _img = sec.image or business.story_image %}
 				{% if _img %}<img src="{{ _img }}" alt="{{ business.brand_name }}" />{% endif %}
-				<div class="story-text">{{ sec.body_text or business.story_text }}</div>
+				<p>{{ sec.body_text or business.story_text }}</p>
 			</div>
 		</section>
 
 	{%- elif sec.section_type == 'services' %}
 		{% if services %}
-		<section class="section section--services{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="section section--services">
 			<p class="eyebrow">What we do</p>
 			<h2>{{ sec.heading or business.services_heading }}</h2>
 			{% if sec.subheading %}<p class="section-sub">{{ sec.subheading }}</p>{% endif %}
@@ -559,7 +519,7 @@
 		{% endif %}
 
 	{%- elif sec.section_type == 'how_it_works' %}
-		<section class="section section--how{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="section section--how">
 			<p class="eyebrow">Simple steps</p>
 			<h2>{{ sec.heading or business.how_heading }}</h2>
 			{% if sec.subheading %}<p class="section-sub">{{ sec.subheading }}</p>{% endif %}
@@ -576,7 +536,7 @@
 
 	{%- elif sec.section_type == 'gallery' %}
 		{% if gallery|length > 0 %}
-		<section class="section section--gallery{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="section section--gallery">
 			<p class="eyebrow">Take a look</p>
 			<h2>{{ sec.heading or 'Gallery' }}</h2>
 			<div class="gallery-strip">
@@ -587,7 +547,7 @@
 
 	{%- elif sec.section_type == 'testimonials' %}
 		{% if business.testimonials %}
-		<section class="section section--testimonials{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="section section--testimonials">
 			<p class="eyebrow">Kind words</p>
 			<h2>{{ sec.heading or 'Testimonials' }}</h2>
 			{% if sec.subheading %}<p class="section-sub">{{ sec.subheading }}</p>{% endif %}
@@ -604,7 +564,7 @@
 
 	{%- elif sec.section_type == 'visit' %}
 		{% if business.hours_text or business.address or business.maps_url or business.contact_phone or business.contact_whatsapp or business.contact_email or business.instagram %}
-		<section class="section section--visit{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="section section--visit">
 			<p class="eyebrow">Find us</p>
 			<h2>{{ sec.heading or 'Hours &amp; Visit' }}</h2>
 			<div class="info-grid">
@@ -620,24 +580,10 @@
 		{% endif %}
 
 	{%- elif sec.section_type == 'cta_band' %}
-		<section class="cta-band{% if sec.layout_variant and sec.layout_variant != 'default' %} cta-band--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
+		<section class="cta-band">
 			<h2>{{ sec.heading or business.cta_band_heading }}</h2>
-			{% if sec.body_text %}<p>{{ sec.body_text }}</p>{% else %}<p>{{ business.cta_band_text }}</p>{% endif %}
+			<p>{{ sec.body_text or business.cta_band_text }}</p>
 			<a class="btn" href="{{ sec.button_link or '/book' }}">{{ sec.button_label or business.cta_band_label }}</a>
-		</section>
-
-	{%- elif sec.section_type == 'custom' %}
-		{#- Freeform block: heading + rich body + optional image -#}
-		<section class="section section--custom{% if sec.layout_variant and sec.layout_variant != 'default' %} section--{{ sec.layout_variant }}{% endif %}"{% if sec.background_color %} style="background:{{ sec.background_color }}"{% endif %}>
-			{% if sec.heading %}<h2>{{ sec.heading }}</h2>{% endif %}
-			{% if sec.subheading %}<p class="section-sub">{{ sec.subheading }}</p>{% endif %}
-			{% if sec.image or sec.body_text %}
-			<div class="custom-block custom-block--img-{{ sec.image_position or 'right' }}">
-				{% if sec.image %}<div class="custom-img"><img src="{{ sec.image }}" alt="{{ sec.heading or '' }}" loading="lazy" /></div>{% endif %}
-				{% if sec.body_text %}<div class="custom-body">{{ sec.body_text }}</div>{% endif %}
-			</div>
-			{% endif %}
-			{% if sec.button_label and sec.button_link %}<a class="btn btn--outline" href="{{ sec.button_link }}">{{ sec.button_label }}</a>{% endif %}
 		</section>
 	{%- endif %}
 

@@ -46,15 +46,14 @@ function render_section_manager(frm) {
 }
 
 const SECTION_TYPES = [
-	{ value: "hero",         label: "Hero",          icon: "🏠", desc: "Full-width banner with tagline + CTA buttons" },
-	{ value: "story",        label: "Story",         icon: "📖", desc: "Heading + rich text + optional image (split layout)" },
-	{ value: "services",     label: "Services",      icon: "✂️", desc: "Service cards grid (pulled from Items)" },
-	{ value: "how_it_works", label: "How It Works",  icon: "🔢", desc: "3-step numbered cards" },
-	{ value: "gallery",      label: "Gallery",       icon: "🖼️", desc: "Image strip (from service images)" },
-	{ value: "testimonials", label: "Testimonials",  icon: "💬", desc: "Customer quote cards" },
-	{ value: "visit",        label: "Hours & Visit", icon: "📍", desc: "Opening hours, address, contact links" },
-	{ value: "cta_band",     label: "CTA Band",      icon: "🎯", desc: "Full-width call-to-action strip" },
-	{ value: "custom",       label: "Custom Block",  icon: "✏️", desc: "Freeform: any heading + rich text + optional image" },
+	{ value: "hero",         label: "Hero Banner",      icon: "🏠", desc: "Tagline + CTA buttons at the top" },
+	{ value: "story",        label: "Our Story",        icon: "📖", desc: "Heading + text + optional image" },
+	{ value: "services",     label: "Services",         icon: "✂️", desc: "Service cards (pulled from Items)" },
+	{ value: "how_it_works", label: "How It Works",     icon: "🔢", desc: "3-step numbered cards" },
+	{ value: "gallery",      label: "Gallery",          icon: "🖼️", desc: "Image strip (from service images)" },
+	{ value: "testimonials", label: "Testimonials",     icon: "💬", desc: "Customer quote cards" },
+	{ value: "visit",        label: "Hours & Visit",    icon: "📍", desc: "Opening hours, address, contact" },
+	{ value: "cta_band",     label: "Call to Action",   icon: "🎯", desc: "Full-width booking prompt strip" },
 ];
 
 function open_add_section_dialog(frm) {
@@ -78,21 +77,16 @@ function open_add_section_dialog(frm) {
 					`).join("")}
 				</div>`,
 			},
-			{ fieldtype: "Data",      fieldname: "heading",      label: "Heading (optional)" },
-			{ fieldtype: "Data",      fieldname: "subheading",   label: "Sub-heading (optional)" },
-			{ fieldtype: "Text",      fieldname: "body_text",    label: "Body Text (optional — HTML allowed for custom blocks)" },
-			{ fieldtype: "Attach Image", fieldname: "image",     label: "Image (optional)" },
+			{ fieldtype: "Data",         fieldname: "heading",       label: "Section Heading (overrides default)" },
+			{ fieldtype: "Data",         fieldname: "subheading",    label: "Sub-heading" },
+			{ fieldtype: "Text",         fieldname: "body_text",     label: "Body Text" },
+			{ fieldtype: "Attach Image", fieldname: "image",         label: "Image" },
 			{
-				fieldtype: "Select",  fieldname: "image_position", label: "Image Position",
-				options: "right\nleft\ntop\nbackground", default: "right"
+				fieldtype: "Select", fieldname: "image_position", label: "Image Position",
+				options: "right\nleft\ntop", default: "right"
 			},
-			{ fieldtype: "Data",      fieldname: "button_label", label: "Button Label (optional)" },
-			{ fieldtype: "Data",      fieldname: "button_link",  label: "Button Link (optional)" },
-			{
-				fieldtype: "Select",  fieldname: "layout_variant", label: "Layout",
-				options: "default\nfull-width\nsplit\ncard-grid\ncentered", default: "default"
-			},
-			{ fieldtype: "Color",     fieldname: "background_color", label: "Background Color (optional)" },
+			{ fieldtype: "Data", fieldname: "button_label", label: "Button Label" },
+			{ fieldtype: "Data", fieldname: "button_link",  label: "Button Link (e.g. /book)" },
 		],
 		primary_action_label: "Add Section",
 		primary_action(values) {
@@ -112,8 +106,6 @@ function open_add_section_dialog(frm) {
 			row.image_position  = values.image_position || "right";
 			row.button_label    = values.button_label || "";
 			row.button_link     = values.button_link || "";
-			row.layout_variant  = values.layout_variant || "default";
-			row.background_color = values.background_color || "";
 			frm.refresh_field("homepage_sections");
 			d.hide();
 			frappe.show_alert({ message: `"${SECTION_TYPES.find(t=>t.value===sec_type)?.label}" section added — Save to publish.`, indicator: "green" });
@@ -129,8 +121,8 @@ function open_add_section_dialog(frm) {
 	});
 
 	d.show();
-	// Pre-select "custom" as default
-	d.$wrapper.find('.fd-type-card[data-val="custom"]').trigger("click");
+	// Pre-select "hero" as a sensible starting pick
+	d.$wrapper.find('.fd-type-card[data-val="hero"]').trigger("click");
 }
 
 function open_reorder_dialog(frm) {
