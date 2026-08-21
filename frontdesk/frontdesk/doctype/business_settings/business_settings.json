@@ -142,30 +142,35 @@
    "fieldtype": "Data",
    "label": "Business Name",
    "reqd": 1,
-   "idx": 1
+   "idx": 1,
+   "description": "Your business name as it appears on your website."
   },
   {
    "fieldname": "logo",
    "fieldtype": "Attach Image",
    "label": "Logo",
-   "idx": 4
+   "idx": 4,
+   "description": "Upload your business logo (PNG/SVG preferred, transparent background)."
   },
   {
    "fieldname": "favicon",
    "fieldtype": "Attach Image",
-   "label": "Favicon"
+   "label": "Browser Icon (Favicon)",
+   "description": "Small square icon shown in the browser tab (32\u00d732 or 64\u00d764 px)."
   },
   {
    "fieldname": "cover_image",
    "fieldtype": "Attach Image",
    "label": "Cover Image",
-   "idx": 5
+   "idx": 5,
+   "description": "Large image shown at the top of your homepage. Recommended: 1400\u00d7700 px."
   },
   {
    "fieldname": "about_text",
    "fieldtype": "Text",
-   "label": "About",
-   "idx": 6
+   "label": "About Your Business",
+   "idx": 6,
+   "description": "A short description shown on your homepage and about section."
   },
   {
    "fieldname": "sec_contact",
@@ -175,38 +180,41 @@
   {
    "fieldname": "contact_phone",
    "fieldtype": "Data",
-   "label": "Phone",
+   "label": "Phone Number",
    "idx": 8
   },
   {
    "fieldname": "contact_whatsapp",
    "fieldtype": "Data",
-   "label": "WhatsApp",
-   "idx": 9
+   "label": "WhatsApp Number",
+   "idx": 9,
+   "description": "Include country code, e.g. +212612345678"
   },
   {
    "fieldname": "contact_email",
    "fieldtype": "Data",
-   "label": "Email",
+   "label": "Email Address",
    "idx": 10
   },
   {
    "fieldname": "instagram",
    "fieldtype": "Data",
-   "label": "Instagram",
-   "idx": 11
+   "label": "Instagram Username",
+   "idx": 11,
+   "description": "Just the username, no @. e.g. basira.salon"
   },
   {
    "fieldname": "address",
    "fieldtype": "Small Text",
    "idx": 69,
-   "label": "Address"
+   "label": "Business Address"
   },
   {
    "fieldname": "maps_url",
    "fieldtype": "Data",
    "idx": 70,
-   "label": "Google Maps URL"
+   "label": "Google Maps Link",
+   "description": "Paste the full link from Google Maps (Share \u2192 Copy link)."
   },
   {
    "fieldname": "c1",
@@ -226,7 +234,8 @@
    "fieldname": "preset_theme",
    "fieldtype": "Select",
    "label": "Preset Theme",
-   "options": "Custom\nBrass\nTeal\nTerracotta\nForest\nNavy\nBurgundy\nMidnight\nDesert\nOcean\nSlate\nRose\nOlive"
+   "options": "Custom\nBrass\nTeal\nTerracotta\nForest\nNavy\nBurgundy\nMidnight\nDesert\nOcean\nSlate\nRose\nOlive",
+   "description": "Choose a ready-made look. You can fine-tune colors below if needed."
   },
   {
    "fieldname": "wa1",
@@ -235,22 +244,25 @@
   {
    "fieldname": "theme_mode",
    "fieldtype": "Select",
-   "label": "Theme Mode",
-   "options": "Light\nDark\nAuto"
+   "label": "Color Mode",
+   "options": "Light\nDark\nAuto",
+   "description": "Auto follows the visitor's device (dark/light)."
   },
   {
    "default": "Barbershop",
    "fieldname": "vertical",
    "fieldtype": "Select",
-   "label": "Vertical",
-   "options": "Barbershop\nSalon\nClinic\nSpa\nNail Studio\nOther",
+   "label": "Business Type",
+   "options": "\nBarbershop\nHair Salon\nNail Salon\nSpa\nBeauty Clinic\nTattoo Studio\nBarber & Beauty\nOther",
    "reqd": 1,
-   "idx": 2
+   "idx": 2,
+   "description": "What type of business are you? This adjusts the language used on your website."
   },
   {
    "fieldname": "primary_color",
    "fieldtype": "Color",
-   "label": "Primary Color"
+   "label": "Main Color",
+   "description": "Used for buttons and highlights."
   },
   {
    "fieldname": "wa2",
@@ -264,7 +276,8 @@
   {
    "fieldname": "accent_color",
    "fieldtype": "Color",
-   "label": "Accent Color"
+   "label": "Accent Color",
+   "description": "Used for hover states and small highlights."
   },
   {
    "fieldname": "wa3",
@@ -273,7 +286,7 @@
   {
    "fieldname": "background_color",
    "fieldtype": "Color",
-   "label": "Background Color"
+   "label": "Page Background Color"
   },
   {
    "fieldname": "text_color",
@@ -297,12 +310,13 @@
   {
    "fieldname": "font_size_base",
    "fieldtype": "Select",
-   "label": "Font Size Base"
+   "label": "Text Size"
   },
   {
    "fieldname": "border_radius",
    "fieldtype": "Select",
-   "label": "Border Radius"
+   "label": "Corner Style",
+   "description": "None = sharp corners, Large = very rounded cards."
   },
   {
    "fieldname": "wa5",
@@ -316,7 +330,7 @@
   {
    "fieldname": "site_layout",
    "fieldtype": "Select",
-   "label": "Site Layout"
+   "label": "Layout Style"
   },
   {
    "fieldname": "tab_business_hours",
@@ -337,26 +351,27 @@
   {
    "fieldname": "enforce_hours",
    "fieldtype": "Check",
-   "label": "Enforce Business Hours",
-   "description": "Block bookings outside business hours"
+   "label": "Only Allow Bookings During Business Hours",
+   "description": "If checked, online bookings outside your opening hours will be blocked."
   },
   {
    "fieldname": "hours_text",
    "fieldtype": "Data",
    "idx": 68,
-   "label": "Opening Hours Text"
+   "label": "Opening Hours Display Text",
+   "description": "e.g. 'Mon\u2013Sat: 9am\u20138pm, Sun: 10am\u20136pm' \u2014 shown on your homepage."
   },
   {
    "fieldname": "show_visit",
    "fieldtype": "Check",
    "idx": 67,
-   "label": "Show Hours & Visit",
+   "label": "Show Hours & Location on Homepage",
    "default": "1"
   },
   {
    "fieldname": "tab_channels",
    "fieldtype": "Tab Break",
-   "label": "Channels & Booking"
+   "label": "Booking Settings"
   },
   {
    "fieldname": "channels_booking",
@@ -367,9 +382,10 @@
    "default": "0",
    "fieldname": "slot_buffer_minutes",
    "fieldtype": "Int",
-   "label": "Slot Buffer (minutes)",
+   "label": "Gap Between Appointments (minutes)",
    "non_negative": 1,
-   "idx": 13
+   "idx": 13,
+   "description": "Extra time added after each booking so staff can prepare. E.g. 15 means a 60-min appointment takes up 75 mins of the calendar."
   },
   {
    "default": "QAR",
@@ -377,7 +393,8 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency",
-   "idx": 14
+   "idx": 14,
+   "description": "Used for service prices shown on your website."
   },
   {
    "fieldname": "tab_payments",
@@ -398,12 +415,14 @@
   {
    "fieldname": "payment_api_key",
    "fieldtype": "Password",
-   "label": "API Key"
+   "label": "Payment Gateway \u2014 API Key",
+   "description": "Provided by your payment provider (Paymob, Stripe, etc)."
   },
   {
    "fieldname": "payment_secret",
    "fieldtype": "Password",
-   "label": "Secret Key"
+   "label": "Payment Gateway \u2014 Secret Key",
+   "description": "Keep this private \u2014 never share it."
   },
   {
    "fieldname": "payment_mode",
@@ -424,7 +443,7 @@
   {
    "fieldname": "sms_enabled",
    "fieldtype": "Check",
-   "label": "SMS Enabled"
+   "label": "Send SMS Notifications"
   },
   {
    "fieldname": "sms_provider",
@@ -435,22 +454,22 @@
   {
    "fieldname": "whatsapp_notify",
    "fieldtype": "Check",
-   "label": "WhatsApp Notifications"
+   "label": "Send WhatsApp Notifications"
   },
   {
    "fieldname": "notify_on_booking_placed",
    "fieldtype": "Check",
-   "label": "Notify on Booking Placed"
+   "label": "Notify When a Booking is Made"
   },
   {
    "fieldname": "notify_on_booking_ready",
    "fieldtype": "Check",
-   "label": "Notify on Booking Ready"
+   "label": "Notify When Client is Ready"
   },
   {
    "fieldname": "tab_integrations",
    "fieldtype": "Tab Break",
-   "label": "Integrations"
+   "label": "Advanced Integrations"
   },
   {
    "fieldname": "integrations_omnichat",
@@ -460,26 +479,29 @@
   {
    "fieldname": "omnichat_api_url",
    "fieldtype": "Data",
-   "label": "Omnichat API URL",
-   "idx": 16
+   "label": "WhatsApp Messaging \u2014 API URL",
+   "idx": 16,
+   "description": "Provided by your Omnichat account."
   },
   {
    "fieldname": "omnichat_api_token",
    "fieldtype": "Password",
-   "label": "Omnichat API Token",
+   "label": "WhatsApp Messaging \u2014 API Token",
    "idx": 17
   },
   {
    "fieldname": "omnichat_sender_id",
    "fieldtype": "Data",
-   "label": "Omnichat Sender ID",
-   "idx": 18
+   "label": "WhatsApp Sender ID",
+   "idx": 18,
+   "description": "Your WhatsApp sender number/ID on Omnichat."
   },
   {
    "fieldname": "google_review_url",
    "fieldtype": "Data",
-   "label": "Google Review URL",
-   "idx": 19
+   "label": "Google Review Link",
+   "idx": 19,
+   "description": "Direct link to your Google Business review page. Paste from Google Maps \u2192 Share \u2192 Copy link."
   },
   {
    "fieldname": "integrations_crm",
@@ -489,13 +511,13 @@
   {
    "fieldname": "basira_crm_api_url",
    "fieldtype": "Data",
-   "label": "Basira CRM API URL",
+   "label": "CRM Connection \u2014 URL",
    "idx": 21
   },
   {
    "fieldname": "basira_crm_secret",
    "fieldtype": "Password",
-   "label": "Basira CRM Secret",
+   "label": "CRM Connection \u2014 Secret",
    "idx": 22
   },
   {
@@ -536,25 +558,28 @@
    "fieldname": "cta_label",
    "fieldtype": "Data",
    "idx": 27,
-   "label": "CTA Button Label"
+   "label": "Main Booking Button Text",
+   "description": "e.g. 'Book Now', 'Reserve', 'Book an Appointment'"
   },
   {
    "fieldname": "cta_secondary_label",
    "fieldtype": "Data",
    "idx": 28,
-   "label": "Secondary CTA Label"
+   "label": "Secondary Button Text",
+   "description": "Optional second button on the hero (e.g. 'See Our Services')"
   },
   {
    "fieldname": "cta_secondary_link",
    "fieldtype": "Data",
    "idx": 29,
-   "label": "Secondary CTA Link"
+   "label": "Secondary Button Link"
   },
   {
    "fieldname": "staff_label",
    "fieldtype": "Data",
    "idx": 30,
-   "label": "Staff Label (barber / stylist / therapist)"
+   "label": "Staff Job Title",
+   "description": "What do you call your staff? e.g. Barber, Stylist, Therapist, Artist"
   },
   {
    "fieldname": "show_story",
