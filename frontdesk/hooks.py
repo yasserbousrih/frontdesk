@@ -18,8 +18,18 @@ after_migrate = "frontdesk.hooks.setup_after_migrate"
 def setup_after_migrate():
     """Re-ensure custom fields on every migrate — after_install only fires on
     fresh installs, so existing sites that pull this app would never get the
-    Item custom fields without this."""
+    Item custom fields without this.
+    Also force-reload Business Settings so its Tab Break fields always land in
+    tabDocField correctly (bench migrate skips rows that look unchanged but
+    won't flush Redis meta — reload_doc guarantees the DB + cache are in sync
+    with the JSON on every migrate and fresh clone/install)."""
     _ensure_custom_fields()
+    # Force-sync Business Settings schema from JSON → DB + Redis
+    try:
+        frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=True)
+        frappe.db.commit()
+    except Exception:
+        pass
 
 
 # -------------------
@@ -37,6 +47,11 @@ def setup_after_install():
     _ensure_loyalty_program()
     _ensure_custom_fields()
     _seed_homepage_defaults()
+    try:
+        frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=True)
+        frappe.db.commit()
+    except Exception:
+        pass
 
 
 # -------------------
