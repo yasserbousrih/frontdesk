@@ -1,0 +1,137 @@
+{
+ "name": "Homepage Section",
+ "module": "Frontdesk",
+ "doctype": "DocType",
+ "is_child_table": 1,
+ "is_submittable": 0,
+ "is_tree": 0,
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_type",
+  "enabled",
+  "col1",
+  "heading",
+  "subheading",
+  "col2",
+  "body_text",
+  "col3",
+  "image",
+  "image_position",
+  "col4",
+  "button_label",
+  "button_link",
+  "col5",
+  "layout_variant",
+  "background_color"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_type",
+   "label": "Section Type",
+   "fieldtype": "Select",
+   "options": "hero\nstory\nservices\nhow_it_works\ngallery\ntestimonials\nvisit\ncta_band\ncustom",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "enabled",
+   "label": "Enabled",
+   "fieldtype": "Check",
+   "default": "1",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "heading",
+   "label": "Heading",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "columns": 3
+  },
+  {
+   "fieldname": "subheading",
+   "label": "Sub-heading",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "body_text",
+   "label": "Body Text",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "col3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach Image"
+  },
+  {
+   "fieldname": "image_position",
+   "label": "Image Position",
+   "fieldtype": "Select",
+   "options": "right\nleft\nbackground\ntop",
+   "default": "right"
+  },
+  {
+   "fieldname": "col4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "button_label",
+   "label": "Button Label",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "button_link",
+   "label": "Button Link",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "col5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "layout_variant",
+   "label": "Layout Variant",
+   "fieldtype": "Select",
+   "options": "default\nfull-width\nsplit\ncard-grid\ncentered",
+   "default": "default"
+  },
+  {
+   "fieldname": "background_color",
+   "label": "Background Color",
+   "fieldtype": "Color"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Frontdesk Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ],
+ "sort_field": "idx",
+ "sort_order": "ASC",
+ "track_changes": 0
+}

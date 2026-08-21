@@ -46,9 +46,49 @@ def get_context(context):
     except Exception:
         frappe.log_error("Item fetch failed", "FrontDesk Home")
 
+    # ── Homepage Sections (ordered rows from child table) ─────────────────────
+    # Falls back to a sensible default order when no rows exist yet, so a fresh
+    # install still renders correctly before the client has configured anything.
+    sections = []
+    try:
+        rows = frappe.get_all(
+            "Homepage Section",
+            filters={"parent": "Business Settings", "parenttype": "Business Settings"},
+            fields=["section_type", "enabled", "heading", "subheading",
+                    "body_text", "image", "image_position",
+                    "button_label", "button_link",
+                    "layout_variant", "background_color", "idx"],
+            order_by="idx asc",
+        )
+        sections = [r for r in rows]
+    except Exception:
+        frappe.log_error("Homepage Section fetch failed", "FrontDesk Home")
+
+    # Fallback: if no sections rows exist, build defaults from the old flat toggles
+    if not sections:
+        _defaults = [
+            ("hero",          b.get("show_hero", 1)),
+            ("story",         b.get("show_story", 1)),
+            ("services",      b.get("show_services", 1)),
+            ("how_it_works",  b.get("show_how_it_works", 1)),
+            ("gallery",       b.get("show_gallery", 1)),
+            ("testimonials",  b.get("show_testimonials", 1)),
+            ("visit",         b.get("show_visit", 1)),
+            ("cta_band",      b.get("show_cta_band", 1)),
+        ]
+        sections = [
+            frappe._dict(section_type=t, enabled=bool(e),
+                         heading=None, subheading=None, body_text=None,
+                         image=None, image_position="right",
+                         button_label=None, button_link=None,
+                         layout_variant="default", background_color=None)
+            for t, e in _defaults
+        ]
+
     context.business = b
     context.services = services
     context.gallery = gallery[:6]
+    context.sections = sections
     context.active_staff_count = active_staff
     context.no_cache = 1
     context.title = b["brand_name"]

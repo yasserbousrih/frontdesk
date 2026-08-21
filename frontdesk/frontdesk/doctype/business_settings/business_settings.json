@@ -76,6 +76,7 @@
   "basira_crm_secret",
   "tab_content",
   "content_homepage",
+  "homepage_sections",
   "show_hero",
   "ch1",
   "hero_tagline",
@@ -506,6 +507,13 @@
    "fieldname": "content_homepage",
    "fieldtype": "Section Break",
    "label": "Content \u00b7 Homepage"
+  },
+  {
+   "fieldname": "homepage_sections",
+   "label": "Homepage Sections",
+   "fieldtype": "Table",
+   "options": "Homepage Section",
+   "description": "Drag rows to reorder. Enable/disable each section. Add a 'custom' row for freeform text+image blocks."
   },
   {
    "fieldname": "show_hero",
