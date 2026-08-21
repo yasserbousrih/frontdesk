@@ -578,7 +578,7 @@
 				{% if business.contact_whatsapp %}
 					<div class="info-card">
 						<div class="info-label">WhatsApp</div>
-						<div class="info-value"><a href="https://wa.me/{{ business.contact_whatsapp|ltrim('0+')|replace(' ', '') }}" target="_blank" rel="noopener">{{ business.contact_whatsapp }}</a></div>
+						<div class="info-value"><a href="https://wa.me/{{ business.contact_whatsapp|replace('+', '')|replace(' ', '') }}" target="_blank" rel="noopener">{{ business.contact_whatsapp }}</a></div>
 					</div>
 				{% endif %}
 				{% if business.contact_email %}
@@ -590,7 +590,7 @@
 				{% if business.instagram %}
 					<div class="info-card">
 						<div class="info-label">Instagram</div>
-						<div class="info-value"><a href="https://instagram.com/{{ business.instagram|ltrim('@') }}" target="_blank" rel="noopener">@{{ business.instagram|ltrim('@') }}</a></div>
+						<div class="info-value"><a href="https://instagram.com/{{ business.instagram|replace('@', '') }}" target="_blank" rel="noopener">@{{ business.instagram|replace('@', '') }}</a></div>
 					</div>
 				{% endif %}
 			</div>
