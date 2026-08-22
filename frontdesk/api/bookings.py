@@ -82,19 +82,21 @@ def create_web_booking(staff, service, booking_date, start_time, phone, customer
 
 	try:
 		bs = frappe.get_single("Business Settings")
-		pm = bs.get("payment_mode") or "Pay On Service"
-		should_pay_online = (pm in ("Online Now", "Pay Now (online)")) or (pm == "Both" and frappe.utils.cint(pay_online))
-		if should_pay_online and service_rate > 0:
-			from frontdesk.api.payments import create_payment_request
-			pr_res = create_payment_request(
-				booking=booking.name,
-				grand_total=service_rate,
-				guest_email=email,
-				guest_phone=phone,
-			)
-			payment_url = pr_res.get("payment_url") or ""
-			payment_request_id = pr_res.get("payment_request") or ""
-			requires_payment = bool(payment_url)
+		from frontdesk.api.payments import is_online_payment_enabled
+		if is_online_payment_enabled(bs) and service_rate > 0:
+			pm = bs.get("payment_mode") or "Pay on Service"
+			should_pay_online = (pm in ("Online Now", "Pay Now (online)")) or (pm == "Both" and frappe.utils.cint(pay_online))
+			if should_pay_online:
+				from frontdesk.api.payments import create_payment_request
+				pr_res = create_payment_request(
+					booking=booking.name,
+					grand_total=service_rate,
+					guest_email=email,
+					guest_phone=phone,
+				)
+				payment_url = pr_res.get("payment_url") or ""
+				payment_request_id = pr_res.get("payment_request") or ""
+				requires_payment = bool(payment_url)
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "FrontDesk Create Web Booking Payment")
 

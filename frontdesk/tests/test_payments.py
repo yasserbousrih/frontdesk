@@ -5,15 +5,64 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 from frappe.utils import add_days, today
 from frontdesk.api.bookings import create_web_booking
-from frontdesk.api.payments import confirm_demo_payment, sync_gateway_from_settings, verify_payment
+from frontdesk.api.payments import (
+	confirm_demo_payment,
+	get_payment_modes,
+	is_online_payment_enabled,
+	sync_gateway_from_settings,
+	verify_payment,
+)
 
 
 class TestFrontDeskPayments(FrappeTestCase):
 	def setUp(self):
-		sync_gateway_from_settings()
+		# Reset Business Settings for predictable testing
+		bs = frappe.get_single("Business Settings")
+		bs.enable_online_payments = 1
+		bs.payment_gateway = "FrontDesk Gateway"
+		bs.payment_mode = "Both"
+		bs.save(ignore_permissions=True)
+		sync_gateway_from_settings(bs)
+
+	def test_payment_disabled_setting(self):
+		bs = frappe.get_single("Business Settings")
+		bs.enable_online_payments = 0
+		bs.save(ignore_permissions=True)
+
+		self.assertFalse(is_online_payment_enabled(bs))
+
+		modes = get_payment_modes()
+		online_in_modes = any(m.get("method") == "Online" for m in modes.get("modes", []))
+		self.assertFalse(online_in_modes)
+
+		# Create booking when disabled
+		services = frappe.get_all("Item", filters={"item_group": "Services"}, fields=["name"])
+		staff_members = frappe.get_all("Staff Member", filters={"active": 1}, fields=["name"])
+		if not services or not staff_members:
+			return
+
+		booking_date = str(add_days(today(), 3))
+		res = create_web_booking(
+			staff=staff_members[0].name,
+			service=services[0].name,
+			booking_date=booking_date,
+			start_time="11:00:00",
+			phone="+974 6611 2233",
+			customer_name="Cash Customer",
+			pay_online=1,  # Attempting to pay online when setting is disabled
+		)
+		self.assertFalse(res.get("requires_payment"))
+		self.assertEqual(res.get("payment_url"), "")
 
 	def test_payment_chain_and_booking_flow(self):
-		# Ensure gateway and account exist
+		bs = frappe.get_single("Business Settings")
+		bs.enable_online_payments = 1
+		bs.payment_gateway = "FrontDesk Gateway"
+		bs.payment_mode = "Both"
+		bs.save(ignore_permissions=True)
+		sync_gateway_from_settings(bs)
+
+		self.assertTrue(is_online_payment_enabled(bs))
 		self.assertTrue(frappe.db.exists("Payment Gateway", "FrontDesk Gateway"))
 		self.assertTrue(frappe.db.exists("DocType", "FrontDesk Gateway Settings"))
 
@@ -27,8 +76,8 @@ class TestFrontDeskPayments(FrappeTestCase):
 		svc = services[0]
 		stf = staff_members[0]
 
-		# Create booking with online payment
-		booking_date = str(add_days(today(), 2))
+		# Create booking with online payment enabled
+		booking_date = str(add_days(today(), 4))
 		res = create_web_booking(
 			staff=stf.name,
 			service=svc.name,

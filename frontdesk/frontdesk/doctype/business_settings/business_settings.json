@@ -54,10 +54,13 @@
   "currency",
   "tab_payments",
   "payments",
+  "enable_online_payments",
   "payment_gateway",
   "payment_api_key",
   "payment_secret",
   "payment_mode",
+  "payments_booking",
+  "booking_payment_methods",
   "tab_notifications",
   "notifications",
   "sms_enabled",
@@ -407,28 +410,50 @@
    "label": "Payments"
   },
   {
+   "default": "0",
+   "fieldname": "enable_online_payments",
+   "fieldtype": "Check",
+   "label": "Enable Online Payments",
+   "description": "Allow customers to pay online when booking appointments."
+  },
+  {
+   "default": "None",
    "fieldname": "payment_gateway",
    "fieldtype": "Select",
    "label": "Website Payment Gateway",
-   "options": "\nFrontDesk Gateway\nPaymob\nStripe\nCash On Service"
+   "options": "None\nFrontDesk Gateway\nPaymob\nStripe\nCash On Service",
+   "description": "The gateway that processes online payments on your website. 'FrontDesk Gateway' is the built-in hosted checkout (demo mode). Stripe / Paymob go live once their settings + API keys exist in the desk."
   },
   {
    "fieldname": "payment_api_key",
    "fieldtype": "Password",
-   "label": "Payment Gateway \u2014 API Key",
+   "label": "API Key",
    "description": "Provided by your payment provider (Paymob, Stripe, etc)."
   },
   {
    "fieldname": "payment_secret",
    "fieldtype": "Password",
-   "label": "Payment Gateway \u2014 Secret Key",
-   "description": "Keep this private \u2014 never share it."
+   "label": "Secret Key",
+   "description": "Keep this private — never share it."
   },
   {
+   "default": "Pay on Service",
    "fieldname": "payment_mode",
    "fieldtype": "Select",
    "label": "Payment Mode",
-   "options": "\nPay On Service\nOnline Now\nBoth"
+   "options": "Pay on Service\nOnline Now\nBoth",
+   "description": "Choose whether clients pay in person upon visit, online immediately when booking, or can choose between both."
+  },
+  {
+   "fieldname": "payments_booking",
+   "fieldtype": "Section Break",
+   "label": "Payments · Booking Methods"
+  },
+  {
+   "fieldname": "booking_payment_methods",
+   "fieldtype": "Table",
+   "label": "Payment Methods",
+   "options": "FrontDesk Payment Method"
   },
   {
    "fieldname": "tab_notifications",

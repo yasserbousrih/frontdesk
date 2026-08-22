@@ -102,9 +102,9 @@ The full accumulated expertise is in these Hermes skills under
 
 8. **Online Payments & Gateway Settings (Back House Pattern)**:
    - FrontDesk integrates with Frappe's official `payments` app (`frappe/payments`, branch version-16).
-   - `Business Settings` has the `tab_payments` tab with `payment_gateway` (FrontDesk Gateway, Paymob, Stripe, Cash On Service) and `payment_mode` (Pay On Service, Online Now, Both).
+   - `Business Settings` has the `tab_payments` tab with `enable_online_payments` (Check toggle), `payment_gateway` (None, FrontDesk Gateway, Paymob, Stripe, Cash On Service), `payment_mode` (Pay on Service, Online Now, Both), and `booking_payment_methods` (`FrontDesk Payment Method` child table).
    - `sync_gateway_from_settings()` auto-builds the `Payment Gateway`, `Payment Gateway Account` (tied to Company default cash/bank account and currency), and `Mode of Payment: Online` (`type: Phone`).
-   - Web booking wizard (`/book`) passes `pay_online=1` and triggers `create_payment_request()`, generating a standard `Payment Request` linked to the `Booking` and returning `/fd_pay?pr=...`.
+   - Web booking wizard (`/book`) reads `enable_online_payments` & `payment_mode`; when online pay is selected/required, passes `pay_online=1` and triggers `create_payment_request()`, generating a standard `Payment Request` linked to the `Booking` and returning `/fd_pay?pr=...`.
    - On payment authorization / webhook, `Payment Request` transitions to `Paid` and updates `Booking.status = "Paid"` while triggering WhatsApp confirmation.
 
 ---

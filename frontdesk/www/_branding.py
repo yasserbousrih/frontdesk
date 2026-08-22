@@ -199,8 +199,9 @@ def get_branding() -> dict:
         # -- operational (still from Business Settings) -----------------------
         "slot_buffer_minutes": bs.get("slot_buffer_minutes", 0),
         "currency": bs.get("currency") or "QAR",
-        "payment_mode": bs.get("payment_mode") or "Pay On Service",
-        "payment_gateway": bs.get("payment_gateway") or "FrontDesk Gateway",
+        "enable_online_payments": bool(bs.get("enable_online_payments")) and (bs.get("payment_gateway") not in (None, "", "None", "Cash On Service")),
+        "payment_mode": bs.get("payment_mode") or "Pay on Service",
+        "payment_gateway": bs.get("payment_gateway") or "None",
     }
 
 

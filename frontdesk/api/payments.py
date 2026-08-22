@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import flt, nowdate
+from frappe.utils import cint, flt, nowdate
 
 
 def _get_settings():
@@ -18,6 +18,29 @@ GATEWAY_SETTINGS = {
 }
 
 
+def is_online_payment_enabled(settings=None):
+	"""Check if online payment is enabled for the business.
+
+	Follows the Back House architecture:
+	- Business Settings enable_online_payments toggle must be enabled (or not explicitly 0)
+	- Website Payment Gateway must be selected and not 'None' or 'Cash On Service'
+	- Payment Mode must be 'Online Now' or 'Both'
+	"""
+	s = settings or _get_settings()
+	if s.get("enable_online_payments") is not None and not cint(s.get("enable_online_payments")):
+		return False
+
+	gateway = (s.get("payment_gateway") or "None").strip()
+	if gateway in ("", "None", "Cash On Service"):
+		return False
+
+	pm = (s.get("payment_mode") or "Pay on Service").strip()
+	if pm not in ("Online Now", "Both", "Pay Now (online)"):
+		return False
+
+	return True
+
+
 def _gateway_ready(gw_account):
 	"""Check if the gateway account has active configuration."""
 	try:
@@ -34,11 +57,57 @@ def _gateway_ready(gw_account):
 
 
 @frappe.whitelist(allow_guest=True)
+def get_payment_modes():
+	"""Payment methods visible to the client on website / booking wizard.
+
+	Follows the Back House architecture: reads Business Settings → Payment Methods table
+	or standard defaults, filtering out Online / Card if not enabled or gateway not ready.
+	"""
+	bs = _get_settings()
+	label_map = {"Cash": "Cash", "Card": "Credit Card", "Online": "Online", "Pay Later": "Pay Later"}
+	modes = []
+
+	if frappe.db.exists("DocType", "FrontDesk Payment Method"):
+		selected = frappe.get_all(
+			"FrontDesk Payment Method",
+			filters={"parent": "Business Settings", "parentfield": "booking_payment_methods"},
+			fields=["method", "label"],
+			order_by="idx",
+		)
+		for row in selected:
+			m_key = (row.method or "").strip()
+			if not m_key:
+				continue
+			display = (row.label or "").strip() or label_map.get(m_key, m_key)
+			modes.append({"method": label_map.get(m_key, m_key), "label": display, "default": m_key == "Cash"})
+
+	online_ok = is_online_payment_enabled(bs)
+
+	if not modes:
+		# Standard fallback
+		modes = [
+			{"method": "Cash", "label": "Pay at Front Desk", "default": True},
+			{"method": "Credit Card", "label": "Card at Counter", "default": False},
+		]
+		if online_ok:
+			modes.append({"method": "Online", "label": "Pay Online Now", "default": False})
+
+	modes = [m for m in modes if not (m["method"] == "Online" and not online_ok)]
+
+	return {
+		"ok": True,
+		"modes": modes,
+		"enable_online_payments": online_ok,
+		"payment_mode": bs.get("payment_mode") or "Pay on Service",
+		"payment_gateway": bs.get("payment_gateway") or "None",
+	}
+
+
+@frappe.whitelist(allow_guest=True)
 def create_payment_request(booking=None, invoice=None, grand_total=None, guest_email=None, guest_phone=None):
 	"""Create a standard Frappe Payment Request for a Booking or Sales Invoice."""
 	settings = _get_settings()
-	payment_mode = settings.get("payment_mode") or "Pay On Service"
-	if payment_mode not in ("Online Now", "Both", "Pay Now (online)"):
+	if not is_online_payment_enabled(settings):
 		frappe.throw("Online payment is not enabled.")
 
 	ref_doctype = "Booking" if booking else "Sales Invoice"
@@ -126,12 +195,10 @@ def create_payment_request(booking=None, invoice=None, grand_total=None, guest_e
 	if gw_account and not custom_gateway:
 		pr.insert()
 		pr.submit()
-		frappe.db.commit()
 	else:
 		pr.flags.ignore_validate = True
 		pr.flags.ignore_mandatory = True
 		pr.insert()
-		frappe.db.commit()
 
 	pay_url = f"/fd_pay?pr={pr.name}"
 	try:
@@ -172,17 +239,15 @@ def _mark_pr_paid(pr):
 		pr.set_as_paid()
 	except Exception:
 		pr.db_set({"status": "Paid", "outstanding_amount": 0})
-	frappe.db.commit()
 
 	if prev_status != "Paid":
 		on_payment_request_authorized(pr, "Completed")
-		frappe.db.commit()
 	return pr.status
 
 
 @frappe.whitelist(allow_guest=True)
 def confirm_demo_payment(payment_request=None):
-	"""Demo mode payment handler for hosted /fd-pay checkout."""
+	"""Demo mode payment handler for hosted /fd_pay checkout."""
 	pr_name = (payment_request or frappe.form_dict.get("payment_request") or "").strip()
 	if not pr_name or not frappe.db.exists("Payment Request", pr_name):
 		frappe.local.response["http_status_code"] = 400
@@ -214,7 +279,6 @@ def on_payment_request_authorized(doc, status=None):
 			booking.status = "Paid"
 			booking.flags.ignore_permissions = True
 			booking.save()
-			frappe.db.commit()
 
 			# Trigger confirmation notification if configured
 			try:
@@ -234,9 +298,9 @@ def on_payment_request_submit(doc, method=None):
 def sync_gateway_from_settings(settings=None):
 	"""Build or sync the ERPNext payment chain when Business Settings is saved."""
 	s = settings or _get_settings()
-	gateway = (s.get("payment_gateway") or "FrontDesk Gateway").strip()
+	gateway = (s.get("payment_gateway") or "None").strip()
 	if gateway in ("", "None", "Cash On Service"):
-		gateway = "FrontDesk Gateway"
+		return {"ok": True, "gateway": gateway, "status": "disabled"}
 
 	api_key = (s.get("payment_api_key") or "").strip()
 	secret_key = (s.get("payment_secret") or "").strip()

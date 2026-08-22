@@ -35,6 +35,7 @@ def setup_after_migrate():
     try:
         frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "homepage_section", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "frontdesk_payment_method", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "frontdesk_gateway_settings", force=False)
         frappe.db.commit()
     except Exception:
@@ -66,6 +67,7 @@ def setup_after_install():
     try:
         frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "homepage_section", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "frontdesk_payment_method", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "frontdesk_gateway_settings", force=False)
         frappe.db.commit()
     except Exception:
