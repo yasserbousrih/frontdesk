@@ -100,11 +100,19 @@ The full accumulated expertise is in these Hermes skills under
    - CSS: `display: block; font-family: var(--font-arabic); direction: rtl; unicode-bidi: isolate; font-weight: 600; color: var(--text);`.
    - Epson receipt printing snapshots `item_name_ar` onto Sales Invoice Item rows.
 
+8. **Online Payments & Gateway Settings (Back House Pattern)**:
+   - FrontDesk integrates with Frappe's official `payments` app (`frappe/payments`, branch version-16).
+   - `Business Settings` has the `tab_payments` tab with `payment_gateway` (FrontDesk Gateway, Paymob, Stripe, Cash On Service) and `payment_mode` (Pay On Service, Online Now, Both).
+   - `sync_gateway_from_settings()` auto-builds the `Payment Gateway`, `Payment Gateway Account` (tied to Company default cash/bank account and currency), and `Mode of Payment: Online` (`type: Phone`).
+   - Web booking wizard (`/book`) passes `pay_online=1` and triggers `create_payment_request()`, generating a standard `Payment Request` linked to the `Booking` and returning `/fd_pay?pr=...`.
+   - On payment authorization / webhook, `Payment Request` transitions to `Paid` and updates `Booking.status = "Paid"` while triggering WhatsApp confirmation.
+
 ---
 
 ## Verification Commands
 
-- **Unit tests**: `PYTHONPATH=/home/frappe/frontdesk python3 /home/frappe/frontdesk/frontdesk/tests/test_availability.py`
+- **Unit tests (availability)**: `PYTHONPATH=/home/frappe/frontdesk python3 /home/frappe/frontdesk/frontdesk/tests/test_availability.py`
+- **Unit tests (payments)**: `bash /root/run-bench.sh --site frontdesk.local run-tests --module frontdesk.tests.test_payments`
 - **Compile check**: `python3 -c "import ast, glob; [ast.parse(open(f).read()) for f in glob.glob('/home/frappe/frontdesk/frontdesk/**/*.py', recursive=True)]; print('OK')"`
 - **Bench migrate**: `bash /root/run-bench.sh --site frontdesk.local migrate`
 - **Bench restart**: `bash /root/run-bench.sh restart`

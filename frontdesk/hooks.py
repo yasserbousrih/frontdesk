@@ -9,6 +9,8 @@ app_description = "Booking, POS, and AI-powered front desk for service businesse
 app_email = "yasser@basira.tech"
 app_license = "MIT"
 
+required_apps = ["erpnext", "payments"]
+
 # Hook registrations (dotted-path strings — bare functions in hooks.py are
 # NOT picked up by frappe's hook loader, which filters out FunctionType).
 # Implementation functions are named setup_* to avoid shadowing these strings.
@@ -33,11 +35,17 @@ def setup_after_migrate():
     try:
         frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "homepage_section", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "frontdesk_gateway_settings", force=False)
         frappe.db.commit()
     except Exception:
         pass
     # Fill any blank defaults (never overwrites owner-set values)
     _seed_homepage_defaults()
+    try:
+        from frontdesk.api.payments import sync_gateway_from_settings
+        sync_gateway_from_settings()
+    except Exception:
+        pass
 
 
 # -------------------
@@ -58,7 +66,13 @@ def setup_after_install():
     try:
         frappe.reload_doc("Frontdesk", "doctype", "business_settings", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "homepage_section", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "frontdesk_gateway_settings", force=False)
         frappe.db.commit()
+    except Exception:
+        pass
+    try:
+        from frontdesk.api.payments import sync_gateway_from_settings
+        sync_gateway_from_settings()
     except Exception:
         pass
 
@@ -265,7 +279,14 @@ doc_events = {
     },
     "Customer Profile": {
         "on_update": "frontdesk.api.basira_crm.sync_customer_to_basira",
-    }
+    },
+    "Payment Request": {
+        "on_payment_authorized": "frontdesk.api.payments.on_payment_request_authorized",
+        "on_submit": "frontdesk.api.payments.on_payment_request_submit",
+    },
+    "Business Settings": {
+        "on_update": "frontdesk.api.payments.on_business_settings_update",
+    },
 }
 
 # -------------------

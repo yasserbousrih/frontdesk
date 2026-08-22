@@ -806,7 +806,17 @@
 			renderProgress();
 			btnRowEl.style.display = 'flex';
 			backBtn.style.display = '';
-			nextBtn.textContent = 'Confirm booking';
+			var payMode = (BUSINESS && BUSINESS.payment_mode) || 'Pay On Service';
+			var priceVal = state.service && state.service.price;
+			var hasPrice = Boolean(priceVal && Number(priceVal) > 0);
+
+			if (payMode === 'Online Now' && hasPrice) {
+				nextBtn.textContent = 'Pay ' + currency(priceVal);
+			} else if (state.payOnline && hasPrice) {
+				nextBtn.textContent = 'Pay ' + currency(priceVal);
+			} else {
+				nextBtn.textContent = 'Confirm booking';
+			}
 			nextBtn.disabled = !(state.phone && state.name);
 
 			var summarySvc = state.service
@@ -827,19 +837,46 @@
 				+ '<input id="nameInput" type="text" autocomplete="name" placeholder="Jane Doe" value="' + escapeHTML(state.name) + '" /></div>';
 			html += '<div class="form-row"><label for="phoneInput">Phone number</label>'
 				+ '<input id="phoneInput" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 555 0100" value="' + escapeHTML(state.phone) + '" /></div>';
+			html += '<div class="form-row"><label for="emailInput">Email (optional)</label>'
+				+ '<input id="emailInput" type="email" autocomplete="email" placeholder="jane@example.com" value="' + escapeHTML(state.email || '') + '" /></div>';
+
+			if (payMode === 'Both' && hasPrice) {
+				html += '<div class="form-row" style="margin-top:16px;"><label>Payment Method</label>'
+					+ '<div style="display:flex;gap:12px;margin-top:6px;">'
+					+ '<label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;"><input type="radio" name="payChoice" value="online" ' + (state.payOnline ? 'checked' : '') + ' id="payChoiceOnline"> Pay Online Now (' + currency(priceVal) + ')</label>'
+					+ '<label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;"><input type="radio" name="payChoice" value="onsite" ' + (!state.payOnline ? 'checked' : '') + ' id="payChoiceOnsite"> Pay on Visit</label>'
+					+ '</div></div>';
+			} else if (payMode === 'Online Now' && hasPrice) {
+				html += '<div style="font-size:13px;color:var(--muted);margin-top:12px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> Secure online payment required to confirm appointment.</div>';
+			}
 			html += '<div id="errBox"></div>';
 			appEl.innerHTML = html;
 
 			var nameInput = document.getElementById('nameInput');
 			var phoneInput = document.getElementById('phoneInput');
+			var emailInput = document.getElementById('emailInput');
+			var payChoiceOnline = document.getElementById('payChoiceOnline');
+			var payChoiceOnsite = document.getElementById('payChoiceOnsite');
 
 			function refreshNext() {
 				state.name = nameInput.value.trim();
 				state.phone = phoneInput.value.trim();
+				if (emailInput) state.email = emailInput.value.trim();
+				if (payChoiceOnline) state.payOnline = payChoiceOnline.checked;
+				if (payMode === 'Online Now' && hasPrice) {
+					nextBtn.textContent = 'Pay ' + currency(priceVal);
+				} else if (state.payOnline && hasPrice) {
+					nextBtn.textContent = 'Pay ' + currency(priceVal);
+				} else {
+					nextBtn.textContent = 'Confirm booking';
+				}
 				nextBtn.disabled = !(state.name && state.phone);
 			}
 			nameInput.addEventListener('input', refreshNext);
 			phoneInput.addEventListener('input', refreshNext);
+			if (emailInput) emailInput.addEventListener('input', refreshNext);
+			if (payChoiceOnline) payChoiceOnline.addEventListener('change', refreshNext);
+			if (payChoiceOnsite) payChoiceOnsite.addEventListener('change', refreshNext);
 
 			refreshNext();
 		}
@@ -923,14 +960,23 @@
 					resetBtn(originalLabel);
 					return;
 				}
+				var payMode = (BUSINESS && BUSINESS.payment_mode) || 'Pay On Service';
+				var isOnlinePay = (payMode === 'Online Now') || (payMode === 'Both' && state.payOnline);
+
 				fc('frontdesk.api.bookings.create_web_booking', {
 					staff: (state.staff ? state.staff.name : ''),
 					service: state.service.name,
 					booking_date: state.date,
 					start_time: state.slot,
 					phone: state.phone,
-					customer_name: state.name
+					customer_name: state.name,
+					email: (state.email || ''),
+					pay_online: isOnlinePay ? 1 : 0
 				}).then(function(res) {
+					if (res && res.payment_url) {
+						window.location.href = res.payment_url;
+						return;
+					}
 					state.bookingResult = res;
 					state.step = FLOW.length;
 					render();

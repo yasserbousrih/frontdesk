@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · {{ business.brand_name }}</title>
+  {% if business.font_urls %}
+    {% for u in business.font_urls %}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{{ u }}&display=swap">
+    {% endfor %}
+  {% endif %}
+  <style>
+    :root {
+      --primary: {{ business.theme.light.primary or '#01696f' }};
+      --accent: {{ business.theme.light.accent or '#4f98a3' }};
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: {{ business.radius or '12px' }};
+      --font-body: {{ business.font_family or 'Inter' }}, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .pay-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+    }
+    .pay-header {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 24px;
+      text-align: center;
+    }
+    .pay-header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .pay-header p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .pay-body {
+      padding: 24px;
+    }
+    .summary-box {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .summary-row:last-child {
+      margin-bottom: 0;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--primary);
+    }
+    .summary-label { color: var(--muted); }
+    .summary-val { font-weight: 600; text-align: right; }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-paid { background: #dcfce7; color: #166534; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-demo { background: #e0f2fe; color: #0369a1; font-size: 11px; margin-bottom: 12px; }
+    .pay-btn {
+      display: block;
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+    .pay-btn:hover { opacity: 0.92; }
+    .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .success-box {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: #dcfce7;
+      color: #16a34a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+    }
+    .success-box h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; color: #0f172a; }
+    .success-box p { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+    .footer-note {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="pay-card">
+  <div class="pay-header">
+    <h1>{{ business.brand_name }}</h1>
+    <p>Secure Online Checkout</p>
+  </div>
+
+  <div class="pay-body">
+    {% if error %}
+      <div style="text-align:center;padding:24px 0;">
+        <p style="color:#ef4444;font-weight:600;margin-bottom:16px;">{{ error }}</p>
+        <a href="/" class="pay-btn">Return to Home</a>
+      </div>
+    {% elif is_paid %}
+      <div class="success-box">
+        <div class="success-icon">✓</div>
+        <h2>Payment Complete!</h2>
+        <p>Your appointment has been confirmed.</p>
+        <div class="summary-box" style="text-align:left;margin-bottom:20px;">
+          <div class="summary-row"><span class="summary-label">Booking ID</span><span class="summary-val">{{ booking.name if booking else '' }}</span></div>
+          <div class="summary-row"><span class="summary-label">Service</span><span class="summary-val">{{ booking.service_name if booking else '' }}</span></div>
+          <div class="summary-row"><span class="summary-label">Date & Time</span><span class="summary-val">{{ booking.booking_date if booking else '' }} @ {{ booking.start_time if booking else '' }}</span></div>
+          <div class="summary-row"><span class="summary-label">Amount Paid</span><span class="summary-val">{{ grand_total }} {{ currency }}</span></div>
+        </div>
+        <a href="/" class="pay-btn">Return to Home</a>
+      </div>
+    {% else %}
+      {% if demo_mode %}
+        <div class="badge badge-demo">⚡ Demo Mode — Simulated Payment Available</div>
+      {% endif %}
+
+      <div class="summary-box">
+        {% if booking %}
+          <div class="summary-row"><span class="summary-label">Service</span><span class="summary-val">{{ booking.service_name }}</span></div>
+          <div class="summary-row"><span class="summary-label">Staff</span><span class="summary-val">{{ booking.staff_name }}</span></div>
+          <div class="summary-row"><span class="summary-label">Date</span><span class="summary-val">{{ booking.booking_date }}</span></div>
+          <div class="summary-row"><span class="summary-label">Time</span><span class="summary-val">{{ booking.start_time }}</span></div>
+          <div class="summary-row"><span class="summary-label">Guest</span><span class="summary-val">{{ booking.customer_name }}</span></div>
+        {% endif %}
+        <div class="summary-row"><span class="summary-label">Total to Pay</span><span class="summary-val">{{ grand_total }} {{ currency }}</span></div>
+      </div>
+
+      <div id="payActionBox">
+        <button id="btnPay" class="pay-btn" onclick="processPayment()">
+          Pay {{ grand_total }} {{ currency }}
+        </button>
+        <div id="msgBox" style="margin-top:12px;text-align:center;font-size:13px;color:#ef4444;"></div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="footer-note">
+  {{ business.copyright_text or "© " + business.brand_name }} · Powered by {{ business.footer_powered or "Basira" }}
+</div>
+
+<script>
+async function processPayment() {
+  const btn = document.getElementById('btnPay');
+  const msg = document.getElementById('msgBox');
+  btn.disabled = true;
+  btn.textContent = 'Processing Payment…';
+  msg.textContent = '';
+
+  try {
+    const res = await fetch('/api/method/frontdesk.api.payments.confirm_demo_payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ payment_request: '{{ payment_request.name if payment_request else "" }}' })
+    });
+    const d = await res.json();
+    if (d.message && (d.message.ok || d.message.status === 'paid' || d.message.status === 'already_paid')) {
+      window.location.reload();
+    } else {
+      msg.textContent = (d.message && d.message.error) || 'Payment could not be completed. Please try again.';
+      btn.disabled = false;
+      btn.textContent = 'Pay {{ grand_total }} {{ currency }}';
+    }
+  } catch (e) {
+    msg.textContent = 'Network error. Please try again.';
+    btn.disabled = false;
+    btn.textContent = 'Pay {{ grand_total }} {{ currency }}';
+  }
+}
+</script>
+
+</body>
+</html>

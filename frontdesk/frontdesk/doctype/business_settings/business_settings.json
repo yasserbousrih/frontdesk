@@ -410,7 +410,7 @@
    "fieldname": "payment_gateway",
    "fieldtype": "Select",
    "label": "Website Payment Gateway",
-   "options": "\nPaymob\nCash On Service"
+   "options": "\nFrontDesk Gateway\nPaymob\nStripe\nCash On Service"
   },
   {
    "fieldname": "payment_api_key",
@@ -428,7 +428,7 @@
    "fieldname": "payment_mode",
    "fieldtype": "Select",
    "label": "Payment Mode",
-   "options": "\nOnline Now\nPay On Service"
+   "options": "\nPay On Service\nOnline Now\nBoth"
   },
   {
    "fieldname": "tab_notifications",

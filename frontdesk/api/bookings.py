@@ -9,13 +9,16 @@ with status Booked and source Web.
 """
 
 import frappe
+from frappe.utils import flt
 
 
 @frappe.whitelist(allow_guest=True)
-def create_web_booking(staff, service, booking_date, start_time, phone, customer_name):
+def create_web_booking(staff, service, booking_date, start_time, phone, customer_name, pay_online=None, email=None):
 	"""Create a booking from the public website.
 	Find-or-create Customer Profile by phone, then create a Booking with status Booked, source Web.
-	Returns dict with booking name + details."""
+	If online payment is enabled/requested, creates a Payment Request and returns the payment_url.
+	Returns dict with booking name + details.
+	"""
 	# --- input validation ---
 	_missing = [f for f, v in {
 		"service": service, "booking_date": booking_date,
@@ -47,12 +50,17 @@ def create_web_booking(staff, service, booking_date, start_time, phone, customer
 	existing = frappe.db.get_value("Customer Profile", {"phone": phone}, "name")
 	if existing:
 		customer = existing
+		if email and not frappe.db.get_value("Customer Profile", existing, "email"):
+			frappe.db.set_value("Customer Profile", existing, "email", email)
 	else:
 		customer = frappe.get_doc({
 			"doctype": "Customer Profile",
 			"customer_name": customer_name,
 			"phone": phone,
+			"email": email or "",
 		}).insert(ignore_permissions=True).name
+
+	service_rate = flt(frappe.db.get_value("Item", service, "standard_rate") or 0)
 
 	booking = frappe.get_doc({
 		"doctype": "Booking",
@@ -63,8 +71,32 @@ def create_web_booking(staff, service, booking_date, start_time, phone, customer
 		"start_time": start_time,
 		"status": "Booked",
 		"source": "Web",
+		"price": service_rate,
 	})
 	booking.insert(ignore_permissions=True)
+
+	# Check online payment
+	payment_url = ""
+	payment_request_id = ""
+	requires_payment = False
+
+	try:
+		bs = frappe.get_single("Business Settings")
+		pm = bs.get("payment_mode") or "Pay On Service"
+		should_pay_online = (pm in ("Online Now", "Pay Now (online)")) or (pm == "Both" and frappe.utils.cint(pay_online))
+		if should_pay_online and service_rate > 0:
+			from frontdesk.api.payments import create_payment_request
+			pr_res = create_payment_request(
+				booking=booking.name,
+				grand_total=service_rate,
+				guest_email=email,
+				guest_phone=phone,
+			)
+			payment_url = pr_res.get("payment_url") or ""
+			payment_request_id = pr_res.get("payment_request") or ""
+			requires_payment = bool(payment_url)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "FrontDesk Create Web Booking Payment")
 
 	return {
 		"booking": booking.name,
@@ -72,6 +104,10 @@ def create_web_booking(staff, service, booking_date, start_time, phone, customer
 		"staff": frappe.db.get_value("Staff Member", staff, "staff_name"),
 		"date": str(booking.booking_date),
 		"time": str(booking.start_time)[:5],
+		"price": service_rate,
+		"payment_url": payment_url,
+		"payment_request": payment_request_id,
+		"requires_payment": requires_payment,
 	}
 
 

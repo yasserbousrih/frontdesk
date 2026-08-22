@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-08-22 11:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "gateway_name",
+  "demo_mode",
+  "api_base_url",
+  "merchant_key",
+  "merchant_secret"
+ ],
+ "fields": [
+  {
+   "allow_in_quick_entry": 0,
+   "fieldname": "gateway_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Gateway Name",
+   "reqd": 1,
+   "default": "FrontDesk Gateway"
+  },
+  {
+   "default": "1",
+   "fieldname": "demo_mode",
+   "fieldtype": "Check",
+   "label": "Demo Mode (test payments on the hosted checkout)"
+  },
+  {
+   "fieldname": "api_base_url",
+   "fieldtype": "Data",
+   "label": "API Base URL (when live)",
+   "description": "e.g. https://api.paymob.com — the PSP endpoint used once merchant keys are set."
+  },
+  {
+   "fieldname": "merchant_key",
+   "fieldtype": "Data",
+   "label": "Merchant Key (when live)"
+  },
+  {
+   "fieldname": "merchant_secret",
+   "fieldtype": "Password",
+   "label": "Merchant Secret (when live)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-22 11:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Frontdesk",
+ "name": "FrontDesk Gateway Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
