@@ -57,13 +57,13 @@ def _gateway_ready(gw_account):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_payment_modes():
+def get_payment_modes(settings=None):
 	"""Payment methods visible to the client on website / booking wizard.
 
 	Follows the Back House architecture: reads Business Settings → Payment Methods table
 	or standard defaults, filtering out Online / Card if not enabled or gateway not ready.
 	"""
-	bs = _get_settings()
+	bs = settings or _get_settings()
 	label_map = {"Cash": "Cash", "Card": "Credit Card", "Online": "Online", "Pay Later": "Pay Later"}
 	modes = []
 
