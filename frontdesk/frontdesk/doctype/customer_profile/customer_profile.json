@@ -11,6 +11,7 @@
   "phone",
   "email",
   "preferred_staff",
+  "technical_notes",
   "notes",
   "basira_crm_id",
   "erpnext_customer"
@@ -41,6 +42,11 @@
    "fieldtype": "Link",
    "label": "Preferred Staff",
    "options": "Staff Member"
+  },
+  {
+   "fieldname": "technical_notes",
+   "fieldtype": "Text",
+   "label": "Client Formula / Preferences / Allergies"
   },
   {
    "fieldname": "notes",

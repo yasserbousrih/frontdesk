@@ -75,7 +75,7 @@ def create_invoice(
         "is_pos": 1,  # POS invoice — payments table is applied at submit,
         #             # recording the payment (no separate Payment Entry).
         "items": _build_items(
-            booking.service, booking.price, staff_member,
+            booking, staff_member,
             extra_items, tip,
         ),
         "additional_discount_percentage": discount_pct,
@@ -119,18 +119,32 @@ def create_invoice(
 
 # ---------- item builder ----------
 
-def _build_items(service_name, service_price, staff_member, extra_items, tip):
+def _build_items(booking, staff_member, extra_items, tip):
     """Return the list of Sales Invoice Item dicts."""
     items = []
 
-    # 1. Primary service from the booking — the Item code IS the service name
-    items.append({
-        "item_code": service_name,
-        "qty": 1,
-        "rate": service_price,
-        "staff_member": staff_member,
-        "item_name_ar": frappe.db.get_value("Item", service_name, "item_name_ar") or "",
-    })
+    # 1. Services from booking
+    if hasattr(booking, "services") and booking.services:
+        for s in booking.services:
+            if not s.service:
+                continue
+            svc_code = s.service
+            rate = flt(s.price) if s.price is not None else flt(frappe.db.get_value("Item", svc_code, "standard_rate") or 0)
+            items.append({
+                "item_code": svc_code,
+                "qty": 1,
+                "rate": rate,
+                "staff_member": staff_member,
+                "item_name_ar": frappe.db.get_value("Item", svc_code, "item_name_ar") or "",
+            })
+    elif booking.service:
+        items.append({
+            "item_code": booking.service,
+            "qty": 1,
+            "rate": booking.price,
+            "staff_member": staff_member,
+            "item_name_ar": frappe.db.get_value("Item", booking.service, "item_name_ar") or "",
+        })
 
     # 2. Extra items (add‑on products, additional services)
     for ei in extra_items:

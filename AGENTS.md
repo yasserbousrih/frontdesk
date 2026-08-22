@@ -107,6 +107,21 @@ The full accumulated expertise is in these Hermes skills under
    - Web booking wizard (`/book`) reads `enable_online_payments` & `payment_mode`; when online pay is selected/required, passes `pay_online=1` and triggers `create_payment_request()`, generating a standard `Payment Request` linked to the `Booking` and returning `/fd_pay?pr=...`.
    - On payment authorization / webhook, `Payment Request` transitions to `Paid` and updates `Booking.status = "Paid"` while triggering WhatsApp confirmation.
 
+9. **Multi-Service Selection (Cart of Services)**:
+   - `Booking` supports multiple services via `Booking Service` child table.
+   - Durations and rates are summed automatically (`duration_minutes`, `price`).
+   - Availability engine computes slots for the combined duration.
+   - POS checkout (`/checkout`) generates separate `Sales Invoice Item` rows for each service.
+
+10. **Live Walk-in & Chairside Client Cards**:
+   - `/board` provides 1-tap quick walk-in seating (`In Progress` or `Booked`) with customer name & phone.
+   - Clickable client card popup displays past visit history and editable technical formula/allergies.
+   - Daily Cash Out modal aggregates gross revenue, tickets completed, payment methods, and staff commissions.
+
+11. **Self-Service 1-Click Rescheduling & Cancellation**:
+   - Each booking is assigned a unique, secure `reschedule_token`.
+   - Route `/reschedule?token=...` allows clients to pick a new date/time or cancel without calling.
+
 ---
 
 ## Verification Commands

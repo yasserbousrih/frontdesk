@@ -10,6 +10,7 @@
   "customer",
   "staff",
   "service",
+  "services",
   "section_break_timing",
   "booking_date",
   "start_time",
@@ -23,7 +24,8 @@
   "notes",
   "internal_flags_section",
   "reminder_sent",
-  "follow_up_sent"
+  "follow_up_sent",
+  "reschedule_token"
  ],
  "fields": [
   {
@@ -48,8 +50,14 @@
    "in_list_view": 1,
    "label": "Service",
    "options": "Item",
-   "reqd": 1,
+   "reqd": 0,
    "filters": [["item_group", "=", "Services"]]
+  },
+  {
+   "fieldname": "services",
+   "fieldtype": "Table",
+   "label": "Services",
+   "options": "Booking Service"
   },
   {
    "fieldname": "section_break_timing",
@@ -136,6 +144,13 @@
    "fieldname": "follow_up_sent",
    "fieldtype": "Check",
    "label": "Follow-up Sent",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "reschedule_token",
+   "fieldtype": "Data",
+   "label": "Reschedule Token",
    "read_only": 1,
    "hidden": 1
   }

@@ -182,10 +182,40 @@
 			background: #fff;
 			box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.12);
 		}
+		.svc .svc-check {
+			width: 22px;
+			height: 22px;
+			border-radius: 6px;
+			border: 2px solid var(--border);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			font-size: 13px;
+			font-weight: 700;
+			color: #fff;
+			transition: all 0.15s ease;
+		}
+		.svc.selected .svc-check {
+			background: var(--accent);
+			border-color: var(--accent);
+		}
 		.svc .svc-name { font-weight: 600; font-size: 15px; }
 		.svc .svc-name .svc-name-ar { display: block; font-family: '{{ business.ar_font }}', 'Amiri', serif; font-weight: 600; direction: rtl; unicode-bidi: isolate; color: var(--text); font-size: 14px; margin-top: 2px; }
 		.svc .svc-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
 		.svc .svc-price { font-weight: 700; color: var(--primary); white-space: nowrap; font-size: 16px; }
+		.cart-summary-bar {
+			margin-top: 14px;
+			padding: 12px 16px;
+			background: #f8fafc;
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 14px;
+			font-weight: 600;
+		}
 
 		/* Date + slots */
 		.date-row {
@@ -459,11 +489,14 @@
 			department: null,   // department key (Clinic flow)
 			staff: null,        // staff object
 			noStaffPref: false, // "No preference" chosen — auto-assign
-			service: null,      // service object
+			service: null,      // primary service object
+			services: [],       // list of selected service objects
 			date: null,         // YYYY-MM-DD
 			slot: null,         // "HH:MM"
 			name: '',
 			phone: '',
+			email: '',
+			payOnline: false,
 			bookingResult: null
 		};
 		var TOTAL_STEPS = FLOW.length;
@@ -687,7 +720,7 @@
 			btnRowEl.style.display = 'flex';
 			backBtn.style.display = '';
 			nextBtn.textContent = 'Next';
-			nextBtn.disabled = !state.service;
+			nextBtn.disabled = !state.services.length;
 
 			// Department filter (Clinic flow): show only services in the
 			// chosen department. If no department step, show everything.
@@ -700,28 +733,58 @@
 				return;
 			}
 
-			var html = '<h2 class="step-title">Choose a service</h2>';
+			var html = '<h2 class="step-title">Choose services</h2>';
 			html += '<div class="svc-list">';
 			for (var i = 0; i < pool.length; i++) {
 				var s = pool[i];
-				var selected = state.service && state.service.name === s.name;
+				var isSelected = state.services.some(function(x) { return x.name === s.name; });
 				var priceLabel = (s.price !== null && s.price !== undefined && s.price !== '')
 					? currency(s.price)
 					: '';
-				html += '<div class="svc' + (selected ? ' selected' : '') + '" data-svc="' + escapeHTML(s.name) + '">'
+				html += '<div class="svc' + (isSelected ? ' selected' : '') + '" data-svc="' + escapeHTML(s.name) + '">'
+					+ '<div style="display:flex;align-items:center;gap:12px;">'
+					+ '<div class="svc-check">' + (isSelected ? '✓' : '') + '</div>'
 					+ '<div><div class="svc-name">' + escapeHTML(s.service_name) + (s.service_name_ar ? ' <span class="svc-name-ar" lang="ar">' + escapeHTML(s.service_name_ar) + '</span>' : '') + '</div>'
 					+ '<div class="svc-meta">' + escapeHTML(s.duration_minutes) + ' min</div></div>'
+					+ '</div>'
 					+ '<div class="svc-price">' + escapeHTML(priceLabel) + '</div>'
 					+ '</div>';
 			}
 			html += '</div>';
+
+			if (state.services.length) {
+				var totalMin = 0;
+				var totalPrice = 0;
+				for (var k = 0; k < state.services.length; k++) {
+					totalMin += Number(state.services[k].duration_minutes || 0);
+					totalPrice += Number(state.services[k].price || 0);
+				}
+				html += '<div class="cart-summary-bar">'
+					+ '<div><span>' + state.services.length + ' service' + (state.services.length === 1 ? '' : 's') + ' selected</span> <span style="color:var(--muted);font-weight:400;">(' + totalMin + ' min)</span></div>'
+					+ '<div style="color:var(--primary);">' + currency(totalPrice) + '</div>'
+					+ '</div>';
+			}
+
 			appEl.innerHTML = html;
 
 			var rows = appEl.querySelectorAll('.svc');
 			for (var j = 0; j < rows.length; j++) {
 				rows[j].addEventListener('click', function() {
 					var name = this.getAttribute('data-svc');
-					state.service = SERVICES.filter(function(x) { return x.name === name; })[0] || null;
+					var foundIdx = -1;
+					for (var idx = 0; idx < state.services.length; idx++) {
+						if (state.services[idx].name === name) {
+							foundIdx = idx;
+							break;
+						}
+					}
+					if (foundIdx >= 0) {
+						state.services.splice(foundIdx, 1);
+					} else {
+						var item = SERVICES.filter(function(x) { return x.name === name; })[0];
+						if (item) state.services.push(item);
+					}
+					state.service = state.services[0] || null;
 					renderStep2();
 				});
 			}
@@ -766,9 +829,11 @@
 					wrap.innerHTML = '<div class="error-banner">Failed to load booking system. Please refresh.</div>';
 					return;
 				}
+				var serviceNames = state.services.map(function(s) { return s.name; });
 				fc('frontdesk.api.availability.get_available_slots', {
 					staff: (state.staff ? state.staff.name : ''),
-					service: state.service.name,
+					services: JSON.stringify(serviceNames),
+					service: (state.service ? state.service.name : ''),
 					date: date
 				}).then(function(slots) {
 					if (!slots || !slots.length) {
@@ -808,29 +873,40 @@
 			backBtn.style.display = '';
 			var onlineEnabled = Boolean(BUSINESS && BUSINESS.enable_online_payments);
 			var payMode = (BUSINESS && BUSINESS.payment_mode) || 'Pay on Service';
-			var priceVal = state.service && state.service.price;
-			var hasPrice = Boolean(priceVal && Number(priceVal) > 0);
+
+			var totalPrice = 0;
+			var totalDur = 0;
+			for (var i = 0; i < state.services.length; i++) {
+				totalPrice += Number(state.services[i].price || 0);
+				totalDur += Number(state.services[i].duration_minutes || 0);
+			}
+			var hasPrice = totalPrice > 0;
 
 			if (onlineEnabled && payMode === 'Online Now' && hasPrice) {
-				nextBtn.textContent = 'Pay ' + currency(priceVal);
+				nextBtn.textContent = 'Pay ' + currency(totalPrice);
 			} else if (onlineEnabled && state.payOnline && hasPrice) {
-				nextBtn.textContent = 'Pay ' + currency(priceVal);
+				nextBtn.textContent = 'Pay ' + currency(totalPrice);
 			} else {
 				nextBtn.textContent = 'Confirm booking';
 			}
 			nextBtn.disabled = !(state.phone && state.name);
 
-			var summarySvc = state.service
-				? escapeHTML(state.service.service_name) + (state.service.service_name_ar ? ' (' + escapeHTML(state.service.service_name_ar) + ')' : '')
-					+ ' &middot; ' + escapeHTML(state.service.duration_minutes) + ' min'
-					+ (state.service.price ? ' &middot; ' + escapeHTML(currency(state.service.price)) : '')
-				: '';
+			var servicesHtml = '';
+			for (var sIdx = 0; sIdx < state.services.length; sIdx++) {
+				var s = state.services[sIdx];
+				servicesHtml += '<div style="display:flex;justify-content:space-between;margin-top:3px;">'
+					+ '<span>' + escapeHTML(s.service_name) + (s.service_name_ar ? ' (' + escapeHTML(s.service_name_ar) + ')' : '') + ' <small style="color:var(--muted);">' + escapeHTML(s.duration_minutes) + ' min</small></span>'
+					+ '<span style="font-weight:600;">' + currency(s.price) + '</span>'
+					+ '</div>';
+			}
+
 			var html = '<h2 class="step-title">Your details</h2>';
 			html += '<div class="summary">'
 				+ (state.department ? '<div><span>Department</span><span>' + escapeHTML(state.department) + '</span></div>' : '')
 				+ (state.staff ? '<div><span>' + escapeHTML(staffLabel()) + '</span><span>' + escapeHTML(state.staff.staff_name) + '</span></div>' : '')
 				+ (state.noStaffPref ? '<div><span>' + escapeHTML(staffLabel()) + '</span><span>No preference</span></div>' : '')
-				+ '<div><span>Service</span><span>' + summarySvc + '</span></div>'
+				+ '<div><span>Services (' + totalDur + ' min)</span><div style="flex:1;text-align:right;">' + servicesHtml + '</div></div>'
+				+ '<div style="border-top:1px dashed var(--border);padding-top:6px;font-weight:700;"><span>Total</span><span style="color:var(--primary);">' + currency(totalPrice) + '</span></div>'
 				+ '<div><span>Date</span><span>' + escapeHTML(formatDate(state.date)) + '</span></div>'
 				+ '<div><span>Time</span><span>' + escapeHTML(formatTime(state.slot)) + '</span></div>'
 				+ '</div>';
@@ -844,7 +920,7 @@
 			if (onlineEnabled && payMode === 'Both' && hasPrice) {
 				html += '<div class="form-row" style="margin-top:16px;"><label>Payment Method</label>'
 					+ '<div style="display:flex;gap:12px;margin-top:6px;">'
-					+ '<label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;"><input type="radio" name="payChoice" value="online" ' + (state.payOnline ? 'checked' : '') + ' id="payChoiceOnline"> Pay Online Now (' + currency(priceVal) + ')</label>'
+					+ '<label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;"><input type="radio" name="payChoice" value="online" ' + (state.payOnline ? 'checked' : '') + ' id="payChoiceOnline"> Pay Online Now (' + currency(totalPrice) + ')</label>'
 					+ '<label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;"><input type="radio" name="payChoice" value="onsite" ' + (!state.payOnline ? 'checked' : '') + ' id="payChoiceOnsite"> Pay on Visit</label>'
 					+ '</div></div>';
 			} else if (onlineEnabled && payMode === 'Online Now' && hasPrice) {
@@ -865,9 +941,9 @@
 				if (emailInput) state.email = emailInput.value.trim();
 				if (payChoiceOnline) state.payOnline = payChoiceOnline.checked;
 				if (onlineEnabled && payMode === 'Online Now' && hasPrice) {
-					nextBtn.textContent = 'Pay ' + currency(priceVal);
+					nextBtn.textContent = 'Pay ' + currency(totalPrice);
 				} else if (onlineEnabled && state.payOnline && hasPrice) {
-					nextBtn.textContent = 'Pay ' + currency(priceVal);
+					nextBtn.textContent = 'Pay ' + currency(totalPrice);
 				} else {
 					nextBtn.textContent = 'Confirm booking';
 				}
@@ -901,6 +977,7 @@
 				+ '<div><span>Service</span><span>' + escapeHTML(b.service || '') + '</span></div>'
 				+ '<div><span>Date</span><span>' + escapeHTML(formatDate(b.date)) + '</span></div>'
 				+ '<div><span>Time</span><span>' + escapeHTML(formatTime(b.time)) + '</span></div>'
+				+ (b.price ? '<div><span>Total</span><span style="font-weight:700;">' + currency(b.price) + '</span></div>' : '')
 				+ '</div>'
 				+ '<p style="margin-top: 16px; color: var(--muted); font-size: 13px;">A confirmation will be sent to your phone.</p>'
 				+ '</div>';
@@ -924,8 +1001,8 @@
 			if (state.step >= FLOW.length) {
 				// reset wizard
 				state = {
-					step: 0, department: null, staff: null, noStaffPref: false, service: null,
-					date: null, slot: null, name: '', phone: '', bookingResult: null
+					step: 0, department: null, staff: null, noStaffPref: false, service: null, services: [],
+					date: null, slot: null, name: '', phone: '', email: '', payOnline: false, bookingResult: null
 				};
 				render();
 				return;
@@ -964,10 +1041,12 @@
 				var onlineEnabled = Boolean(BUSINESS && BUSINESS.enable_online_payments);
 				var payMode = (BUSINESS && BUSINESS.payment_mode) || 'Pay on Service';
 				var isOnlinePay = onlineEnabled && ((payMode === 'Online Now') || (payMode === 'Both' && state.payOnline));
+				var serviceNames = state.services.map(function(s) { return s.name; });
 
 				fc('frontdesk.api.bookings.create_web_booking', {
 					staff: (state.staff ? state.staff.name : ''),
-					service: state.service.name,
+					services: JSON.stringify(serviceNames),
+					service: (state.service ? state.service.name : ''),
 					booking_date: state.date,
 					start_time: state.slot,
 					phone: state.phone,

@@ -20,6 +20,8 @@ class Booking(Document):
     """
 
     def validate(self):
+        if not self.reschedule_token:
+            self.reschedule_token = frappe.generate_hash(length=32)
         self._snapshot_service_fields()
         self._normalize_times()
         self._compute_end_time()
@@ -108,11 +110,41 @@ class Booking(Document):
                 )
 
     def _snapshot_service_fields(self):
-        """Copy duration + price from Item if not already set on the booking."""
-        if not self.service:
+        """Copy duration + price from Item(s) onto the booking and child table rows."""
+        from frappe.utils import flt
+
+        if self.get("services"):
+            total_dur = 0
+            total_price = 0.0
+            for row in self.services:
+                if not row.service:
+                    continue
+                svc = frappe.get_doc("Item", row.service)
+                if not row.service_name:
+                    row.service_name = svc.item_name
+                if not row.duration_minutes:
+                    row.duration_minutes = svc.duration_minutes or 0
+                if row.price is None:
+                    row.price = svc.standard_rate or 0.0
+                total_dur += int(row.duration_minutes or 0)
+                total_price += flt(row.price or 0.0)
+
+            if not self.service and self.services:
+                self.service = self.services[0].service
+            self.duration_minutes = total_dur
+            self.price = total_price
             return
-        svc = frappe.get_doc("Item", self.service)
-        if not self.duration_minutes:
-            self.duration_minutes = svc.duration_minutes
-        if self.price is None:
-            self.price = svc.standard_rate
+
+        if self.service:
+            svc = frappe.get_doc("Item", self.service)
+            if not self.duration_minutes:
+                self.duration_minutes = svc.duration_minutes or 0
+            if self.price is None:
+                self.price = svc.standard_rate or 0.0
+            if not self.get("services"):
+                self.append("services", {
+                    "service": self.service,
+                    "service_name": svc.item_name,
+                    "duration_minutes": svc.duration_minutes or 0,
+                    "price": svc.standard_rate or 0.0,
+                })
