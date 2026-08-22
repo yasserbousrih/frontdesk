@@ -61,6 +61,10 @@
   "payment_mode",
   "payments_booking",
   "booking_payment_methods",
+  "payments_deposit",
+  "require_deposit",
+  "deposit_type",
+  "deposit_value",
   "tab_notifications",
   "notifications",
   "sms_enabled",
@@ -454,6 +458,32 @@
    "fieldtype": "Table",
    "label": "Payment Methods",
    "options": "FrontDesk Payment Method"
+  },
+  {
+   "fieldname": "payments_deposit",
+   "fieldtype": "Section Break",
+   "label": "Deposit & No-Show Protection"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_deposit",
+   "fieldtype": "Check",
+   "label": "Require Booking Deposit",
+   "description": "Require an upfront deposit when clients book online to prevent no-shows."
+  },
+  {
+   "default": "Percentage",
+   "fieldname": "deposit_type",
+   "fieldtype": "Select",
+   "label": "Deposit Type",
+   "options": "Percentage\nFixed Amount"
+  },
+  {
+   "default": "20",
+   "fieldname": "deposit_value",
+   "fieldtype": "Float",
+   "label": "Deposit Value (% or Amount)",
+   "description": "Enter 20 for 20% of service total, or 50 for fixed 50 QAR."
   },
   {
    "fieldname": "tab_notifications",

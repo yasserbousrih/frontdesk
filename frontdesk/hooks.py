@@ -40,6 +40,7 @@ def setup_after_migrate():
         frappe.reload_doc("Frontdesk", "doctype", "booking", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "frontdesk_payment_method", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "frontdesk_gateway_settings", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "service_station", force=False)
         frappe.db.commit()
     except Exception:
         pass
@@ -75,6 +76,7 @@ def setup_after_install():
         frappe.reload_doc("Frontdesk", "doctype", "booking", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "frontdesk_payment_method", force=False)
         frappe.reload_doc("Frontdesk", "doctype", "frontdesk_gateway_settings", force=False)
+        frappe.reload_doc("Frontdesk", "doctype", "service_station", force=False)
         frappe.db.commit()
     except Exception:
         pass

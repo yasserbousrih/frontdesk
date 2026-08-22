@@ -28,6 +28,7 @@ class Booking(Document):
         self._enforce_timing()
         self._enforce_staff_active()
         self._enforce_no_overlap()
+        self._enforce_station_no_overlap()
 
     def _normalize_times(self):
         """Coerce start/end to datetime.time regardless of how they arrived
@@ -109,6 +110,44 @@ class Booking(Document):
                     f"Pick a different time or staff member."
                 )
 
+    def _enforce_station_no_overlap(self):
+        """Reject if any non-cancelled booking for the same station/room overlaps this one."""
+        if not (self.station and self.booking_date and self.start_time and self.end_time):
+            return
+
+        frappe.db.sql(
+            "SELECT name FROM `tabService Station` WHERE name=%s FOR UPDATE",
+            (self.station,),
+        )
+
+        existing = frappe.db.sql(
+            """
+            SELECT name, start_time, end_time, status, staff
+            FROM `tabBooking`
+            WHERE station = %(station)s
+              AND booking_date = %(date)s
+              AND status NOT IN ('Cancelled', 'No-Show')
+              AND name != %(self_name)s
+            FOR UPDATE
+            """,
+            {
+                "station": self.station,
+                "date": self.booking_date,
+                "self_name": self.name or "",
+            },
+            as_dict=True,
+        )
+
+        for b in existing:
+            if overlap.times_overlap(
+                self.start_time, self.end_time, b.start_time, b.end_time
+            ):
+                frappe.throw(
+                    f"Station/Room '{self.station}' is already reserved for {b.name} "
+                    f"({b.start_time}–{b.end_time}). "
+                    f"Pick a different room or time."
+                )
+
     def _snapshot_service_fields(self):
         """Copy duration + price from Item(s) onto the booking and child table rows."""
         from frappe.utils import flt
@@ -133,9 +172,7 @@ class Booking(Document):
                 self.service = self.services[0].service
             self.duration_minutes = total_dur
             self.price = total_price
-            return
-
-        if self.service:
+        elif self.service:
             svc = frappe.get_doc("Item", self.service)
             if not self.duration_minutes:
                 self.duration_minutes = svc.duration_minutes or 0
@@ -148,3 +185,15 @@ class Booking(Document):
                     "duration_minutes": svc.duration_minutes or 0,
                     "price": svc.standard_rate or 0.0,
                 })
+
+        # Calculate deposit_amount if required by business settings and not yet explicitly set
+        try:
+            bs = frappe.get_single("Business Settings")
+            if bs.get("require_deposit") and (self.price or 0) > 0 and (not self.deposit_amount or self.deposit_amount == 0):
+                if bs.get("deposit_type") == "Fixed Amount":
+                    self.deposit_amount = min(flt(self.price), flt(bs.get("deposit_value") or 0))
+                else:
+                    pct = flt(bs.get("deposit_value") or 20.0)
+                    self.deposit_amount = round(flt(self.price) * (pct / 100.0), 2)
+        except Exception:
+            pass

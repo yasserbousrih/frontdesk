@@ -1,0 +1,90 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:station_name",
+ "creation": "2026-08-22 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "station_name",
+  "station_type",
+  "active",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "station_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Station / Room Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "Treatment Room",
+   "fieldname": "station_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Treatment Room\nBarber Chair\nStyling Station\nSpa Suite\nConsultation Room\nOther",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Active"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-08-22 12:00:00.000000",
+ "module": "Frontdesk",
+ "name": "Service Station",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Frontdesk User",
+   "write": 1
+  }
+ ],
+ "sort_field": "station_name",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 1
+}

@@ -31,7 +31,7 @@ def get_board_data():
         },
         fields=[
             "name", "customer", "start_time", "end_time",
-            "service", "status", "price", "staff", "duration_minutes",
+            "service", "status", "price", "staff", "duration_minutes", "station",
         ],
         order_by="start_time",
     )
@@ -90,7 +90,18 @@ def get_board_data():
 
 
 @frappe.whitelist()
-def add_walkin(staff, service=None, services=None, customer_name=None, phone=None, status="In Progress", start_time=None):
+def get_stations():
+    """Return active stations/rooms for selection."""
+    return frappe.get_all(
+        "Service Station",
+        filters={"active": 1},
+        fields=["name", "station_name", "station_type", "description"],
+        order_by="station_name",
+    )
+
+
+@frappe.whitelist()
+def add_walkin(staff, service=None, services=None, customer_name=None, phone=None, status="In Progress", start_time=None, station=None):
     """Create a walk-in booking starting now or at a specified time."""
     if not frappe.db.exists("Staff Member", staff):
         frappe.throw(f"Staff Member not found: {staff}")
@@ -165,6 +176,7 @@ def add_walkin(staff, service=None, services=None, customer_name=None, phone=Non
         "doctype": "Booking",
         "customer": customer,
         "staff": staff,
+        "station": station or "",
         "service": service_list[0],
         "booking_date": today(),
         "start_time": start_time or nowtime(),

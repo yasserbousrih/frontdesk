@@ -127,11 +127,26 @@ The full accumulated expertise is in these Hermes skills under
 ## Verification Commands
 
 - **Unit tests (availability)**: `PYTHONPATH=/home/frappe/frontdesk python3 /home/frappe/frontdesk/frontdesk/tests/test_availability.py`
-- **Unit tests (payments)**: `bash /root/run-bench.sh --site frontdesk.local run-tests --module frontdesk.tests.test_payments`
+- **Unit tests (all)**: `bash /root/run-bench.sh --site frontdesk.local run-tests --app frontdesk`
+- **Unit tests (payments & deposits)**: `bash /root/run-bench.sh --site frontdesk.local run-tests --module frontdesk.tests.test_payments,frontdesk.tests.test_deposits`
 - **Compile check**: `python3 -c "import ast, glob; [ast.parse(open(f).read()) for f in glob.glob('/home/frappe/frontdesk/frontdesk/**/*.py', recursive=True)]; print('OK')"`
 - **Bench migrate**: `bash /root/run-bench.sh --site frontdesk.local migrate`
 - **Bench restart**: `bash /root/run-bench.sh restart`
 - **Live web curl**: `curl -s -H "Host: frontdesk.local" http://127.0.0.1:8000/`
+
+## Operations, Retention & Station Architecture (Aug 2026)
+- **WhatsApp 1-Click Reschedule / Retention**:
+  - `Booking.reschedule_token`: unique 32-char token generated per booking.
+  - Injected into WhatsApp booking confirmation (`notifications.py`), 2-hour pre-visit reminder (`reminders.py`), and post-paid rebooking prompt (`followups.py`).
+- **No-Show Deposits**:
+  - `Business Settings.require_deposit` (Check), `deposit_type` ("Percentage" / "Fixed Amount"), `deposit_value` (Float).
+  - Snapshot onto `Booking.deposit_amount` and tracked via `Booking.deposit_paid`.
+  - Invoicing at `/checkout` automatically applies pre-paid deposit to `Online` MOP and charges only remainder.
+- **Service Station & Treatment Room Allocation**:
+  - `Service Station` DocType (`station_name`, `station_type`, `active`).
+  - `Booking.station`: Enforces room overlap serialization (`_enforce_station_no_overlap`) so rooms/suites cannot be double booked.
+- **Staff Mobile Queue & Chair Portal (`/chair` & `/my_schedule`)**:
+  - Tablet/mobile-first live chair queue for practitioners with 1-tap "Seat Client", "Done & Checkout", and client formula / tech notes popup.
 
 ## Clone / Fresh-Install Playbook
 Complete recipe to go from a blank server to a working FrontDesk site.

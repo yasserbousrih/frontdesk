@@ -37,7 +37,7 @@ def send_2h_reminders():
             "status": ["not in", ["Cancelled", "No-Show"]],
             "reminder_sent": 0,
         },
-        fields=["name", "customer", "staff", "service", "booking_date", "start_time"],
+        fields=["name", "customer", "staff", "service", "booking_date", "start_time", "reschedule_token"],
     )
 
     for b in bookings:
@@ -56,15 +56,29 @@ def _send_reminder(booking, bs):
         return True  # no phone to send to — mark as handled
 
     staff_name = frappe.db.get_value("Staff Member", booking["staff"], "staff_name")
-    service_name = frappe.db.get_value("Item", booking["service"], "item_name")
+    
+    # Load child services if any
+    child_services = frappe.get_all("Booking Service", filters={"parent": booking["name"]}, fields=["service_name", "service"])
+    if child_services:
+        names = [s.service_name or frappe.db.get_value("Item", s.service, "item_name") for s in child_services]
+    else:
+        names = [frappe.db.get_value("Item", booking["service"], "item_name")]
+    service_str = ", ".join(filter(None, names)) or "Appointment"
+
     time_str = str(booking["start_time"])[:5]
+    reschedule_token = booking.get("reschedule_token") or frappe.db.get_value("Booking", booking["name"], "reschedule_token")
+    reschedule_url = ""
+    if reschedule_token:
+        reschedule_url = frappe.utils.get_url(f"/reschedule?token={reschedule_token}")
 
     message = (
         f"⏰ Reminder\n\n"
-        f"{service_name} with {staff_name}\n"
-        f"🕐 {time_str} today\n\n"
-        f"See you soon! — {bs.business_name}"
+        f"💈 {service_str} with {staff_name}\n"
+        f"🕐 {time_str} today\n"
     )
+    if reschedule_url:
+        message += f"\nNeed to change or cancel? Manage your booking:\n{reschedule_url}\n"
+    message += f"\nSee you soon! — {bs.business_name}"
 
     payload = {"to": customer.phone, "message": message}
     if bs.get("omnichat_sender_id"):

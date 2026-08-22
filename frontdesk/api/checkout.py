@@ -104,11 +104,28 @@ def create_invoice(
             f"No payment account resolvable for {mop_name} / {company} — "
             "set the Mode of Payment default account or the company cash account."
         )
-    si.append("payments", {
-        "mode_of_payment": mop_name,
-        "amount": si.grand_total,
-        "account": account,
-    })
+    deposit_amt = flt(booking.deposit_amount) if booking.deposit_paid else 0.0
+    if deposit_amt > 0 and deposit_amt < flt(si.grand_total):
+        online_mop = "Online" if frappe.db.exists("Mode of Payment", "Online") else "Bank Transfer"
+        online_acc = frappe.db.get_value("Mode of Payment Account", {"parent": online_mop, "company": company}, "default_account") or account
+        si.append("payments", {
+            "mode_of_payment": online_mop,
+            "amount": deposit_amt,
+            "account": online_acc,
+        })
+        rem_amt = max(0.0, flt(si.grand_total) - deposit_amt)
+        if rem_amt > 0:
+            si.append("payments", {
+                "mode_of_payment": mop_name,
+                "amount": rem_amt,
+                "account": account,
+            })
+    else:
+        si.append("payments", {
+            "mode_of_payment": mop_name,
+            "amount": si.grand_total,
+            "account": account,
+        })
 
     si.submit()
 

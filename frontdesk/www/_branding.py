@@ -202,6 +202,9 @@ def get_branding() -> dict:
         "enable_online_payments": bool(bs.get("enable_online_payments")) and (bs.get("payment_gateway") not in (None, "", "None", "Cash On Service")),
         "payment_mode": bs.get("payment_mode") or "Pay on Service",
         "payment_gateway": bs.get("payment_gateway") or "None",
+        "require_deposit": bool(bs.get("require_deposit")),
+        "deposit_type": bs.get("deposit_type") or "Percentage",
+        "deposit_value": float(bs.get("deposit_value") or 20.0),
     }
 
 

@@ -31,13 +31,21 @@ def send_post_paid_message(doc):
         return True  # no phone to send to — mark as handled
 
     staff_name = frappe.db.get_value("Staff Member", doc.staff, "staff_name")
-    service_name = frappe.db.get_value("Item", doc.service, "item_name")
+    
+    # Multi-service support
+    service_names = []
+    if doc.get("services"):
+        service_names = [s.service_name or frappe.db.get_value("Item", s.service, "item_name") for s in doc.services if s.service]
+    if not service_names and doc.service:
+        service_names = [frappe.db.get_value("Item", doc.service, "item_name")]
+    services_str = ", ".join(filter(None, service_names)) or "Appointment"
+
     book_link = frappe.utils.get_url("/book")
     review_link = bs.get("google_review_url") or ""
 
     message = (
         f"Thanks for visiting {bs.business_name}! 💈\n\n"
-        f"{service_name} with {staff_name}\n\n"
+        f"{services_str} with {staff_name}\n\n"
         f"📅 Book your next visit:\n{book_link}\n"
     )
     if review_link:

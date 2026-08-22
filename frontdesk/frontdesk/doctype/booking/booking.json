@@ -9,6 +9,7 @@
  "field_order": [
   "customer",
   "staff",
+  "station",
   "service",
   "services",
   "section_break_timing",
@@ -21,6 +22,8 @@
   "source",
   "section_break_amounts",
   "price",
+  "deposit_amount",
+  "deposit_paid",
   "notes",
   "internal_flags_section",
   "reminder_sent",
@@ -43,6 +46,13 @@
    "label": "Staff",
    "options": "Staff Member",
    "reqd": 1
+  },
+  {
+   "fieldname": "station",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Station / Room",
+   "options": "Service Station"
   },
   {
    "fieldname": "service",
@@ -119,6 +129,18 @@
    "fieldname": "price",
    "fieldtype": "Currency",
    "label": "Price (snapshot)"
+  },
+  {
+   "fieldname": "deposit_amount",
+   "fieldtype": "Currency",
+   "label": "Deposit Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "deposit_paid",
+   "fieldtype": "Check",
+   "label": "Deposit Paid",
+   "read_only": 1
   },
   {
    "fieldname": "notes",

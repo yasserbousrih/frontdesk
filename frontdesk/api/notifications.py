@@ -20,15 +20,27 @@ def send_booking_confirmation(doc, method):
         return
 
     staff_name = frappe.db.get_value("Staff Member", doc.staff, "staff_name")
-    service_name = frappe.db.get_value("Item", doc.service, "item_name")
+    
+    service_names = []
+    if doc.get("services"):
+        service_names = [s.service_name or frappe.db.get_value("Item", s.service, "item_name") for s in doc.services if s.service]
+    if not service_names and doc.service:
+        service_names = [frappe.db.get_value("Item", doc.service, "item_name")]
+    services_str = ", ".join(filter(None, service_names)) or "Appointment"
+
+    reschedule_url = ""
+    if doc.reschedule_token:
+        reschedule_url = frappe.utils.get_url(f"/reschedule?token={doc.reschedule_token}")
 
     message = (
         f"✅ Booking Confirmed\n\n"
-        f"{service_name} with {staff_name}\n"
+        f"💈 {services_str} with {staff_name}\n"
         f"📅 {doc.booking_date}\n"
-        f"🕐 {str(doc.start_time)[:5]}\n\n"
-        f"See you soon! — {bs.business_name}"
+        f"🕐 {str(doc.start_time)[:5]}\n"
     )
+    if reschedule_url:
+        message += f"\nNeed to change or cancel? Manage your booking:\n{reschedule_url}\n"
+    message += f"\nSee you soon! — {bs.business_name}"
 
     payload = {
         "to": customer.phone,

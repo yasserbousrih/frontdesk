@@ -122,7 +122,10 @@ def create_payment_request(booking=None, invoice=None, grand_total=None, guest_e
 	email = guest_email or ""
 
 	if ref_doctype == "Booking":
-		price = flt(grand_total) if grand_total is not None else flt(doc.price or 0)
+		if flt(doc.deposit_amount) > 0 and flt(doc.deposit_amount) < flt(doc.price or 0):
+			price = flt(doc.deposit_amount)
+		else:
+			price = flt(grand_total) if grand_total is not None else flt(doc.price or 0)
 		if price <= 0:
 			# If price was 0 on booking, fetch from service
 			if doc.service:
@@ -276,14 +279,19 @@ def on_payment_request_authorized(doc, status=None):
 	if ref_doctype == "Booking" and frappe.db.exists("Booking", ref_name):
 		try:
 			booking = frappe.get_doc("Booking", ref_name)
-			booking.status = "Paid"
+			booking.deposit_paid = 1
+			if flt(booking.deposit_amount) > 0 and flt(booking.deposit_amount) < flt(booking.price or 0):
+				if booking.status not in ("Seated", "In Progress", "Completed", "Paid"):
+					booking.status = "Booked"
+			else:
+				booking.status = "Paid"
 			booking.flags.ignore_permissions = True
 			booking.save()
 
 			# Trigger confirmation notification if configured
 			try:
 				from frontdesk.api.notifications import send_booking_confirmation
-				send_booking_confirmation(booking.name)
+				send_booking_confirmation(booking, "after_insert")
 			except Exception:
 				pass
 		except Exception:

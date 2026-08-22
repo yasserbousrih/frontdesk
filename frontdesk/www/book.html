@@ -881,11 +881,22 @@
 				totalDur += Number(state.services[i].duration_minutes || 0);
 			}
 			var hasPrice = totalPrice > 0;
+			var onlineEnabled = Boolean(BUSINESS && BUSINESS.enable_online_payments);
+			var payMode = (BUSINESS && BUSINESS.payment_mode) || 'Pay on Service';
+			var requireDeposit = Boolean(BUSINESS && BUSINESS.require_deposit && onlineEnabled);
+			var depType = (BUSINESS && BUSINESS.deposit_type) || 'Percentage';
+			var depVal = Number((BUSINESS && BUSINESS.deposit_value) || 20);
+			var depositAmt = 0;
+			if (requireDeposit && hasPrice) {
+				if (depType === 'Fixed Amount') {
+					depositAmt = Math.min(totalPrice, depVal);
+				} else {
+					depositAmt = Math.round((totalPrice * (depVal / 100)) * 100) / 100;
+				}
+			}
 
 			if (onlineEnabled && payMode === 'Online Now' && hasPrice) {
-				nextBtn.textContent = 'Pay ' + currency(totalPrice);
-			} else if (onlineEnabled && state.payOnline && hasPrice) {
-				nextBtn.textContent = 'Pay ' + currency(totalPrice);
+				nextBtn.textContent = (depositAmt > 0 && depositAmt < totalPrice) ? ('Pay Deposit ' + currency(depositAmt)) : ('Pay ' + currency(totalPrice));
 			} else {
 				nextBtn.textContent = 'Confirm booking';
 			}
@@ -906,8 +917,12 @@
 				+ (state.staff ? '<div><span>' + escapeHTML(staffLabel()) + '</span><span>' + escapeHTML(state.staff.staff_name) + '</span></div>' : '')
 				+ (state.noStaffPref ? '<div><span>' + escapeHTML(staffLabel()) + '</span><span>No preference</span></div>' : '')
 				+ '<div><span>Services (' + totalDur + ' min)</span><div style="flex:1;text-align:right;">' + servicesHtml + '</div></div>'
-				+ '<div style="border-top:1px dashed var(--border);padding-top:6px;font-weight:700;"><span>Total</span><span style="color:var(--primary);">' + currency(totalPrice) + '</span></div>'
-				+ '<div><span>Date</span><span>' + escapeHTML(formatDate(state.date)) + '</span></div>'
+				+ '<div style="border-top:1px dashed var(--border);padding-top:6px;font-weight:700;"><span>Total</span><span style="color:var(--primary);">' + currency(totalPrice) + '</span></div>';
+			if (depositAmt > 0 && depositAmt < totalPrice) {
+				html += '<div style="color:var(--primary);font-weight:600;"><span>Deposit Due Now</span><span>' + currency(depositAmt) + '</span></div>'
+					+ '<div style="color:var(--muted);font-size:13px;"><span>Remaining at Visit</span><span>' + currency(totalPrice - depositAmt) + '</span></div>';
+			}
+			html += '<div><span>Date</span><span>' + escapeHTML(formatDate(state.date)) + '</span></div>'
 				+ '<div><span>Time</span><span>' + escapeHTML(formatTime(state.slot)) + '</span></div>'
 				+ '</div>';
 			html += '<div class="form-row"><label for="nameInput">Full name</label>'
@@ -941,9 +956,9 @@
 				if (emailInput) state.email = emailInput.value.trim();
 				if (payChoiceOnline) state.payOnline = payChoiceOnline.checked;
 				if (onlineEnabled && payMode === 'Online Now' && hasPrice) {
-					nextBtn.textContent = 'Pay ' + currency(totalPrice);
+					nextBtn.textContent = (depositAmt > 0 && depositAmt < totalPrice) ? ('Pay Deposit ' + currency(depositAmt)) : ('Pay ' + currency(totalPrice));
 				} else if (onlineEnabled && state.payOnline && hasPrice) {
-					nextBtn.textContent = 'Pay ' + currency(totalPrice);
+					nextBtn.textContent = (depositAmt > 0 && depositAmt < totalPrice) ? ('Pay Deposit ' + currency(depositAmt)) : ('Pay ' + currency(totalPrice));
 				} else {
 					nextBtn.textContent = 'Confirm booking';
 				}
