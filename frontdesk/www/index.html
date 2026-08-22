@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ business.theme_mode }}">
+<html lang="{{ business.lang or 'en' }}" dir="{{ 'rtl' if business.is_rtl else 'ltr' }}" data-theme="{{ business.theme_mode }}">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -12,11 +12,18 @@
 	<link href="https://fonts.googleapis.com/css2?{{ business.font_urls|join('&') }}&display=swap" rel="stylesheet">
 	{% endif %}
 	<script>
-		// restore the visitor's saved theme before first paint (no flash)
-		try { var _t = localStorage.getItem('fd_theme'); if (_t === 'dark' || _t === 'light') document.documentElement.dataset.theme = _t; } catch (e) {}
+		// restore the visitor's saved theme & language before first paint (no flash)
+		try {
+			var _t = localStorage.getItem('fd_theme');
+			if (_t === 'dark' || _t === 'light') document.documentElement.dataset.theme = _t;
+			var _l = localStorage.getItem('fd_lang') || 'en';
+			document.documentElement.lang = _l;
+			if (_l === 'ar') document.documentElement.dir = 'rtl';
+		} catch (e) {}
 	</script>
 	<style>
 		:root {
+			--ar-font: '{{ business.ar_font or "Tajawal" }}', 'Noto Sans Arabic', 'Cairo', sans-serif;
 			--primary: {{ business.theme.light.primary }};
 			--secondary: {{ business.theme.light.secondary }};
 			--accent: {{ business.theme.light.accent }};
@@ -110,21 +117,56 @@
 			padding: 48px 20px;
 			max-width: 720px;
 		}
-		.theme-toggle {
+		:root[dir="rtl"], html[dir="rtl"] {
+			direction: rtl;
+			text-align: right;
+			font-family: var(--ar-font);
+		}
+		.header-actions {
 			position: absolute;
 			top: 14px;
 			right: 14px;
-			z-index: 2;
+			z-index: 10;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+		:root[dir="rtl"] .header-actions, html[dir="rtl"] .header-actions {
+			right: auto;
+			left: 14px;
+		}
+		.lang-toggle {
+			height: 38px;
+			padding: 0 14px;
+			border-radius: 999px;
+			border: 1px solid rgba(255,255,255,0.45);
+			background: rgba(0,0,0,0.25);
+			color: #fff;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 13px;
+			font-weight: 600;
+			backdrop-filter: blur(8px);
+			-webkit-backdrop-filter: blur(8px);
+			transition: background 0.15s, border-color 0.15s;
+		}
+		.lang-toggle:hover { background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.7); }
+		.lang-toggle svg { width: 15px; height: 15px; }
+		.theme-toggle {
 			width: 38px;
 			height: 38px;
 			border-radius: 50%;
 			border: 1px solid rgba(255,255,255,0.45);
-			background: rgba(0,0,0,0.2);
+			background: rgba(0,0,0,0.25);
 			color: #fff;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			backdrop-filter: blur(8px);
+			-webkit-backdrop-filter: blur(8px);
 			transition: background 0.15s;
 		}
 		.theme-toggle:hover { background: rgba(0,0,0,0.35); }
@@ -436,10 +478,20 @@
 		{% if business.brand_cover %}
 			<img class="cover" src="{{ business.brand_cover }}" alt="" />
 		{% endif %}
-		<button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-			<svg class="icon-moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-			<svg class="icon-sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-		</button>
+		<div class="header-actions">
+			<button type="button" class="lang-toggle" id="langToggle" onclick="toggleLanguage()" aria-label="Switch Language" title="Switch Language">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="10"></circle>
+					<line x1="2" y1="12" x2="22" y2="12"></line>
+					<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+				</svg>
+				<span class="lang-text">العربية</span>
+			</button>
+			<button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+				<svg class="icon-moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+				<svg class="icon-sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+			</button>
+		</div>
 		<div class="hero-content">
 			<div class="brand-row">
 				{% if business.brand_logo %}
@@ -452,7 +504,7 @@
 				<p class="hero-staff">{{ active_staff_count }} {{ business.staff_label_plural if active_staff_count != 1 else business.staff_label }} ready to serve you</p>
 			{% endif %}
 			<div class="hero-cta">
-				<a class="btn" href="/book">{{ business.cta_label }}</a>
+				<a class="btn" href="/book" data-i18n="Book Appointment">{{ business.cta_label }}</a>
 				{% if business.cta_secondary_label and business.cta_secondary_link %}
 					<a class="btn btn-ghost" href="{{ business.cta_secondary_link }}">{{ business.cta_secondary_label }}</a>
 				{% endif %}
@@ -593,6 +645,10 @@
 	<footer>{{ business.copyright_text }} &middot; <a href="https://basira.app" target="_blank" rel="noopener" style="color:inherit;font-weight:600;">{{ business.footer_powered }}</a></footer>
 </main>
 
+<script>
+	window.FD_SERVER_TRANSLATIONS = {{ business.ui_translations | tojson if business.ui_translations else '{}' }};
+</script>
+<script src="/assets/frontdesk/js/frontdesk_i18n.js"></script>
 <script>
 	(function () {
 		var KEY = 'fd_theme';

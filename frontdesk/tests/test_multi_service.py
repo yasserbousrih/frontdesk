@@ -38,14 +38,15 @@ class TestMultiService(FrappeTestCase):
 				"standard_rate": 30.0,
 			}).insert(ignore_permissions=True)
 
-		# Ensure staff member exists
-		staff = frappe.get_all("Staff Member", filters={"active": 1}, fields=["name"])
-		if staff:
-			self.staff = staff[0].name
+		# Ensure dedicated test staff member exists with full hours
+		staff_name = "Multi Test Staff"
+		existing_staff = frappe.db.get_value("Staff Member", {"staff_name": staff_name}, "name")
+		if existing_staff:
+			self.staff = existing_staff
 		else:
 			sm = frappe.get_doc({
 				"doctype": "Staff Member",
-				"staff_name": "Multi Barber",
+				"staff_name": staff_name,
 				"active": 1,
 				"working_hours": [
 					{"weekday": "Monday", "start_time": "09:00:00", "end_time": "21:00:00"},

@@ -294,6 +294,10 @@ doc_events = {
         "on_payment_authorized": "frontdesk.api.payments.on_payment_request_authorized",
         "on_submit": "frontdesk.api.payments.on_payment_request_submit",
     },
+    "Item": {
+        "before_insert": "frontdesk.api.translation.auto_translate_item",
+        "before_save": "frontdesk.api.translation.auto_translate_item",
+    },
     "Business Settings": {
         "on_update": "frontdesk.api.payments.on_business_settings_update",
     },

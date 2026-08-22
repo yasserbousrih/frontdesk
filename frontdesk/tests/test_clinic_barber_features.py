@@ -150,12 +150,12 @@ class TestClinicBarberFeatures(FrappeTestCase):
 		token = b_doc.reschedule_token
 		self.assertTrue(bool(token))
 
-		# Reschedule to 11:00:00
-		new_date = str(add_days(today(), 9))
-		resched_res = reschedule_web_booking(token=token, new_date=new_date, new_time="11:00:00")
+		# Reschedule to 14:00:00 on future date
+		new_date = str(add_days(today(), 14))
+		resched_res = reschedule_web_booking(token=token, new_date=new_date, new_time="14:00:00")
 		self.assertTrue(resched_res.get("ok"))
 		self.assertEqual(resched_res["date"], new_date)
-		self.assertEqual(resched_res["time"], "11:00")
+		self.assertEqual(resched_res["time"], "14:00")
 
 		b_doc.reload()
 		self.assertEqual(str(b_doc.booking_date), new_date)

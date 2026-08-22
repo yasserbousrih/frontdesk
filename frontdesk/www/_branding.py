@@ -61,6 +61,24 @@ def get_branding() -> dict:
     Source priority: Website Settings (Frappe built-in) → Business
     Settings (FrontDesk custom) → hard-coded defaults.
     """
+    # Resolve and set current request language safely
+    cookies = {}
+    try:
+        if getattr(frappe, "request", None) and hasattr(frappe.request, "cookies"):
+            cookies = frappe.request.cookies or {}
+    except Exception:
+        cookies = {}
+
+    req_lang = (
+        frappe.form_dict.get("lang")
+        or cookies.get("preferred_language")
+        or cookies.get("fd_lang")
+        or getattr(frappe.local, "lang", "en")
+        or "en"
+    )
+    if req_lang in ("ar", "fr", "en"):
+        frappe.local.lang = req_lang
+
     ws = _safe_single("Website Settings") or {}
     bs = _safe_single("Business Settings") or {}
 
@@ -205,7 +223,20 @@ def get_branding() -> dict:
         "require_deposit": bool(bs.get("require_deposit")),
         "deposit_type": bs.get("deposit_type") or "Percentage",
         "deposit_value": float(bs.get("deposit_value") or 20.0),
+        # -- translations & localization --------------------------------------
+        "lang": req_lang,
+        "is_rtl": req_lang in ("ar", "he", "fa", "ur"),
+        "ui_translations": _get_ui_translations(req_lang),
     }
+
+
+def _get_ui_translations(lang: str = "ar") -> dict:
+    """Fetch all translations for client hydration."""
+    try:
+        from frontdesk.api.translation import get_translations
+        return get_translations(lang).get("translations", {})
+    except Exception:
+        return {}
 
 
 def _safe_single(doctype: str) -> dict | None:
